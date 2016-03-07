@@ -1,0 +1,28 @@
+{
+  "name": "photo-editor",
+  "description": "JavaScript Photo Editor Widget",
+  "main": "Gruntfile.js",
+  "authors": [
+    "John Need"
+  ],
+  "license": "Beerware",
+  "keywords": [
+    "photo",
+    "editor"
+  ],
+  "moduleType": [
+    "es6"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "modernizr": "^3.3.1"
+  }
+}

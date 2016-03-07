@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../ts-out/src/test.js"],"names":[],"mappings":";;;;;;;;;;AAAA,IAAI,QAAQ,QAAR;;IACS;;;;;;;+BACF;AACH,kBAAM,KAAN,EADG;;;;WADE","file":"test.js","sourcesContent":["var chomp = \"Chomp!\";\nexport class Pony {\n    bite() {\n        alert(chomp);\n    }\n}\n//# sourceMappingURL=test.js.map"]}
