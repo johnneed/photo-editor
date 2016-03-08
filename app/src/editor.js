@@ -111,6 +111,15 @@ class Editor {
         this.redraw();
     }
 
+    rotate(deg){
+        var rad = deg * Math.PI / 180;
+        this.canvasContext.translate(this.canvas.width/2, this.canvas.height/2);
+        this.canvasContext.rotate(rad);
+        this.redraw();
+        this.canvasContext.translate( -this.canvas.width/2, -this.canvas.height/2);
+
+    }
+
     save() {
         var imgdata = this.canvas.toDataURL('imgage/png');
         // standard data to url
@@ -119,7 +128,6 @@ class Editor {
         var newdata = imgdata.replace(/^data:image\/png/, 'data:application/octet-stream');
         return newdata;
         // give the link the values it needs
-
 
     }
 }

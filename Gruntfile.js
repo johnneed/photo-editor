@@ -279,6 +279,9 @@ module.exports = function(grunt) {
             }
         },
         watch: {
+            html : {files: "*.html",
+                tasks: ["copy"]
+            },
             app: {
                 files: "<%= paths.app %>/src/**/*.js",
                 tasks: ["babel:dist", "webpack:dev"]

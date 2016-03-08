@@ -11,6 +11,10 @@ import {getOffset} from "./utilities";
     var cropControl = document.getElementById("cropImageControl");
     var editorBox = document.getElementById("editor");
     var saveButton = document.getElementById("save");
+    var rotateControl0 = document.getElementById("rotateImageControl0");
+    var rotateControl90 = document.getElementById("rotateImageControl90");
+    var rotateControl180 = document.getElementById("rotateImageControl180");
+    var rotateControl270 = document.getElementById("rotateImageControl270");
     var myEditor;
     var mouseStartX;
     var mouseStartY;
@@ -176,10 +180,21 @@ import {getOffset} from "./utilities";
         saveButton.href=myEditor.canvas.toDataURL(myEditor.mimeType);
         saveButton.download = myEditor.fileName;
     }
+
+    function rotate(event){
+         if(event.target.checked){
+             myEditor.rotate(parseInt(event.target.value,10));
+         }
+
+    }
     
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     moveControl.addEventListener('change', movePic);
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);
+    rotateControl0.addEventListener('change', rotate);
+    rotateControl90.addEventListener('change', rotate);
+    rotateControl180.addEventListener('change', rotate);
+    rotateControl270.addEventListener('change', rotate);
 }());
