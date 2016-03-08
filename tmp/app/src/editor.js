@@ -61,9 +61,10 @@ var Editor = function () {
             console.log("scale" + percentage + "%");
             var newHeight = this.originalImage.height * percentage * .01;
             var newWidth = this.originalImage.width * percentage * .01;
-
             this.imageState.width = newWidth;
             this.imageState.height = newHeight;
+            this.canvas.width = newWidth;
+            this.canvas.height = newHeight;
             this.redraw();
             this.history.push({
                 action: "zoom",
@@ -113,10 +114,16 @@ var Editor = function () {
         value: function crop(args) {
             args = args || {};
             console.log('crop ' + JSON.stringify(args));
+            this.imageState.x = 0;
+            this.imageState.y = 0;
+            this.imageState.width = args.swidth;
+            this.imageState.height = args.sheight;
             this.imageState.sy = args.sy || 0;
             this.imageState.sx = args.sx || 0;
             this.imageState.swidth = args.swidth || 0;
             this.imageState.sheight = args.sheight || 0;
+            this.canvas.width = args.swidth;
+            this.canvas.height = args.sheight;
             this.redraw();
         }
     }, {

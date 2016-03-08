@@ -101,24 +101,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         isCropping = true;
     }
 
-    function endCrop(e) {
-        console.log(e);
-        mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
-        mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
-
-        console.log('end-crop : X ' + mouseEndX + ' Y ' + mouseEndY);
-        if (isCropping) {
-            myEditor.crop({
-                sx: mouseStartX - offset.left,
-                sy: mouseStartY - offset.top,
-                swidth: mouseEndX,
-                sheight: mouseEndY
-            });
-        }
-        // clear the crop flag
-        isCropping = false;
-    }
-
     function cropping(e) {
         var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
@@ -135,6 +117,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
             //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
             //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
         }
+    }
+
+    function endCrop(e) {
+        console.log(e);
+        mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
+        mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
+
+        console.log('end-crop : X ' + mouseEndX + ' Y ' + mouseEndY);
+        if (isCropping) {
+            myEditor.crop({
+                sx: mouseEndX > 0 ? mouseStartX - offset.left : parseInt(e.clientX, 10) - offset.left,
+                sy: mouseEndY > 0 ? mouseStartY - offset.top : parseInt(e.clientY, 10) - offset.top,
+                swidth: Math.abs(mouseEndX),
+                sheight: Math.abs(mouseEndY)
+            });
+        }
+        // clear the crop flag
+        isCropping = false;
     }
 
     function movePic(event) {
