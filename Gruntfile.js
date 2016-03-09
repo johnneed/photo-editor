@@ -26,6 +26,8 @@ module.exports = function(grunt) {
         modules: "modules",
         reports: "reports",
         src: "app/src",
+        assets: "app/assets",
+        fonts: "app/fonts",
         test: "__test__",
         temp: "tmp",
         vendor: "vendor"
@@ -156,6 +158,18 @@ module.exports = function(grunt) {
                         expand: true,
                         src: ["*.html"],
                         dest: "<%= paths.dist %>/"
+                    },
+                    {
+                        expand: true,
+                        cwd : "<%= paths.assets %>",
+                        src: ["**/*"],
+                        dest: "<%= paths.dist %>/assets/"
+                    },
+                    {
+                        expand: true,
+                        cwd : "<%= paths.fonts %>",
+                        src: ["**/*"],
+                        dest: "<%= paths.dist %>/fonts/"
                     }
                     // copy and rename Modernizr
                     //{
@@ -167,7 +181,8 @@ module.exports = function(grunt) {
                     //    rename: (dest) => `${dest}modernizr.js`
                     //}
                 ]
-            }
+            },
+
         },
         eslint: {
             app: {
@@ -286,9 +301,13 @@ module.exports = function(grunt) {
                 files: "<%= paths.app %>/src/**/*.js",
                 tasks: ["babel:dist", "webpack:dev"]
             },
-            gruntfile: {
-                files: "Gruntfile.js",
-                tasks: ["eslint:gruntfile"]
+            assets: {
+                files: "<%= paths.assets %>/**/*",
+                tasks: ["copy"]
+            },
+            fonts: {
+                files: "<%= paths.fonts %>/**/*",
+                tasks: ["copy"]
             },
             specs: {
                 files: "<%= paths.test %>",
