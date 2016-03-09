@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,32 +11,41 @@
 
     <link rel="stylesheet" href="css/main.css">
 
-  </head>
-  <body>
+</head>
+<body>
 
-  <div class="photo-widget is-column-layout">
+<div class="photo-widget is-column-layout">
     <div id="workspace" class="photo-widget_workspace">
-      <div id="editor" class="photo-widget_editor"></div>
+        <div id="editor" class="photo-widget_editor"></div>
     </div>
     <div id="tools" class="photo-widget_tools">
-      <div class="photo-widget_toolbar">
-        <label><span>Upload File&nbsp;</span><input id="fileInput" type="file" accept="image/*"/></label>
-        <label><span>Scale Image&nbsp;</span><em>1%</em><input id="scaleImageControl" type="range"  min="1" max="100" value="100"/><em>100%</em></label>
-        <label class='photo-widget_boolean-button'><input id="moveImageControl" type="checkbox"/><span>Move</span></label>
-        <label class='photo-widget_boolean-button'><input id="cropImageControl" type="checkbox"/><span>Crop</span></label>
-         <a class="button" id="save" href="#" download>save</a>
-        <label>
-          <span>Rotate</span>
-          <input id="rotateImageControl0" type="radio" checked="checked" name="rotate" value="0"/>
-          <input id="rotateImageControl90" type="radio" name="rotate" value="90"/>
-          <input id="rotateImageControl180" type="radio" name="rotate" value="180"/>
-          <input id="rotateImageControl270" type="radio" name="rotate" value="270"/>
-        </label>
-      </div>
+        <div class="photo-widget_toolbar">
+            <label><span>Upload File&nbsp;</span>
+                <input id="fileInput" type="file" accept="image/*"/></label>
+            <label><span>Scale Image&nbsp;</span>
+                <em>1%</em><input id="scaleImageControl" type="range" min="1" max="100"
+                                  value="100"/><em>100%</em></label>
+            <label class='photo-widget_boolean-button'>
+                <input id="moveImageControl"
+                       type="checkbox"/><span>Move</span>
+            </label>
+            <label class='photo-widget_boolean-button'>
+                <input id="cropImageControl"
+                       type="checkbox"/><span>Crop</span>
+            </label>
+            <a class="button" id="save" href="#" download>save</a>
+            <label>
+                <span>Rotate Left</span>
+                <button id="rotateLeft" title="Rotate Left" value="-90"><i class="icon-undo"></i></button>
+            </label>
+            <label><span>Rotate Right</span>
+                <button id="rotateRight" title="Rotate Right" value="90"><i class="icon-redo"></i></button>
+            </label>
+        </div>
     </div>
-  </div>
+</div>
 
-    <script src="scripts/photo-editor.js"></script>
+<script src="scripts/photo-editor.js"></script>
 
-  </body>
+</body>
 </html>

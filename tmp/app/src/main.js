@@ -17,10 +17,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var cropControl = document.getElementById("cropImageControl");
     var editorBox = document.getElementById("editor");
     var saveButton = document.getElementById("save");
-    var rotateControl0 = document.getElementById("rotateImageControl0");
-    var rotateControl90 = document.getElementById("rotateImageControl90");
-    var rotateControl180 = document.getElementById("rotateImageControl180");
-    var rotateControl270 = document.getElementById("rotateImageControl270");
+    var rotateRight = document.getElementById("rotateRight");
+    var rotateLeft = document.getElementById("rotateLeft");
     var myEditor;
     var mouseStartX;
     var mouseStartY;
@@ -182,9 +180,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     }
 
     function rotate(event) {
-        if (event.target.checked) {
-            myEditor.rotate(parseInt(event.target.value, 10));
-        }
+        console.log('rotate ' + parseFloat(event.currentTarget.value));
+
+        myEditor.rotate(parseFloat(event.currentTarget.value));
     }
 
     fileInput.addEventListener('change', addPic);
@@ -192,9 +190,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     moveControl.addEventListener('change', movePic);
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);
-    rotateControl0.addEventListener('change', rotate);
-    rotateControl90.addEventListener('change', rotate);
-    rotateControl180.addEventListener('change', rotate);
-    rotateControl270.addEventListener('change', rotate);
+    rotateLeft.addEventListener('click', rotate);
+    rotateRight.addEventListener('click', rotate);
 })();
 //# sourceMappingURL=main.js.map
