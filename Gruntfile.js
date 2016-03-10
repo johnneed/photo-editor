@@ -123,7 +123,7 @@ module.exports = function(grunt) {
                 src: ["<%= paths.dist %>/css/*.css", "<%= paths.dist %>/**/*.js", "<%= paths.dist %>/**/*.html"]
             },
             options: {
-               // watchTask: true,
+                watchTask: true,
                 server: {
                     baseDir: "<%= paths.dist %>/"
                 }
@@ -181,7 +181,7 @@ module.exports = function(grunt) {
                     //    rename: (dest) => `${dest}modernizr.js`
                     //}
                 ]
-            },
+            }
 
         },
         eslint: {

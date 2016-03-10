@@ -6,6 +6,10 @@ var _editor2 = _interopRequireDefault(_editor);
 
 var _utilities = require("./utilities");
 
+var _editorState = require("./editor-state");
+
+var _editorState2 = _interopRequireDefault(_editorState);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function () {
@@ -20,15 +24,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var rotateRight = document.getElementById("rotateRight");
     var rotateLeft = document.getElementById("rotateLeft");
     var myEditor;
-    var mouseStartX;
-    var mouseStartY;
-    var mouseEndX;
-    var mouseEndY;
-    var offset;
-    var canvasWidth;
-    var canvasHeight;
-    var isDragging;
-    var isCropping;
+    var appState = {
+        mouseStartX: null,
+        mouseStartY: null,
+        mouseEndX: null,
+        mouseEndY: null,
+        offset: null,
+        canvasWidth: null,
+        canvasHeight: null,
+        isDragging: null,
+        isCropping: null
+    };
 
     function addPic(event) {
         myEditor = new _editor2.default(event.target.files[0]);
@@ -37,10 +43,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
             editorBox.removeChild(editorBox.lastChild);
         }
         editorBox.appendChild(myEditor.canvas);
-        offset = (0, _utilities.getOffset)(myEditor.canvas);
+        appState.offset = (0, _utilities.getOffset)(myEditor.canvas);
 
-        canvasWidth = myEditor.canvas.width;
-        canvasHeight = myEditor.canvas.height;
+        appState.canvasWidth = myEditor.canvas.width;
+        appState.canvasHeight = myEditor.canvas.height;
 
         window.editor = myEditor;
         saveButton.setAttribute('href', myEditor.save());
@@ -53,27 +59,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     function startDrag(e) {
         console.log(e);
-        mouseStartX = parseInt(e.clientX, 10);
-        mouseStartY = parseInt(e.clientY, 10);
+        appState.mouseStartX = parseInt(e.clientX, 10);
+        appState.mouseStartY = parseInt(e.clientY, 10);
         console.log('start-drag : X ' + mouseStartX + ' Y ' + mouseStartY);
 
         // set the drag flag
-        isDragging = true;
-    }
-
-    function endDrag(e) {
-        console.log(e);
-        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
-        console.log('end-drag : X ' + canMouseX + ' Y ' + canMouseY);
-        if (isDragging) {
-            myEditor.move({
-                x: canMouseX,
-                y: canMouseY
-            });
-        }
-        // clear the drag flag
-        isDragging = false;
+        appState.isDragging = true;
     }
 
     function dragging(e) {
@@ -92,15 +83,30 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         }
     }
 
+    function endDrag(e) {
+        console.log(e);
+        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
+        console.log('end-drag : X ' + canMouseX + ' Y ' + canMouseY);
+        if (isDragging) {
+            myEditor.move({
+                x: canMouseX,
+                y: canMouseY
+            });
+        }
+        // clear the drag flag
+        appState.isDragging = false;
+    }
+
     function startCrop(e) {
         console.log(e);
 
-        mouseStartX = parseInt(e.clientX, 10);
-        mouseStartY = parseInt(e.clientY, 10);
+        appState.mouseStartX = parseInt(e.clientX, 10);
+        appState.mouseStartY = parseInt(e.clientY, 10);
         console.log('start-crop : X ' + mouseStartX + ' Y ' + mouseStartY);
 
         // set the crop flag
-        isCropping = true;
+        appState.isCropping = true;
     }
 
     function cropping(e) {
@@ -123,8 +129,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     function endCrop(e) {
         console.log(e);
-        mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
-        mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
+        appState.mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
+        appState.mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
 
         console.log('end-crop : X ' + mouseEndX + ' Y ' + mouseEndY);
         if (isCropping) {
@@ -136,7 +142,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
             });
         }
         // clear the crop flag
-        isCropping = false;
+        appState.isCropping = false;
     }
 
     function movePic(event) {

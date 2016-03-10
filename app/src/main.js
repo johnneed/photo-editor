@@ -1,6 +1,6 @@
 import {default as Editor} from './editor';
 import {getOffset} from "./utilities";
-
+import EditorState from "./editor-state";
 
 (function () {
     "use strict";
@@ -14,15 +14,18 @@ import {getOffset} from "./utilities";
     var rotateRight= document.getElementById("rotateRight");
     var rotateLeft = document.getElementById("rotateLeft");
     var myEditor;
-    var mouseStartX;
-    var mouseStartY;
-    var mouseEndX;
-    var mouseEndY;
-    var offset;
-    var canvasWidth;
-    var canvasHeight;
-    var isDragging;
-    var isCropping;
+    let appState = {
+        mouseStartX : null,
+        mouseStartY : null,
+        mouseEndX : null,
+        mouseEndY : null,
+        offset : null,
+        canvasWidth : null,
+        canvasHeight : null,
+        isDragging : null,
+        isCropping : null
+    };
+
 
 
     function addPic(event) {
@@ -32,10 +35,10 @@ import {getOffset} from "./utilities";
             editorBox.removeChild(editorBox.lastChild);
         }
         editorBox.appendChild(myEditor.canvas);
-        offset = getOffset(myEditor.canvas)
+        appState.offset = getOffset(myEditor.canvas)
 
-        canvasWidth = myEditor.canvas.width;
-        canvasHeight = myEditor.canvas.height;
+        appState.canvasWidth = myEditor.canvas.width;
+        appState.canvasHeight = myEditor.canvas.height;
 
         window.editor = myEditor;
         saveButton.setAttribute('href', myEditor.save());
@@ -48,12 +51,28 @@ import {getOffset} from "./utilities";
 
     function startDrag(e) {
         console.log(e);
-        mouseStartX = parseInt(e.clientX, 10);
-        mouseStartY = parseInt(e.clientY, 10);
+        appState.mouseStartX = parseInt(e.clientX, 10);
+        appState.mouseStartY = parseInt(e.clientY, 10);
         console.log('start-drag : X ' + mouseStartX + ' Y ' + mouseStartY);
 
         // set the drag flag
-        isDragging = true;
+        appState.isDragging = true;
+    }
+
+    function dragging(e) {
+        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
+        // if the drag flag is set, clear the canvas and draw the image
+        if (appState.isDragging) {
+            console.log('drag : X ' + canMouseX + ' Y ' + canMouseY);
+
+            myEditor.redraw(new EditorState({
+                x: canMouseX,
+                y: canMouseY
+            });
+            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
+        }
     }
 
     function endDrag(e) {
@@ -61,49 +80,35 @@ import {getOffset} from "./utilities";
         var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
         console.log('end-drag : X ' + canMouseX + ' Y ' + canMouseY);
-        if (isDragging) {
+        if (appState.isDragging) {
             myEditor.move({
                 x: (canMouseX),
                 y: (canMouseY)
             })
         }
         // clear the drag flag
-        isDragging = false;
+        appState.isDragging = false;
 
     }
 
-    function dragging(e) {
-        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
-        // if the drag flag is set, clear the canvas and draw the image
-        if (isDragging) {
-            console.log('drag : X ' + canMouseX + ' Y ' + canMouseY);
 
-            myEditor.redraw({
-                x: (canMouseX),
-                y: (canMouseY)
-            });
-            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
-        }
-    }
 
     function startCrop(e) {
         console.log(e);
 
-        mouseStartX = parseInt(e.clientX, 10);
-        mouseStartY = parseInt(e.clientY, 10);
+        appState.mouseStartX = parseInt(e.clientX, 10);
+        appState.mouseStartY = parseInt(e.clientY, 10);
         console.log('start-crop : X ' + mouseStartX + ' Y ' + mouseStartY);
 
         // set the crop flag
-        isCropping = true;
+        appState.isCropping = true;
     }
 
     function cropping(e) {
         var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
         // if the crop flag is set, clear the canvas and draw the image
-        if (isCropping) {
+        if (appState.isCropping) {
             // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
             myEditor.drawBox({
@@ -119,11 +124,11 @@ import {getOffset} from "./utilities";
 
     function endCrop(e) {
         console.log(e);
-        mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
-        mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
+        appState.mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
+        appState. mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
 
         console.log('end-crop : X ' + mouseEndX + ' Y ' + mouseEndY);
-        if (isCropping) {
+        if (appState.isCropping) {
             myEditor.crop({
                 sx: (mouseEndX > 0) ?  mouseStartX - offset.left : parseInt(e.clientX, 10) - offset.left,
                 sy: (mouseEndY > 0) ?  mouseStartY - offset.top : parseInt(e.clientY, 10) - offset.top,
@@ -132,7 +137,7 @@ import {getOffset} from "./utilities";
             })
         }
         // clear the crop flag
-        isCropping = false;
+        appState.isCropping = false;
     }
 
 
