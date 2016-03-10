@@ -1,31 +1,38 @@
+class EditorState{
+    constructor(state){
+            this.clipStartX = state.clipStartX;
+            this.clipStartY = state.clipStartY;
+            this.clipHeight = state.clipHeight;
+            this.clipWidth = state.clipWidth;
+            this.imageStartX = state.imageStartX;
+            this.imageStartY = state.imageStartY;
+            this.imageWidth =  state.imageWidth;
+            this.imageHeight = state.imageHeight;
+            this.canvasWidth = state.canvasWidth;
+            this.canvasHeight = state.canvasHeight;
+    }
+}
+
+
 class Editor {
     constructor(file) {
         var reader = new FileReader();
         var me = this;
+
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'editorCanvas');
         this.canvasContext = this.canvas.getContext("2d");
-        this.imageState = {
-            swidth: null,
-            sheight: null,
-            sx: 0,
-            sy: 0,
-            height: null,
-            width: null,
-            x: 0,
-            y: 0,
-            canvasWidth: null,
-            canvasHeight: null
-        };
         this.fileName = file.name;
         this.mimeType = file.type;
         this.lastModifiedDate = file.lastModifiedDate;
         this.fileSize = file.size;
         this.history = [];
-        this.zoomPercent = 100;
         this.scale = this.scale.bind(this);
         this.redraw = this.redraw.bind(this);
         this.move = this.move.bind(this);
+        this.currentState = new EditorState({});
+
+        //SetData from image
         reader.onload = function (e) {
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
@@ -113,12 +120,15 @@ class Editor {
 
     rotate(deg){
         var rad = deg * Math.PI / 180;
+        var height = this.canvas.height;
+        var width = this.canvas.width;
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvasContext.translate(this.canvas.width/2, this.canvas.height/2);
         this.canvasContext.rotate(rad);
         this.canvasContext.translate( -this.canvas.width/2, -this.canvas.height/2);
+        this.canvas.height = width;
+        this.canvas.width = height;
         this.redraw();
-        //
 
     }
 
