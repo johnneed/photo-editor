@@ -27,10 +27,8 @@ import EditorState from "./editor-state";
     };
 
 
-
     function addPic(event) {
         myEditor = new Editor(event.target.files[0]);
-
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
@@ -54,7 +52,6 @@ import EditorState from "./editor-state";
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
         console.log('start-drag : X ' + mouseStartX + ' Y ' + mouseStartY);
-
         // set the drag flag
         appState.isDragging = true;
     }
@@ -66,7 +63,7 @@ import EditorState from "./editor-state";
         if (appState.isDragging) {
             console.log('drag : X ' + canMouseX + ' Y ' + canMouseY);
 
-            myEditor.redraw(new EditorState({
+            myEditor.draw(new EditorState({
                 x: canMouseX,
                 y: canMouseY
             }));
@@ -88,7 +85,6 @@ import EditorState from "./editor-state";
         }
         // clear the drag flag
         appState.isDragging = false;
-
     }
 
 

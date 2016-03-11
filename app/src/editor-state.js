@@ -11,5 +11,6 @@ export default class EditorState{
         this.imageHeight = state.imageHeight;
         this.canvasWidth = state.canvasWidth || state.clipWidth;
         this.canvasHeight = state.canvasHeight || state.clipHeight;
+        this.rotation = state.rotation || 0; //Rotation in radians
     }
 }
