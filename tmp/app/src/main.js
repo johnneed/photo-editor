@@ -71,13 +71,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
         // if the drag flag is set, clear the canvas and draw the image
-        if (isDragging) {
+        if (appState.isDragging) {
             console.log('drag : X ' + canMouseX + ' Y ' + canMouseY);
 
-            myEditor.redraw({
+            myEditor.redraw(new _editorState2.default({
                 x: canMouseX,
                 y: canMouseY
-            });
+            }));
             //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
             //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
         }
@@ -88,7 +88,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
         console.log('end-drag : X ' + canMouseX + ' Y ' + canMouseY);
-        if (isDragging) {
+        if (appState.isDragging) {
             myEditor.move({
                 x: canMouseX,
                 y: canMouseY
@@ -113,7 +113,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
         // if the crop flag is set, clear the canvas and draw the image
-        if (isCropping) {
+        if (appState.isCropping) {
             // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
             myEditor.drawBox({
@@ -133,7 +133,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         appState.mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
 
         console.log('end-crop : X ' + mouseEndX + ' Y ' + mouseEndY);
-        if (isCropping) {
+        if (appState.isCropping) {
             myEditor.crop({
                 sx: mouseEndX > 0 ? mouseStartX - offset.left : parseInt(e.clientX, 10) - offset.left,
                 sy: mouseEndY > 0 ? mouseStartY - offset.top : parseInt(e.clientY, 10) - offset.top,

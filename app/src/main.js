@@ -69,7 +69,7 @@ import EditorState from "./editor-state";
             myEditor.redraw(new EditorState({
                 x: canMouseX,
                 y: canMouseY
-            });
+            }));
             //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
             //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
         }
