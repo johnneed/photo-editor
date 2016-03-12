@@ -9,18 +9,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var EditorState = function EditorState(state) {
     _classCallCheck(this, EditorState);
 
-    this.image = state.image;
-    this.clipStartX = state.clipStartX || 0;
-    this.clipStartY = state.clipStartY || 0;
-    this.clipHeight = state.clipHeight || state.image && state.image.naturalHeight;
-    this.clipWidth = state.clipWidth || state.image && state.image.naturalWidth;
-    this.imageStartX = state.imageStartX || 0;
-    this.imageStartY = state.imageStartY || 0;
-    this.imageWidth = state.imageWidth || state.image && state.image.naturalWidth;
-    this.imageHeight = state.imageHeight || state.image && state.image.naturalHeight;
-    this.canvasWidth = state.canvasWidth || state.image && state.image.naturalWidth;
-    this.canvasHeight = state.canvasHeight || state.image && state.image.naturalHeight;
-    this.rotation = state.rotation || 0; //Rotation in radians
+    this.clipStartX = state.clipStartX; //pixels
+    this.clipStartY = state.clipStartY; //pixels
+    this.clipHeight = state.clipHeight; //pixels
+    this.clipWidth = state.clipWidth; //pixels
+    this.imageStartX = state.imageStartX; //pixels
+    this.imageStartY = state.imageStartY; //pixels
+    this.imageWidth = state.imageWidth; //pixels
+    this.imageHeight = state.imageHeight; //pixels
+    this.canvasWidth = state.canvasWidth; //pixels
+    this.canvasHeight = state.canvasHeight; //pixels
+    this.rotation = state.rotation; //radians
 };
 
 exports.default = EditorState;

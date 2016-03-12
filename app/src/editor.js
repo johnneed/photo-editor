@@ -3,6 +3,7 @@ import EditorState from "./editor-state";
 let _history = [];
 let _currentStateIndex = 0;
 let _tempState = {};
+let _workingImage = document.createElement('img');
 
 class Editor {
     constructor(file) {
@@ -29,6 +30,7 @@ class Editor {
 
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
+            _workingImage = Object.assign({},me.originalImage);
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
@@ -44,7 +46,7 @@ class Editor {
                 imageHeight: me.originalImage.naturalHeight,
                 canvasWidth: me.originalImage.naturalWidth,
                 canvasHeight: me.originalImage.naturalHeight,
-                rotation : 0
+                rotation: 0
             });
 
             _history.push(firstState);
@@ -71,8 +73,9 @@ class Editor {
 
     }
 
-    draw(editorState) {
-        var newState = new EditorState(Object.assign((editorState || {}),{image : _history[_currentStateIndex].image}));
+    draw(editorState, image) {
+        var newState;
+        var myImage = newState.= new EditorState(Object.assign((editorState || {}), {image: _history[_currentStateIndex].image}));
         console.log('draw1 ' + JSON.stringify(editorState));
         console.log('draw ' + JSON.stringify(newState));
 
@@ -82,7 +85,7 @@ class Editor {
         //Setup Canvas
         this.canvas.width = newState.canvasWidth;
         this.canvas.height = newState.canvasHeight;
-        if(!!newState.rotation){
+        if (!!newState.rotation) {
             this.canvasContext.translate(this.canvas.width / 2, this.canvas.height / 2);
             this.canvasContext.rotate(rad);
             this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
@@ -105,22 +108,25 @@ class Editor {
 
 
     currentState() {
-        return Object.assign({},_history[_currentStateIndex]);
+        return Object.assign({}, _history[_currentStateIndex]);
     }
 
-    undo(){
+    undo() {
         _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
         this.draw();
     }
 
-    redo(){
-        _currentStateIndex = _currentStateIndex >=(_history.length - 1) ? 0 : _currentStateIndex + 1;
+    redo() {
+        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? 0 : _currentStateIndex + 1;
         this.draw();
     }
 
-    saveState(){
-       _history  = _history.slice(0,_currentStateIndex).push(_tempState);
-       _currentStateIndex = _history.length - 1;
+    saveState() {
+         var newImage = document.createElement('img');
+        newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
+        _history = _history.slice(0, _currentStateIndex + 1);
+        _history.push(Object.assign(_tempState, {image:newImage}));
+        _currentStateIndex += 1;
 
     }
 
@@ -135,9 +141,7 @@ class Editor {
     move(args) {
         args = args || {};
         console.log('move ' + JSON.stringify(args));
-        this.imageState.y = this.imageState.y + (args.y || 0);
-        this.imageState.x = this.imageState.x + (args.x || 0);
-        this.draw();
+        this.draw({imageStartX: (args.x || 0), imageStartY: (args.y || 0)});
     }
 
     crop(args) {
@@ -170,7 +174,7 @@ class Editor {
     }
 
     save() {
-        var imgdata = this.canvas.toDataURL('imgage/png');
+        var imgdata = this.canvas.toDataURL(this.mimeType);
         // standard data to url
 
         // modify the dataUrl so the browser starts downloading it instead of just showing it

@@ -32,7 +32,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         offset: null,
         canvasWidth: null,
         canvasHeight: null,
-        isDragging: null,
+        isMoving: null,
         isCropping: null
     };
 
@@ -56,44 +56,44 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         myEditor.scale(event.target.value);
     }
 
-    function startDrag(e) {
+    function startMove(e) {
         console.log(e);
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
-        console.log('start-drag : X ' + mouseStartX + ' Y ' + mouseStartY);
-        // set the drag flag
-        appState.isDragging = true;
+        console.log('start-move : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
+        // set the move flag
+        appState.isMoving = true;
     }
 
-    function dragging(e) {
-        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
-        // if the drag flag is set, clear the canvas and draw the image
-        if (appState.isDragging) {
-            console.log('drag : X ' + canMouseX + ' Y ' + canMouseY);
-
-            myEditor.draw(new _editorState2.default({
+    function moving(e) {
+        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
+        // if the move flag is set, clear the canvas and draw the image
+        if (appState.isMoving) {
+            console.log('move : X ' + canMouseX + ' Y ' + canMouseY);
+            myEditor.move({
                 x: canMouseX,
                 y: canMouseY
-            }));
+            });
             //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
             //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
         }
     }
 
-    function endDrag(e) {
+    function endMove(e) {
         console.log(e);
-        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
-        console.log('end-drag : X ' + canMouseX + ' Y ' + canMouseY);
-        if (appState.isDragging) {
+        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
+        console.log('end-move : X ' + canMouseX + ' Y ' + canMouseY);
+        if (appState.isMoving) {
             myEditor.move({
                 x: canMouseX,
                 y: canMouseY
             });
+            myEditor.saveState();
         }
-        // clear the drag flag
-        appState.isDragging = false;
+        // clear the move flag
+        appState.isMoving = false;
     }
 
     function startCrop(e) {
@@ -101,24 +101,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
-        console.log('start-crop : X ' + mouseStartX + ' Y ' + mouseStartY);
+        console.log('start-crop : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
 
         // set the crop flag
         appState.isCropping = true;
     }
 
     function cropping(e) {
-        var canMouseX = parseInt(e.clientX, 10) - mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - mouseStartY;
+        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
         // if the crop flag is set, clear the canvas and draw the image
         if (appState.isCropping) {
             // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
             myEditor.drawBox({
-                sx: mouseStartX - offset.left,
-                sy: mouseStartY - offset.top,
-                swidth: canMouseX,
-                sheight: canMouseY
+                x: appState.mouseStartX - offset.left,
+                y: appState.mouseStartY - offset.top,
+                width: canMouseX,
+                height: canMouseY
             });
             //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
             //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
@@ -127,16 +127,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     function endCrop(e) {
         console.log(e);
-        appState.mouseEndX = parseInt(e.clientX, 10) - mouseStartX;
-        appState.mouseEndY = parseInt(e.clientY, 10) - mouseStartY;
+        appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
 
-        console.log('end-crop : X ' + mouseEndX + ' Y ' + mouseEndY);
+        console.log('end-crop : X ' + appState.mouseEndX + ' Y ' + appState.mouseEndY);
         if (appState.isCropping) {
             myEditor.crop({
-                sx: mouseEndX > 0 ? mouseStartX - offset.left : parseInt(e.clientX, 10) - offset.left,
-                sy: mouseEndY > 0 ? mouseStartY - offset.top : parseInt(e.clientY, 10) - offset.top,
-                swidth: Math.abs(mouseEndX),
-                sheight: Math.abs(mouseEndY)
+                x: appState.mouseEndX > 0 ? appState.mouseStartX - offset.left : parseInt(e.clientX, 10) - appState.offset.left,
+                y: mappState.ouseEndY > 0 ? appState.mouseStartY - offset.top : parseInt(e.clientY, 10) - appState.offset.top,
+                width: Math.abs(appState.mouseEndX),
+                height: Math.abs(appState.mouseEndY)
             });
         }
         // clear the crop flag
@@ -147,23 +147,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
         if (event.target.checked) {
             myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-moving").trim());
-            myEditor.canvas.addEventListener('mousedown', startDrag);
-            myEditor.canvas.addEventListener('mousemove', dragging);
-            myEditor.canvas.addEventListener('mouseup', endDrag);
-            myEditor.canvas.addEventListener('mouseout', endDrag);
+            myEditor.canvas.addEventListener('mousedown', startMove);
+            myEditor.canvas.addEventListener('mousemove', moving);
+            myEditor.canvas.addEventListener('mouseup', endMove);
+            myEditor.canvas.addEventListener('mouseout', endMove);
         } else {
             myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-moving", "").trim());
-            myEditor.canvas.removeEventListener('mousedown', startDrag);
-            myEditor.canvas.removeEventListener('mousemove', dragging);
-            myEditor.canvas.removeEventListener('mouseup', endDrag);
-            myEditor.canvas.removeEventListener('mouseout', endDrag);
+            myEditor.canvas.removeEventListener('mousedown', startMove);
+            myEditor.canvas.removeEventListener('mousemove', moving);
+            myEditor.canvas.removeEventListener('mouseup', endMove);
+            myEditor.canvas.removeEventListener('mouseout', endMove);
         }
     }
 
     function cropPic(event) {
 
         if (event.target.checked) {
-            offset = (0, _utilities.getOffset)(myEditor.canvas);
+            appState.offset = (0, _utilities.getOffset)(myEditor.canvas);
             myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-cropping").trim());
             myEditor.canvas.addEventListener('mousedown', startCrop);
             myEditor.canvas.addEventListener('mousemove', cropping);

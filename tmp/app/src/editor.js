@@ -17,6 +17,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var _history = [];
 var _currentStateIndex = 0;
 var _tempState = {};
+var _workingImage = document.createElement('img');
 
 var Editor = function () {
     function Editor(file) {
@@ -45,6 +46,7 @@ var Editor = function () {
 
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
+            _workingImage = Object.assign({}, me.originalImage);
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
@@ -131,8 +133,11 @@ var Editor = function () {
     }, {
         key: 'saveState',
         value: function saveState() {
-            _history = _history.slice(0, _currentStateIndex).push(_tempState);
-            _currentStateIndex = _history.length - 1;
+            var newImage = document.createElement('img');
+            newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
+            _history = _history.slice(0, _currentStateIndex + 1);
+            _history.push(Object.assign(_tempState, { image: newImage }));
+            _currentStateIndex += 1;
         }
     }, {
         key: 'drawBox',
@@ -148,9 +153,7 @@ var Editor = function () {
         value: function move(args) {
             args = args || {};
             console.log('move ' + JSON.stringify(args));
-            this.imageState.y = this.imageState.y + (args.y || 0);
-            this.imageState.x = this.imageState.x + (args.x || 0);
-            this.draw();
+            this.draw({ imageStartX: args.x || 0, imageStartY: args.y || 0 });
         }
     }, {
         key: 'crop',
@@ -186,7 +189,7 @@ var Editor = function () {
     }, {
         key: 'save',
         value: function save() {
-            var imgdata = this.canvas.toDataURL('imgage/png');
+            var imgdata = this.canvas.toDataURL(this.mimeType);
             // standard data to url
 
             // modify the dataUrl so the browser starts downloading it instead of just showing it
