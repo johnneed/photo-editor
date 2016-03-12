@@ -38,7 +38,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     function addPic(event) {
         myEditor = new _editor2.default(event.target.files[0]);
-
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
@@ -62,7 +61,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
         console.log('start-drag : X ' + mouseStartX + ' Y ' + mouseStartY);
-
         // set the drag flag
         appState.isDragging = true;
     }
@@ -74,7 +72,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         if (appState.isDragging) {
             console.log('drag : X ' + canMouseX + ' Y ' + canMouseY);
 
-            myEditor.redraw(new _editorState2.default({
+            myEditor.draw(new _editorState2.default({
                 x: canMouseX,
                 y: canMouseY
             }));

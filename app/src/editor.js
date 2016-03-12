@@ -1,8 +1,8 @@
 import EditorState from "./editor-state";
 
-_history = [];
-_currentStateIndex = 0;
-_tempState = {};
+let _history = [];
+let _currentStateIndex = 0;
+let _tempState = {};
 
 class Editor {
     constructor(file) {
@@ -49,6 +49,7 @@ class Editor {
 
             _history.push(firstState);
             _currentStateIndex = 0;
+            me.draw();
         };
 
         reader.readAsDataURL(file);
@@ -62,7 +63,7 @@ class Editor {
         this.imageState.height = newHeight;
         this.canvas.width = newWidth;
         this.canvas.height = newHeight;
-        this.redraw();
+        this.draw();
         this.history.push({
             action: "zoom",
             payload: percentage
@@ -71,39 +72,40 @@ class Editor {
     }
 
     draw(editorState) {
-        editorState = editorState || _history[_currentStateIndex];
-        console.log('redraw ' + JSON.stringify(editorState));
+        var newState = new EditorState(Object.assign((editorState || {}),{image : _history[_currentStateIndex].image}));
+        console.log('draw1 ' + JSON.stringify(editorState));
+        console.log('draw ' + JSON.stringify(newState));
 
         //Clear the canvas
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         //Setup Canvas
-        this.canvas.width = editorState.canvasWidth;
-        this.canvas.height = editorState.canvasHeight;
-        if(!!editorState.rotation){
+        this.canvas.width = newState.canvasWidth;
+        this.canvas.height = newState.canvasHeight;
+        if(!!newState.rotation){
             this.canvasContext.translate(this.canvas.width / 2, this.canvas.height / 2);
             this.canvasContext.rotate(rad);
             this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
         }
         //Draw Image
         this.canvasContext.drawImage(
-            editorState.image,
-            editorState.clipStartX,
-            editorState.clipStartY,
-            editorState.clipWidth,
-            editorState.clipHeight,
-            editorState.imageStartX,
-            editorState.imageStartY,
-            editorState.imageWidth,
-            editorState.imageHeight);
+            newState.image,
+            newState.clipStartX,
+            newState.clipStartY,
+            newState.clipWidth,
+            newState.clipHeight,
+            newState.imageStartX,
+            newState.imageStartY,
+            newState.imageWidth,
+            newState.imageHeight);
 
         //Save this state as the last rendered
-        _tempState = editorState;
+        _tempState = newState;
     }
 
 
     currentState() {
-        return _history[_currentStateIndex];
+        return Object.assign({},_history[_currentStateIndex]);
     }
 
     undo(){
@@ -135,7 +137,7 @@ class Editor {
         console.log('move ' + JSON.stringify(args));
         this.imageState.y = this.imageState.y + (args.y || 0);
         this.imageState.x = this.imageState.x + (args.x || 0);
-        this.redraw();
+        this.draw();
     }
 
     crop(args) {
@@ -151,7 +153,7 @@ class Editor {
         this.imageState.sheight = (args.sheight || 0);
         this.canvas.width = args.swidth;
         this.canvas.height = args.sheight;
-        this.redraw();
+        this.draw();
     }
 
     rotate(deg) {
@@ -164,7 +166,7 @@ class Editor {
         this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
         this.canvas.height = width;
         this.canvas.width = height;
-        this.redraw();
+        this.draw();
     }
 
     save() {

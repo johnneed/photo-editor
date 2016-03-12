@@ -14,6 +14,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var _history = [];
+var _currentStateIndex = 0;
+var _tempState = {};
+
 var Editor = function () {
     function Editor(file) {
         _classCallCheck(this, Editor);
@@ -28,10 +32,12 @@ var Editor = function () {
         this.mimeType = file.type;
         this.lastModifiedDate = file.lastModifiedDate;
         this.fileSize = file.size;
-        this.history = [];
+
         this.scale = this.scale.bind(this);
-        this.redraw = this.redraw.bind(this);
         this.move = this.move.bind(this);
+        this.draw = this.draw.bind(this);
+        this.setState = this.saveState.bind(this);
+        this.currentState = this.currentState.bind(this);
 
         //SetData from image
         reader.onload = function (e) {
@@ -53,10 +59,13 @@ var Editor = function () {
                 imageWidth: me.originalImage.naturalWidth,
                 imageHeight: me.originalImage.naturalHeight,
                 canvasWidth: me.originalImage.naturalWidth,
-                canvasHeight: me.originalImage.naturalHeight
+                canvasHeight: me.originalImage.naturalHeight,
+                rotation: 0
             });
 
-            me.setState(firstState);
+            _history.push(firstState);
+            _currentStateIndex = 0;
+            me.draw();
         };
 
         reader.readAsDataURL(file);
@@ -72,29 +81,65 @@ var Editor = function () {
             this.imageState.height = newHeight;
             this.canvas.width = newWidth;
             this.canvas.height = newHeight;
-            this.redraw();
+            this.draw();
             this.history.push({
                 action: "zoom",
                 payload: percentage
             });
         }
     }, {
-        key: 'redraw',
-        value: function redraw(editorState) {
-            editorState = editorState || {};
-            console.log('redraw ' + JSON.stringify(editorState));
+        key: 'draw',
+        value: function draw(editorState) {
+            var newState = new _editorState2.default(Object.assign(editorState || {}, { image: _history[_currentStateIndex].image }));
+            console.log('draw1 ' + JSON.stringify(editorState));
+            console.log('draw ' + JSON.stringify(newState));
+
             //Clear the canvas
             this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.canvasContext.drawImage(editorState.image, editorState.clipStartX, editorState.clipStartY, editorState.clipWidth, editorState.clipHeight, editorState.imageStartX, editorState.imageStartY, editorState.imageWidth, editorState.imageHeight);
-            this.canvas.width = editorState.canvasWidth;
-            this.canvas.height = editorState.canvasHeight;
+
+            //Setup Canvas
+            this.canvas.width = newState.canvasWidth;
+            this.canvas.height = newState.canvasHeight;
+            if (!!newState.rotation) {
+                this.canvasContext.translate(this.canvas.width / 2, this.canvas.height / 2);
+                this.canvasContext.rotate(rad);
+                this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
+            }
+            //Draw Image
+            this.canvasContext.drawImage(newState.image, newState.clipStartX, newState.clipStartY, newState.clipWidth, newState.clipHeight, newState.imageStartX, newState.imageStartY, newState.imageWidth, newState.imageHeight);
+
+            //Save this state as the last rendered
+            _tempState = newState;
+        }
+    }, {
+        key: 'currentState',
+        value: function currentState() {
+            return Object.assign({}, _history[_currentStateIndex]);
+        }
+    }, {
+        key: 'undo',
+        value: function undo() {
+            _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
+            this.draw();
+        }
+    }, {
+        key: 'redo',
+        value: function redo() {
+            _currentStateIndex = _currentStateIndex >= _history.length - 1 ? 0 : _currentStateIndex + 1;
+            this.draw();
+        }
+    }, {
+        key: 'saveState',
+        value: function saveState() {
+            _history = _history.slice(0, _currentStateIndex).push(_tempState);
+            _currentStateIndex = _history.length - 1;
         }
     }, {
         key: 'drawBox',
         value: function drawBox(args) {
             args = args || {};
             // console.log('drawBox ' + JSON.stringify(args));
-            this.redraw();
+            this.draw();
             this.canvasContext.fillStyle = 'rgba(255,255,255,0.5)';
             this.canvasContext.fillRect(args.sx || 0, args.sy || 0, args.swidth || 0, args.sheight || 0);
         }
@@ -105,7 +150,7 @@ var Editor = function () {
             console.log('move ' + JSON.stringify(args));
             this.imageState.y = this.imageState.y + (args.y || 0);
             this.imageState.x = this.imageState.x + (args.x || 0);
-            this.redraw();
+            this.draw();
         }
     }, {
         key: 'crop',
@@ -122,7 +167,7 @@ var Editor = function () {
             this.imageState.sheight = args.sheight || 0;
             this.canvas.width = args.swidth;
             this.canvas.height = args.sheight;
-            this.redraw();
+            this.draw();
         }
     }, {
         key: 'rotate',
@@ -136,7 +181,7 @@ var Editor = function () {
             this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
             this.canvas.height = width;
             this.canvas.width = height;
-            this.redraw();
+            this.draw();
         }
     }, {
         key: 'save',
