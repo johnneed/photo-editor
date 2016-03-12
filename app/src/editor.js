@@ -3,7 +3,25 @@ import EditorState from "./editor-state";
 let _history = [];
 let _currentStateIndex = 0;
 let _tempState = {};
-let _workingImage = document.createElement('img');
+let _workingImage;
+
+
+/**
+ *
+ * @param {EditorState} stateA
+ * @param {EditorState} stateB
+ * @returns {EditorState}
+ * @private
+ */
+function _mergeStates(stateA, stateB){
+    //create new empty state object
+    var mergedState = new EditorState();
+    //Merge B into empty i.e. clone B;
+    mergedState = Object.assign(mergedState,stateB);
+    //  Merge A into merged State
+    mergedState = Object.assign(mergedState,stateA);
+    return mergedState;
+}
 
 class Editor {
     constructor(file) {
@@ -22,7 +40,7 @@ class Editor {
         this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
         this.setState = this.saveState.bind(this);
-        this.currentState = this.currentState.bind(this);
+       // this.currentState = this.currentState.bind(this);
 
         //SetData from image
         reader.onload = function (e) {
@@ -30,12 +48,12 @@ class Editor {
 
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
-            _workingImage = Object.assign({},me.originalImage);
+            _workingImage =  document.createElement('img')
+            _workingImage.setAttribute('src', e.target.result);
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
             firstState = new EditorState({
-                image: me.originalImage,
                 clipStartX: 0,
                 clipStartY: 0,
                 clipWidth: me.originalImage.naturalWidth,
@@ -70,12 +88,14 @@ class Editor {
             action: "zoom",
             payload: percentage
         });
-
     }
 
     draw(editorState, image) {
-        var newState;
-        var myImage = newState.= new EditorState(Object.assign((editorState || {}), {image: _history[_currentStateIndex].image}));
+        //cloning our state object
+        var newState = _mergeStates((editorState || new EditorState()), _history[_currentStateIndex]);
+        newState.image = image || _workingImage;
+        //merging with previous state;
+
         console.log('draw1 ' + JSON.stringify(editorState));
         console.log('draw ' + JSON.stringify(newState));
 
@@ -107,7 +127,7 @@ class Editor {
     }
 
 
-    currentState() {
+    static currentState() {
         return Object.assign({}, _history[_currentStateIndex]);
     }
 

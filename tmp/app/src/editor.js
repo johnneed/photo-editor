@@ -17,7 +17,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var _history = [];
 var _currentStateIndex = 0;
 var _tempState = {};
-var _workingImage = document.createElement('img');
+var _workingImage = void 0;
+
+/**
+ *
+ * @param {EditorState} stateA
+ * @param {EditorState} stateB
+ * @returns {EditorState}
+ * @private
+ */
+function _mergeStates(stateA, stateB) {
+    //create new empty state object
+    var mergedState = new _editorState2.default();
+    //Merge B into empty i.e. clone B;
+    mergedState = Object.assign(mergedState, stateB);
+    //  Merge A into merged State
+    mergedState = Object.assign(mergedState, stateA);
+    return mergedState;
+}
 
 var Editor = function () {
     function Editor(file) {
@@ -38,7 +55,7 @@ var Editor = function () {
         this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
         this.setState = this.saveState.bind(this);
-        this.currentState = this.currentState.bind(this);
+        // this.currentState = this.currentState.bind(this);
 
         //SetData from image
         reader.onload = function (e) {
@@ -46,12 +63,12 @@ var Editor = function () {
 
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
-            _workingImage = Object.assign({}, me.originalImage);
+            _workingImage = document.createElement('img');
+            _workingImage.setAttribute('src', e.target.result);
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
             firstState = new _editorState2.default({
-                image: me.originalImage,
                 clipStartX: 0,
                 clipStartY: 0,
                 clipWidth: me.originalImage.naturalWidth,
@@ -91,8 +108,12 @@ var Editor = function () {
         }
     }, {
         key: 'draw',
-        value: function draw(editorState) {
-            var newState = new _editorState2.default(Object.assign(editorState || {}, { image: _history[_currentStateIndex].image }));
+        value: function draw(editorState, image) {
+            //cloning our state object
+            var newState = _mergeStates(editorState || new _editorState2.default(), _history[_currentStateIndex]);
+            newState.image = image || _workingImage;
+            //merging with previous state;
+
             console.log('draw1 ' + JSON.stringify(editorState));
             console.log('draw ' + JSON.stringify(newState));
 
@@ -112,11 +133,6 @@ var Editor = function () {
 
             //Save this state as the last rendered
             _tempState = newState;
-        }
-    }, {
-        key: 'currentState',
-        value: function currentState() {
-            return Object.assign({}, _history[_currentStateIndex]);
         }
     }, {
         key: 'undo',
@@ -196,6 +212,11 @@ var Editor = function () {
             var newdata = imgdata.replace(/^data:image\/png/, 'data:application/octet-stream');
             return newdata;
             // give the link the values it needs
+        }
+    }], [{
+        key: 'currentState',
+        value: function currentState() {
+            return Object.assign({}, _history[_currentStateIndex]);
         }
     }]);
 
