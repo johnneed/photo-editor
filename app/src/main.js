@@ -47,6 +47,10 @@ import EditorState from "./editor-state";
         myEditor.scale(event.target.value);
     }
 
+    function saveState(event){
+        myEditor.saveState();
+    }
+
     function startMove(e) {
         console.log(e);
         appState.mouseStartX = parseInt(e.clientX, 10);
@@ -190,6 +194,7 @@ import EditorState from "./editor-state";
     
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
+    scaleControl.addEventListener('blur', saveState);
     moveControl.addEventListener('change', movePic);
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);

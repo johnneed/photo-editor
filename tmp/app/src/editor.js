@@ -80,7 +80,7 @@ var Editor = function () {
             console.log("scale" + percentage + "%");
             var newHeight = _history[_currentStateIndex].image.height * percentage * .01;
             var newWidth = _history[_currentStateIndex].image.width * percentage * .01;
-            var newState = { width: newWidth, height: newHeight };
+            var newState = new _editorState2.default({ imageWidth: newWidth, imageHeight: newHeight });
             this.draw(newState);
         }
     }, {
