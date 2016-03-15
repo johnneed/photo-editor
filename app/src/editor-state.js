@@ -1,3 +1,6 @@
+/*
+* Remove undefined keys and return a POJO;
+*/
 function _prune(obj){
     obj = (typeof obj === "object")? obj : {};
     return  Object.keys(obj).reduce((pojo,key) => {
@@ -31,6 +34,26 @@ export default class EditorState {
     }
 
     merge(state){
-        var pruned
+        return Object.assign(this,_prune(state));
+    }
+    fill (state){
+        Object.keys(this).forEach((key) => {
+            this[key] = (typeof this[key] === "undefined") ? state[key] : this[key];
+        });
+        return this;
+    }
+    combine(state){
+        this.image = state.image || this.image;
+        this.clipStartX = (this.clipStartX || 0) + (state.clipStartX || 0);
+        this.clipStartY = (this.clipStartY || 0) + (state.clipStartY || 0);
+        this.clipHeight = (this.clipHeight || 0) + (state.clipHeight || 0);
+        this.clipWidth = (this.clipWidth || 0) + (state.clipWidth || 0);
+        this.imageStartX = (this.imageStartX || 0) + (state.imageStartX || 0);
+        this.imageStartY = (this.imageStartY || 0) + (state.imageStartY|| 0);
+        this.imageWidth = (this.imageWidth || 0) + (state.imageWidth || 0);
+        this.imageHeight = (this.imageHeight || 0) + (state.imageHeight || 0);
+        this.canvasWidth = (this.canvasWidth || 0) + (state.canvasWidth || 0);
+        this.canvasHeight = (this.canvasHeight || 0) + (state.canvasHeight || 0);
+        this.rotation = (this.rotation || 0) + (state.rotation || 0);
     }
 }

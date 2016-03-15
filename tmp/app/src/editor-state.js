@@ -10,6 +10,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/*
+* Remove undefined keys and return a POJO;
+*/
 function _prune(obj) {
     var _this = this;
 
@@ -49,7 +52,33 @@ var EditorState = function () {
     }, {
         key: "merge",
         value: function merge(state) {
-            var pruned;
+            return Object.assign(this, _prune(state));
+        }
+    }, {
+        key: "fill",
+        value: function fill(state) {
+            var _this2 = this;
+
+            Object.keys(this).forEach(function (key) {
+                _this2[key] = typeof _this2[key] === "undefined" ? state[key] : _this2[key];
+            });
+            return this;
+        }
+    }, {
+        key: "combine",
+        value: function combine(state) {
+            this.image = state.image || this.image;
+            this.clipStartX = (this.clipStartX || 0) + (state.clipStartX || 0);
+            this.clipStartY = (this.clipStartY || 0) + (state.clipStartY || 0);
+            this.clipHeight = (this.clipHeight || 0) + (state.clipHeight || 0);
+            this.clipWidth = (this.clipWidth || 0) + (state.clipWidth || 0);
+            this.imageStartX = (this.imageStartX || 0) + (state.imageStartX || 0);
+            this.imageStartY = (this.imageStartY || 0) + (state.imageStartY || 0);
+            this.imageWidth = (this.imageWidth || 0) + (state.imageWidth || 0);
+            this.imageHeight = (this.imageHeight || 0) + (state.imageHeight || 0);
+            this.canvasWidth = (this.canvasWidth || 0) + (state.canvasWidth || 0);
+            this.canvasHeight = (this.canvasHeight || 0) + (state.canvasHeight || 0);
+            this.rotation = (this.rotation || 0) + (state.rotation || 0);
         }
     }]);
 

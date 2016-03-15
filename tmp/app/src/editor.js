@@ -19,23 +19,6 @@ var _currentStateIndex = 0;
 var _tempState = {};
 var _workingImage = void 0;
 
-/**
- *
- * @param {EditorState} stateA
- * @param {EditorState} stateB
- * @returns {EditorState}
- * @private
- */
-function _mergeStates(stateA, stateB) {
-    //create new empty state object
-    var mergedState = new _editorState2.default();
-    //Merge B into empty i.e. clone B;
-    mergedState = Object.assign(mergedState, stateB);
-    //  Merge A into merged State
-    mergedState = Object.assign(mergedState, stateA);
-    return mergedState;
-}
-
 var Editor = function () {
     function Editor(file) {
         _classCallCheck(this, Editor);
@@ -69,6 +52,7 @@ var Editor = function () {
             me.name = me.originalImage.name || me.fileName;
 
             firstState = new _editorState2.default({
+                image: me.originalImage,
                 clipStartX: 0,
                 clipStartY: 0,
                 clipWidth: me.originalImage.naturalWidth,
@@ -94,28 +78,21 @@ var Editor = function () {
         key: 'scale',
         value: function scale(percentage) {
             console.log("scale" + percentage + "%");
-            var newHeight = this.originalImage.height * percentage * .01;
-            var newWidth = this.originalImage.width * percentage * .01;
-            this.imageState.width = newWidth;
-            this.imageState.height = newHeight;
-            this.canvas.width = newWidth;
-            this.canvas.height = newHeight;
-            this.draw();
-            this.history.push({
-                action: "zoom",
-                payload: percentage
-            });
+            var newHeight = _history[_currentStateIndex].image.height * percentage * .01;
+            var newWidth = _history[_currentStateIndex].image.width * percentage * .01;
+            var newState = { width: newWidth, height: newHeight };
+            this.draw(newState);
         }
     }, {
         key: 'draw',
         value: function draw(editorState, image) {
             //cloning our state object
-            var newState = _mergeStates(editorState || new _editorState2.default(), _history[_currentStateIndex]);
+            var newState = new _editorState2.default(editorState);
+            newState.fill(_history[_currentStateIndex]);
             newState.image = image || _workingImage;
-            //merging with previous state;
 
-            console.log('draw1 ' + JSON.stringify(editorState));
-            console.log('draw ' + JSON.stringify(newState));
+            // console.log('draw1 ' + JSON.stringify(editorState));
+            //  console.log('draw ' + JSON.stringify(newState));
 
             //Clear the canvas
             this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -154,6 +131,7 @@ var Editor = function () {
             _history = _history.slice(0, _currentStateIndex + 1);
             _history.push(Object.assign(_tempState, { image: newImage }));
             _currentStateIndex += 1;
+            console.log(_history);
         }
     }, {
         key: 'drawBox',
@@ -162,14 +140,16 @@ var Editor = function () {
             // console.log('drawBox ' + JSON.stringify(args));
             this.draw();
             this.canvasContext.fillStyle = 'rgba(255,255,255,0.5)';
-            this.canvasContext.fillRect(args.sx || 0, args.sy || 0, args.swidth || 0, args.sheight || 0);
+            this.canvasContext.fillRect(args.x || 0, args.y || 0, args.width || 0, args.height || 0);
         }
     }, {
         key: 'move',
         value: function move(args) {
+            console.log(args);
             args = args || {};
-            console.log('move ' + JSON.stringify(args));
-            this.draw({ imageStartX: args.x || 0, imageStartY: args.y || 0 });
+            var newState = new _editorState2.default({ imageStartX: args.x, imageStartY: args.y });
+            newState.combine(_history[_currentStateIndex]);
+            this.draw(newState);
         }
     }, {
         key: 'crop',
