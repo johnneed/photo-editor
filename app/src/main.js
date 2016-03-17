@@ -112,8 +112,8 @@ import EditorState from "./editor-state";
             // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
             myEditor.drawBox({
-                x: appState.mouseStartX - offset.left,
-                y: appState.mouseStartY - offset.top,
+                x: appState.mouseStartX - appState.offset.left,
+                y: appState.mouseStartY - appState.offset.top,
                 width : canMouseX,
                 height : canMouseY
             });
@@ -130,8 +130,8 @@ import EditorState from "./editor-state";
         console.log('end-crop : X ' + appState.mouseEndX + ' Y ' + appState.mouseEndY);
         if (appState.isCropping) {
             myEditor.crop({
-                x: (appState.mouseEndX > 0) ?  appState.mouseStartX - offset.left : parseInt(e.clientX, 10) - appState.offset.left,
-                y: (mappState.ouseEndY > 0) ?  appState.mouseStartY - offset.top : parseInt(e.clientY, 10) - appState.offset.top,
+                x: (appState.mouseEndX > 0) ?  appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
+                y: (appState.mouseEndY > 0) ?  appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
                 width : Math.abs(appState.mouseEndX),
                 height : Math.abs(appState.mouseEndY)
             })
@@ -188,6 +188,7 @@ import EditorState from "./editor-state";
         console.log('rotate ' +  parseFloat(event.currentTarget.value));
 
              myEditor.rotate(parseFloat(event.currentTarget.value));
+             myEditor.saveState();
 
 
     }

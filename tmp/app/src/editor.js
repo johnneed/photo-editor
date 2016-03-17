@@ -35,7 +35,7 @@ var Editor = function () {
         this.fileSize = file.size;
 
         this.scale = this.scale.bind(this);
-        this.move = this.move.bind(this);
+        //this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
         this.setState = this.saveState.bind(this);
         // this.currentState = this.currentState.bind(this);
@@ -51,24 +51,13 @@ var Editor = function () {
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
-            firstState = new _editorState2.default({
-                image: me.originalImage,
-                clipStartX: 0,
-                clipStartY: 0,
-                clipWidth: me.originalImage.naturalWidth,
-                clipHeight: me.originalImage.naturalHeight,
-                imageStartX: 0,
-                imageStartY: 0,
-                imageWidth: me.originalImage.naturalWidth,
-                imageHeight: me.originalImage.naturalHeight,
-                canvasWidth: me.originalImage.naturalWidth,
-                canvasHeight: me.originalImage.naturalHeight,
-                rotation: 0
-            });
+            firstState = {
+                image: me.originalImage
+            };
 
             _history.push(firstState);
             _currentStateIndex = 0;
-            me.draw();
+            me.draw(me.originalImage);
         };
 
         reader.readAsDataURL(file);
@@ -80,48 +69,32 @@ var Editor = function () {
             console.log("scale" + percentage + "%");
             var newHeight = _history[_currentStateIndex].image.height * percentage * .01;
             var newWidth = _history[_currentStateIndex].image.width * percentage * .01;
-            var newState = new _editorState2.default({ imageWidth: newWidth, imageHeight: newHeight });
-            this.draw(newState);
+            this.canvas.height = newHeight;
+            this.canvas.width = newWidth;
+            this.canvasContext.clearRect(0, 0, newWidth, newHeight);
+            this.canvasContext.drawImage(_history[_currentStateIndex].image, 0, 0, _history[_currentStateIndex].image.width, _history[_currentStateIndex].image.height, 0, 0, newWidth, newHeight);
         }
     }, {
         key: 'draw',
-        value: function draw(editorState, image) {
-            //cloning our state object
-            var newState = new _editorState2.default(editorState);
-            newState.fill(_history[_currentStateIndex]);
-            newState.image = image || _workingImage;
+        value: function draw(image) {
 
-            // console.log('draw1 ' + JSON.stringify(editorState));
-            //  console.log('draw ' + JSON.stringify(newState));
-
-            //Clear the canvas
-            this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-            //Setup Canvas
-            this.canvas.width = newState.canvasWidth;
-            this.canvas.height = newState.canvasHeight;
-            if (!!newState.rotation) {
-                this.canvasContext.translate(this.canvas.width / 2, this.canvas.height / 2);
-                this.canvasContext.rotate(rad);
-                this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
-            }
-            //Draw Image
-            this.canvasContext.drawImage(newState.image, newState.clipStartX, newState.clipStartY, newState.clipWidth, newState.clipHeight, newState.imageStartX, newState.imageStartY, newState.imageWidth, newState.imageHeight);
-
-            //Save this state as the last rendered
-            _tempState = newState;
+            var myImage;
+            this.canvas.height = image.height;
+            this.canvas.width = image.width;
+            this.canvasContext.clearRect(0, 0, image.width, image.height);
+            this.canvasContext.drawImage(image, 0, 0, image.width, image.height);
         }
     }, {
         key: 'undo',
         value: function undo() {
             _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
-            this.draw();
+            this.draw(_history[_currentStateIndex].image);
         }
     }, {
         key: 'redo',
         value: function redo() {
             _currentStateIndex = _currentStateIndex >= _history.length - 1 ? 0 : _currentStateIndex + 1;
-            this.draw();
+            this.draw(_history[_currentStateIndex].image);
         }
     }, {
         key: 'saveState',
@@ -129,7 +102,7 @@ var Editor = function () {
             var newImage = document.createElement('img');
             newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
             _history = _history.slice(0, _currentStateIndex + 1);
-            _history.push(Object.assign(_tempState, { image: newImage }));
+            _history.push({ image: newImage });
             _currentStateIndex += 1;
             console.log(_history);
         }
@@ -142,45 +115,86 @@ var Editor = function () {
             this.canvasContext.fillStyle = 'rgba(255,255,255,0.5)';
             this.canvasContext.fillRect(args.x || 0, args.y || 0, args.width || 0, args.height || 0);
         }
-    }, {
-        key: 'move',
-        value: function move(args) {
-            console.log(args);
-            args = args || {};
-            var newState = new _editorState2.default({ imageStartX: args.x, imageStartY: args.y });
-            newState.combine(_history[_currentStateIndex]);
-            this.draw(newState);
-        }
+
+        //move(args) {
+        //    console.log(args);
+        //    args = args || {};
+        //    imageStartX: args.x, imageStartY: args.y;
+        //    newState.combine(_history[_currentStateIndex]);
+        //    this.draw(newState);
+        //}
+
     }, {
         key: 'crop',
         value: function crop(args) {
             args = args || {};
             console.log('crop ' + JSON.stringify(args));
-            this.imageState.x = 0;
-            this.imageState.y = 0;
-            this.imageState.width = args.swidth;
-            this.imageState.height = args.sheight;
-            this.imageState.sy = args.sy || 0;
-            this.imageState.sx = args.sx || 0;
-            this.imageState.swidth = args.swidth || 0;
-            this.imageState.sheight = args.sheight || 0;
-            this.canvas.width = args.swidth;
-            this.canvas.height = args.sheight;
-            this.draw();
+            var newHeight = args.height;
+            var newWidth = args.width;
+            this.canvas.height = newHeight;
+            this.canvas.width = newWidth;
+            this.canvasContext.clearRect(0, 0, newWidth, newHeight);
+            this.canvasContext.drawImage(_history[_currentStateIndex].image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
         }
     }, {
         key: 'rotate',
         value: function rotate(deg) {
-            var rad = deg * Math.PI / 180;
-            var height = this.canvas.height;
-            var width = this.canvas.width;
-            this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.canvasContext.translate(this.canvas.width / 2, this.canvas.height / 2);
-            this.canvasContext.rotate(rad);
-            this.canvasContext.translate(-this.canvas.width / 2, -this.canvas.height / 2);
-            this.canvas.height = width;
-            this.canvas.width = height;
-            this.draw();
+
+            var num = parseFloat(deg);
+            var rad = (isNaN(deg) ? 0 : num) * Math.PI / 180;
+
+            switch (Math.abs(newState.rotation)) {
+                case Math.PI / 2:
+                    this.canvas.height = myImage.width;
+                    this.canvas.width = myImage.height;
+                    this.canvasContext.save();
+                    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
+                    this.canvasContext.rotate(newState.rotation);
+                    this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
+                    myImage.src = this.canvas.toDataURL(this.mimeType);
+                    this.canvasContext.restore();
+                    newState.image = myImage;
+                    newState.canvasHeight = myImage.height;
+                    newState.canvasWidth = myImage.width;
+
+                    break;
+
+                case Math.PI:
+                    this.canvas.width = myImage.width;
+                    this.canvas.height = myImage.height;
+                    this.canvasContext.save();
+                    this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
+                    this.canvasContext.rotate(newState.rotation);
+                    this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
+                    myImage.src = this.canvas.toDataURL(this.mimeType);
+                    this.canvasContext.restore();
+                    newState.image = myImage;
+                    newState.canvasHeight = myImage.height;
+                    newState.canvasWidth = myImage.width;
+                    break;
+
+                case Math.PI * 1.5:
+                    this.canvas.height = myImage.width;
+                    this.canvas.width = myImage.height;
+                    this.canvasContext.save();
+                    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
+                    this.canvasContext.rotate(newState.rotation);
+                    this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
+                    myImage.src = this.canvas.toDataURL(this.mimeType);
+                    this.canvasContext.restore();
+                    newState.image = myImage;
+                    newState.canvasHeight = myImage.height;
+                    newState.canvasWidth = myImage.width;
+                    break;
+
+                default:
+                    this.canvas.width = myImage.width;
+                    this.canvas.height = myImage.height;
+                    this.canvasContext.drawImage(myImage, newState.clipStartX, newState.clipStartY, newState.clipWidth, newState.clipHeight, newState.imageStartX, newState.imageStartY, newState.imageWidth, newState.imageHeight);
+                    break;
+            }
         }
     }, {
         key: 'save',
