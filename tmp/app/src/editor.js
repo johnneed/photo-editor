@@ -77,8 +77,6 @@ var Editor = function () {
     }, {
         key: 'draw',
         value: function draw(image) {
-
-            var myImage;
             this.canvas.height = image.height;
             this.canvas.width = image.width;
             this.canvasContext.clearRect(0, 0, image.width, image.height);
@@ -139,61 +137,23 @@ var Editor = function () {
     }, {
         key: 'rotate',
         value: function rotate(deg) {
-
+            deg = deg / Math.abs(deg) * 90; //just doing a 90 deg rotate for now
             var num = parseFloat(deg);
-            var rad = (isNaN(deg) ? 0 : num) * Math.PI / 180;
-
-            switch (Math.abs(newState.rotation)) {
-                case Math.PI / 2:
-                    this.canvas.height = myImage.width;
-                    this.canvas.width = myImage.height;
-                    this.canvasContext.save();
-                    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
-                    this.canvasContext.rotate(newState.rotation);
-                    this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
-                    myImage.src = this.canvas.toDataURL(this.mimeType);
-                    this.canvasContext.restore();
-                    newState.image = myImage;
-                    newState.canvasHeight = myImage.height;
-                    newState.canvasWidth = myImage.width;
-
-                    break;
-
-                case Math.PI:
-                    this.canvas.width = myImage.width;
-                    this.canvas.height = myImage.height;
-                    this.canvasContext.save();
-                    this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
-                    this.canvasContext.rotate(newState.rotation);
-                    this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
-                    myImage.src = this.canvas.toDataURL(this.mimeType);
-                    this.canvasContext.restore();
-                    newState.image = myImage;
-                    newState.canvasHeight = myImage.height;
-                    newState.canvasWidth = myImage.width;
-                    break;
-
-                case Math.PI * 1.5:
-                    this.canvas.height = myImage.width;
-                    this.canvas.width = myImage.height;
-                    this.canvasContext.save();
-                    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
-                    this.canvasContext.rotate(newState.rotation);
-                    this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
-                    myImage.src = this.canvas.toDataURL(this.mimeType);
-                    this.canvasContext.restore();
-                    newState.image = myImage;
-                    newState.canvasHeight = myImage.height;
-                    newState.canvasWidth = myImage.width;
-                    break;
-
-                default:
-                    this.canvas.width = myImage.width;
-                    this.canvas.height = myImage.height;
-                    this.canvasContext.drawImage(myImage, newState.clipStartX, newState.clipStartY, newState.clipWidth, newState.clipHeight, newState.imageStartX, newState.imageStartY, newState.imageWidth, newState.imageHeight);
-                    break;
+            var rad = (isNaN(deg) ? 0 : num) * Math.PI / 180 % (2 * Math.PI);
+            var myImage = _history[_currentStateIndex].image;
+            if (rad) {
+                this.canvas.height = myImage.width;
+                this.canvas.width = myImage.height;
+                this.canvasContext.clearRect(0, 0, myImage.height, myImage.Width);
+                this.canvasContext.save();
+                this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
+                this.canvasContext.rotate(rad);
+                this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
+                this.canvasContext.restore();
+            } else {
+                this.canvas.width = myImage.width;
+                this.canvas.height = myImage.height;
+                this.canvasContext.drawImage(myImage, 0, 0, myImage.width, myImage.height);
             }
         }
     }, {
