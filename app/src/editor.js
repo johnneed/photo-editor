@@ -92,19 +92,11 @@ class Editor {
 
     drawBox(args) {
         args = args || {};
-        // console.log('drawBox ' + JSON.stringify(args));
-        this.draw();
-        this.canvasContext.fillStyle = 'rgba(255,255,255,0.5)';
+        this.draw(_history[_currentStateIndex].image);
+        this.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
         this.canvasContext.fillRect((args.x || 0), (args.y || 0), (args.width || 0), (args.height || 0));
     }
 
-    //move(args) {
-    //    console.log(args);
-    //    args = args || {};
-    //    imageStartX: args.x, imageStartY: args.y;
-    //    newState.combine(_history[_currentStateIndex]);
-    //    this.draw(newState);
-    //}
 
     crop(args) {
         args = args || {};
