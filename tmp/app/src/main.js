@@ -17,12 +17,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     var fileInput = document.getElementById("fileInput");
     var scaleControl = document.getElementById("scaleImageControl");
-    var moveControl = document.getElementById("moveImageControl");
     var cropControl = document.getElementById("cropImageControl");
     var editorBox = document.getElementById("editor");
     var saveButton = document.getElementById("save");
     var rotateRight = document.getElementById("rotateRight");
     var rotateLeft = document.getElementById("rotateLeft");
+    var undoControl = document.getElementById("undoControl");
+    var redoControl = document.getElementById("redoControl");
     var myEditor;
     var appState = {
         mouseStartX: null,
@@ -194,10 +195,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         myEditor.saveState();
     }
 
+    function undo() {
+        myEditor.undo();
+    }
+
+    function redo() {
+        myEditor.redo();
+    }
+
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);
-    moveControl.addEventListener('change', movePic);
+    undoControl.addEventListener('click', undo);
+    redoControl.addEventListener('click', redo);
+
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);
     rotateLeft.addEventListener('click', rotate);

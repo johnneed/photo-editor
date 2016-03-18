@@ -39,8 +39,7 @@ class Editor {
             firstState = ({
                 image: me.originalImage
             });
-
-            _history.push(firstState);
+            _history = [firstState];
             _currentStateIndex = 0;
             me.draw(me.originalImage);
         };
