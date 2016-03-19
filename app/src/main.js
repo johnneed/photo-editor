@@ -56,24 +56,20 @@ import EditorState from "./editor-state";
     }
 
     function dragEnd(event) {
-        console.log('drag end');
         event.preventDefault();
         event.stopPropagation();
         uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
     }
 
     function dragStart(event) {
-        console.log('drag start');
         event.preventDefault();
         event.stopPropagation();
-        uploadInstructions.className += " is-dragover";
+        uploadInstructions.className += (/is-dragover/).test(uploadInstructions.className) ? "" : " is-dragover";
     }
 
     function endMove(e) {
-        console.log(e);
         var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
         var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
-        console.log('end-move : X ' + canMouseX + ' Y ' + canMouseY);
         if (appState.isMoving) {
             myEditor.move({
                 x: (canMouseX),
@@ -108,17 +104,12 @@ import EditorState from "./editor-state";
         var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
         // if the crop flag is set, clear the canvas and draw the image
         if (appState.isCropping) {
-            // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
-
-
             drawInvertedBox({
                 x: appState.mouseStartX - appState.offset.left,
                 y: appState.mouseStartY - appState.offset.top,
                 width: canMouseX,
                 height: canMouseY
             });
-            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
         }
     }
 
@@ -160,11 +151,8 @@ import EditorState from "./editor-state";
     }
 
     function endCrop(e) {
-        console.log(e);
         appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
         appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
-
-        console.log('end-crop : X ' + appState.mouseEndX + ' Y ' + appState.mouseEndY);
         if (appState.isCropping) {
             myEditor.crop({
                 x: (appState.mouseEndX > 0) ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
@@ -178,8 +166,7 @@ import EditorState from "./editor-state";
     }
 
     function historyChange(event) {
-        console.log('history');
-        console.log(event);
+
         if (event.detail.isFirst) {
             undoControl.setAttribute('disabled', 'disabled');
         } else {
@@ -200,7 +187,6 @@ import EditorState from "./editor-state";
         var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
         // if the move flag is set, clear the canvas and draw the image
         if (appState.isMoving) {
-            console.log('move : X ' + canMouseX + ' Y ' + canMouseY);
             myEditor.move({
                 x: canMouseX,
                 y: canMouseY
@@ -234,8 +220,6 @@ import EditorState from "./editor-state";
     }
 
     function rotate(event) {
-        console.log('rotate ' + parseFloat(event.currentTarget.value));
-
         myEditor.rotate(parseFloat(event.currentTarget.value));
         myEditor.saveState();
 
@@ -256,26 +240,19 @@ import EditorState from "./editor-state";
     }
 
     function scalePic(event) {
-        console.log('scalePic : ' + event.target.value);
         myEditor.scale(event.target.value);
     }
 
     function startCrop(e) {
-        console.log(e);
-
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
-        console.log('start-crop : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
-
         // set the crop flag
         appState.isCropping = true;
     }
 
     function startMove(e) {
-        console.log(e);
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
-        console.log('start-move : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
         // set the move flag
         appState.isMoving = true;
     }
@@ -292,7 +269,6 @@ import EditorState from "./editor-state";
     }
 
     function zoomPic(event){
-        console.log(event.target.value);
         myEditor.zoom(parseInt(event.target.value, 10));
     }
 
