@@ -28,46 +28,61 @@
     </div>
     <div id="tools" class="photo-widget_tools">
         <div class="photo-widget_toolbar">
-
-            <label><span class="photo-widget_blocky-label">Scale Image&nbsp;</span>
+            <div class="photo-widget_control-group">
+                <label><span class="photo-widget_blocky-label">Scale Image&nbsp;</span>
                <span class="photo-widget_blocky-label">
                 <em>1%</em>
                     <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
                 <em>100%</em>
                    </span>
-            </label>
+                </label>
+            </div>
+            <div class="photo-widget_control-group">
 
-            <label class='photo-widget_boolean-button'>
-                <input id="cropImageControl"
-                       type="checkbox"/><span>Crop</span>
-            </label>
-            <label>
-                <span>Undo</span>
-                <button id="undoControl" title="Undo"><i class="icon-undo2"></i></button>
-            </label>
-            <label><span>Redo</span>
-                <button id="redoControl" title="Redo"><i class="icon-redo2"></i></button>
-            </label>
-            <label>
-                <span>Rotate Left</span>
-                <button id="rotateLeft" title="Rotate Left" value="-90"><i class="icon-undo"></i></button>
-            </label>
-            <label><span>Rotate Right</span>
-                <button id="rotateRight" title="Rotate Right" value="90"><i class="icon-redo"></i></button>
-            </label>
-            <label>
-                <a class="button" id="save" href="#" download>save</a>
-            </label>
-            <label>
-                <button id="clearImageControl">Clear Image</button>
-            </label>
-            <label><span class="photo-widget_blocky-label">Zoom&nbsp;</span>
+                <label class='photo-widget_boolean-button'>
+                    <input id="cropImageControl"
+                           type="checkbox"/><span>Crop</span>
+                </label>
+            </div>
+            <div class="photo-widget_control-group">
+
+                <label>
+                    <span>Undo</span>
+                    <button id="undoControl" title="Undo"><i class="icon-undo2"></i></button>
+                </label>
+                <label><span>Redo</span>
+                    <button id="redoControl" title="Redo"><i class="icon-redo2"></i></button>
+                </label>
+            </div>
+            <div class="photo-widget_control-group">
+
+                <label>
+                    <span>Rotate Left</span>
+                    <button id="rotateLeft" title="Rotate Left" value="-90"><i class="icon-undo"></i></button>
+                </label>
+                <label><span>Rotate Right</span>
+                    <button id="rotateRight" title="Rotate Right" value="90"><i class="icon-redo"></i></button>
+                </label>
+            </div>
+            <div class="photo-widget_control-group">
+                <label>
+                    <a class="button" id="save" href="#" download>save</a>
+                </label>
+            </div>
+            <div class="photo-widget_control-group">
+                <label>
+                    <button id="clearImageControl">Clear Image</button>
+                </label>
+            </div>
+            <div class="photo-widget_control-group">
+                <label><span class="photo-widget_blocky-label">Zoom&nbsp;</span>
                <span class="photo-widget_blocky-label">
                    <em>1%</em>
-                <input id="zoomImageControl" type="range" min="1" max="500" value="100"/>
+                <input id="zoomControl" type="range" min="1" max="500" value="100"/>
                 <em>500%</em>
                    </span>
-            </label>
+                </label>
+            </div>
         </div>
     </div>
 </div>

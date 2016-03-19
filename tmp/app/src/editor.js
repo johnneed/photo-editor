@@ -201,12 +201,12 @@ var Editor = function () {
             if (!percentage) {
                 return _zoom * 100;
             }
-            if (typeof percentage === 'number' && percentage > 0 && percentage <= 100) {
+            if (typeof percentage === 'number' && percentage > 0) {
                 _zoom = percentage / 100;
                 this.draw(_history[_currentStateIndex].image);
                 return _zoom * 100;
             } else {
-                throw new Error("zoom parameters must be of type number");
+                throw new Error("zoom parameters must be of type number. You passed : " + percentage);
             }
         }
     }]);

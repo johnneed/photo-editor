@@ -20,7 +20,7 @@ import EditorState from "./editor-state";
     var redoControl = document.getElementById("redoControl");
     var uploadInstructions = document.getElementById('uploadInstructions');
     var clearImageControl = document.getElementById('clearImageControl');
-
+    var zoomControl = document.getElementById('zoomControl');
     var myEditor;
 
     let appState = {
@@ -250,7 +250,7 @@ import EditorState from "./editor-state";
     function saveState(event) {
 
         myEditor.saveState();
-        scaleControl.max = (myEditor.originalImage.height / myEditor.getCurrentState().image.height) * 100;
+        scaleControl.max = (myEditor.originalImage.height / myEditor.currentState().image.height) * 100;
         scaleControl.value = 100;
 
     }
@@ -291,6 +291,10 @@ import EditorState from "./editor-state";
         myEditor.undo();
     }
 
+    function zoomPic(event){
+        console.log(event.target.value);
+        myEditor.zoom(parseInt(event.target.value, 10));
+    }
 
     document.body.addEventListener('historyIndexChange', historyChange);
 
@@ -305,9 +309,8 @@ import EditorState from "./editor-state";
     saveButton.addEventListener('click', save);
     rotateLeft.addEventListener('click', rotate);
     rotateRight.addEventListener('click', rotate);
-
     clearImageControl.addEventListener('click', startOver);
-
+    zoomControl.addEventListener('input', zoomPic);
     if (isAdvancedUpload) {
         uploadInstructions.className += " has-advanced-upload";
         uploadInstructions.addEventListener("dragover", dragStart);
