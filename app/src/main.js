@@ -2,29 +2,36 @@ import {default as Editor} from './editor';
 import {getOffset} from "./utilities";
 import EditorState from "./editor-state";
 
+
+
 (function () {
     "use strict";
-
+    var isAdvancedUpload = function() {
+        var div = document.createElement('div');
+        return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+    }();
     var fileInput = document.getElementById("fileInput");
     var scaleControl = document.getElementById("scaleImageControl");
     var cropControl = document.getElementById("cropImageControl");
     var editorBox = document.getElementById("editor");
     var saveButton = document.getElementById("save");
-    var rotateRight= document.getElementById("rotateRight");
+    var rotateRight = document.getElementById("rotateRight");
     var rotateLeft = document.getElementById("rotateLeft");
     var undoControl = document.getElementById("undoControl");
     var redoControl = document.getElementById("redoControl");
+
     var myEditor;
+
     let appState = {
-        mouseStartX : null,
-        mouseStartY : null,
-        mouseEndX : null,
-        mouseEndY : null,
-        offset : null,
-        canvasWidth : null,
-        canvasHeight : null,
-        isMoving : null,
-        isCropping : null
+        mouseStartX: null,
+        mouseStartY: null,
+        mouseEndX: null,
+        mouseEndY: null,
+        offset: null,
+        canvasWidth: null,
+        canvasHeight: null,
+        isMoving: null,
+        isCropping: null
     };
 
 
@@ -48,7 +55,7 @@ import EditorState from "./editor-state";
         myEditor.scale(event.target.value);
     }
 
-    function saveState(event){
+    function saveState(event) {
         myEditor.saveState();
     }
 
@@ -92,8 +99,6 @@ import EditorState from "./editor-state";
         appState.isMoving = false;
     }
 
-
-
     function startCrop(e) {
         console.log(e);
 
@@ -112,11 +117,12 @@ import EditorState from "./editor-state";
         if (appState.isCropping) {
             // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
-            myEditor.drawBox({
+
+            drawInvertedBox({
                 x: appState.mouseStartX - appState.offset.left,
                 y: appState.mouseStartY - appState.offset.top,
-                width : canMouseX,
-                height : canMouseY
+                width: canMouseX,
+                height: canMouseY
             });
             //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
             //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
@@ -131,17 +137,15 @@ import EditorState from "./editor-state";
         console.log('end-crop : X ' + appState.mouseEndX + ' Y ' + appState.mouseEndY);
         if (appState.isCropping) {
             myEditor.crop({
-                x: (appState.mouseEndX > 0) ?  appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
-                y: (appState.mouseEndY > 0) ?  appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
-                width : Math.abs(appState.mouseEndX),
-                height : Math.abs(appState.mouseEndY)
+                x: (appState.mouseEndX > 0) ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
+                y: (appState.mouseEndY > 0) ? appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
+                width: Math.abs(appState.mouseEndX),
+                height: Math.abs(appState.mouseEndY)
             })
         }
         // clear the crop flag
         appState.isCropping = false;
     }
-
-
 
     function movePic(event) {
 
@@ -180,27 +184,68 @@ import EditorState from "./editor-state";
         }
     }
 
-    function save(event){
-        saveButton.href=myEditor.canvas.toDataURL(myEditor.mimeType);
+    function save(event) {
+        saveButton.href = myEditor.canvas.toDataURL(myEditor.mimeType);
         saveButton.download = myEditor.fileName;
     }
 
-    function rotate(event){
-        console.log('rotate ' +  parseFloat(event.currentTarget.value));
+    function rotate(event) {
+        console.log('rotate ' + parseFloat(event.currentTarget.value));
 
-             myEditor.rotate(parseFloat(event.currentTarget.value));
-             myEditor.saveState();
+        myEditor.rotate(parseFloat(event.currentTarget.value));
+        myEditor.saveState();
 
 
     }
 
-    function undo(){
+    function undo() {
         myEditor.undo();
     }
 
-    function redo(){
+    function redo() {
         myEditor.redo();
     }
+
+    function drawBox(args) {
+        args = args || {};
+        myEditor.redrawImage();
+        myEditor.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
+        myEditor.canvasContext.fillRect((args.x || 0), (args.y || 0), (args.width || 0), (args.height || 0));
+    }
+
+    function drawInvertedBox(args) {
+
+        args = args || {};
+        console.log(args);
+
+
+        var canvasWidth = myEditor.canvas.width;
+        var canvasHeight = myEditor.canvas.height;
+
+        if (args.width < 0) {
+            args.x = args.x + args.width;
+            args.width = Math.abs(args.width);
+        }
+        if (args.height < 0) {
+            args.y = args.y + args.height;
+            args.height = Math.abs(args.height);
+        }
+
+        myEditor.redrawImage();
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
+        myEditor.canvasContext.fillRect(0, 0, args.x, canvasHeight);
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillRect(args.x + args.width, 0, canvasWidth - args.x - args.width, canvasHeight);
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillRect(args.x, 0, args.width, args.y);
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillRect(args.x, args.y + args.height, args.width, canvasHeight - args.height - args.y);
+
+
+    }
+
+
 
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
@@ -210,7 +255,8 @@ import EditorState from "./editor-state";
 
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);
-    rotateLeft.addEventListener('click', rotate);
+    rotateLeft.addEventListener('click', drawInvertedBox);
     rotateRight.addEventListener('click', rotate);
+
 
 }());

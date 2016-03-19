@@ -15,6 +15,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function () {
     "use strict";
 
+    var isAdvancedUpload = function () {
+        var div = document.createElement('div');
+        return ('draggable' in div || 'ondragstart' in div && 'ondrop' in div) && 'FormData' in window && 'FileReader' in window;
+    }();
     var fileInput = document.getElementById("fileInput");
     var scaleControl = document.getElementById("scaleImageControl");
     var cropControl = document.getElementById("cropImageControl");
@@ -24,7 +28,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var rotateLeft = document.getElementById("rotateLeft");
     var undoControl = document.getElementById("undoControl");
     var redoControl = document.getElementById("redoControl");
+
     var myEditor;
+
     var appState = {
         mouseStartX: null,
         mouseStartY: null,
@@ -119,7 +125,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         if (appState.isCropping) {
             // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
-            myEditor.drawBox({
+            drawInvertedBox({
                 x: appState.mouseStartX - appState.offset.left,
                 y: appState.mouseStartY - appState.offset.top,
                 width: canMouseX,
@@ -203,6 +209,42 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         myEditor.redo();
     }
 
+    function drawBox(args) {
+        args = args || {};
+        myEditor.redrawImage();
+        myEditor.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
+        myEditor.canvasContext.fillRect(args.x || 0, args.y || 0, args.width || 0, args.height || 0);
+    }
+
+    function drawInvertedBox(args) {
+
+        args = args || {};
+        console.log(args);
+
+        var canvasWidth = myEditor.canvas.width;
+        var canvasHeight = myEditor.canvas.height;
+
+        if (args.width < 0) {
+            args.x = args.x + args.width;
+            args.width = Math.abs(args.width);
+        }
+        if (args.height < 0) {
+            args.y = args.y + args.height;
+            args.height = Math.abs(args.height);
+        }
+
+        myEditor.redrawImage();
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
+        myEditor.canvasContext.fillRect(0, 0, args.x, canvasHeight);
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillRect(args.x + args.width, 0, canvasWidth - args.x - args.width, canvasHeight);
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillRect(args.x, 0, args.width, args.y);
+        myEditor.canvasContext.beginPath();
+        myEditor.canvasContext.fillRect(args.x, args.y + args.height, args.width, canvasHeight - args.height - args.y);
+    }
+
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);
@@ -211,7 +253,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);
-    rotateLeft.addEventListener('click', rotate);
+    rotateLeft.addEventListener('click', drawInvertedBox);
     rotateRight.addEventListener('click', rotate);
 })();
 //# sourceMappingURL=main.js.map

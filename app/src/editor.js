@@ -76,7 +76,7 @@ class Editor {
     }
 
     redo() {
-        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? 0 : _currentStateIndex + 1;
+        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ?  _currentStateIndex : _currentStateIndex + 1;
         this.draw(_history[_currentStateIndex].image);
     }
 
@@ -89,11 +89,9 @@ class Editor {
         console.log(_history);
     }
 
-    drawBox(args) {
-        args = args || {};
+    redrawImage(){
+        this.canvasContext.clearRect(0, 0, this.canvas.width,this.canvas.height);
         this.draw(_history[_currentStateIndex].image);
-        this.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
-        this.canvasContext.fillRect((args.x || 0), (args.y || 0), (args.width || 0), (args.height || 0));
     }
 
 
