@@ -29,9 +29,13 @@
     <div id="tools" class="photo-widget_tools">
         <div class="photo-widget_toolbar">
 
-            <label><span>Scale Image&nbsp;</span>
-                <em>1%</em><input id="scaleImageControl" type="range" min="1" max="100"
-                                  value="100"/><em>100%</em></label>
+            <label><span class="photo-widget_blocky-label">Scale Image&nbsp;</span>
+               <span class="photo-widget_blocky-label">
+                <em>1%</em>
+                    <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
+                <em>100%</em>
+                   </span>
+            </label>
 
             <label class='photo-widget_boolean-button'>
                 <input id="cropImageControl"
@@ -54,7 +58,16 @@
             <label>
                 <a class="button" id="save" href="#" download>save</a>
             </label>
-            <label><span>Clear Image</span><button id="clearImageControl">Clear Image</button></label>
+            <label>
+                <button id="clearImageControl">Clear Image</button>
+            </label>
+            <label><span class="photo-widget_blocky-label">Zoom&nbsp;</span>
+               <span class="photo-widget_blocky-label">
+                   <em>1%</em>
+                <input id="zoomImageControl" type="range" min="1" max="500" value="100"/>
+                <em>500%</em>
+                   </span>
+            </label>
         </div>
     </div>
 </div>

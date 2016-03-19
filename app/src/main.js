@@ -283,6 +283,7 @@ import EditorState from "./editor-state";
     function startOver(event) {
         editorBox.removeChild(myEditor.canvas);
         myEditor = null;
+        fileInput.value = null;
         uploadInstructions.className = uploadInstructions.className.replace("is-hidden", "").trim();
     }
 

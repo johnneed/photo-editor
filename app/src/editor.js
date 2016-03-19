@@ -14,7 +14,7 @@ let _fireHistoryEvent = function (element) {
                 history: _history[_currentStateIndex],
                 isLast: _currentStateIndex === (_history.length - 1),
                 isFirst: (_currentStateIndex === 0),
-                index : _currentStateIndex
+                index: _currentStateIndex
             },
             bubbles: true,
             cancelable: true
@@ -23,7 +23,7 @@ let _fireHistoryEvent = function (element) {
     element.dispatchEvent(historyIndexChange);
 
 };
-let _fireImageLoadedEvent = function(element){
+let _fireImageLoadedEvent = function (element) {
     let imageLoaded = new CustomEvent(
         "imageLoaded",
         {
@@ -36,18 +36,18 @@ let _fireImageLoadedEvent = function(element){
     );
     element.dispatchEvent(imageLoaded);
 };
-let _getRotatedDims = function(image, rotation){
-    var newWidth = Math.abs(Math.round(Math.sin(rotation),10) * image.height - Math.round(Math.cos(rotation),10)  * image.width);
-    var newHeight = Math.abs(Math.round(Math.sin(rotation),10) * image.width - Math.round(Math.cos(rotation),10) * image.height);
-    return {height: newHeight, width : newWidth};
+let _getRotatedDims = function (image, rotation) {
+    var newWidth = Math.abs(Math.round(Math.sin(rotation), 10) * image.height - Math.round(Math.cos(rotation), 10) * image.width);
+    var newHeight = Math.abs(Math.round(Math.sin(rotation), 10) * image.width - Math.round(Math.cos(rotation), 10) * image.height);
+    return {height: newHeight, width: newWidth};
 };
+let _zoom = 1;
 
 window.getRotatedDims = _getRotatedDims;
 class Editor {
     constructor(file) {
         var reader = new FileReader();
         var me = this;
-
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'editorCanvas');
         this.canvasContext = this.canvas.getContext("2d");
@@ -55,7 +55,6 @@ class Editor {
         this.mimeType = file.type;
         this.lastModifiedDate = file.lastModifiedDate;
         this.fileSize = file.size;
-
         this.scale = this.scale.bind(this);
         //this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
@@ -87,56 +86,6 @@ class Editor {
         reader.readAsDataURL(file);
     }
 
-    scale(percentage) {
-        console.log("scale" + percentage + "%");
-        var newHeight = this.originalImage.height * percentage * .01;
-        var newWidth = this.originalImage.width * percentage * .01;
-        this.canvas.height = newHeight;
-        this.canvas.width = newWidth;
-        this.canvasContext.clearRect(0, 0, newWidth, newHeight);
-        this.canvasContext.drawImage(_history[_currentStateIndex].image, 0, 0, _history[_currentStateIndex].image.width, _history[_currentStateIndex].image.height, 0, 0, newWidth, newHeight);
-    }
-
-    draw(image) {
-        this.canvas.height = image.height;
-        this.canvas.width = image.width;
-        this.canvasContext.clearRect(0, 0, image.width, image.height);
-        this.canvasContext.drawImage(image, 0, 0, image.width, image.height);
-    }
-
-
-   currentState() {
-        return Object.assign({}, _history[_currentStateIndex]);
-    }
-
-    undo() {
-        _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
-        this.draw(_history[_currentStateIndex].image);
-        _fireHistoryEvent(this.canvas);
-
-    }
-
-    redo() {
-        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? _currentStateIndex : _currentStateIndex + 1;
-        this.draw(_history[_currentStateIndex].image);
-        _fireHistoryEvent(this.canvas);
-
-    }
-
-    saveState() {
-        var newImage = document.createElement('img');
-        newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
-        _history = _history.slice(0, _currentStateIndex + 1);
-        _history.push({image: newImage});
-        _currentStateIndex += 1;
-        _fireHistoryEvent(this.canvas);
-    }
-
-    redrawImage() {
-        this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.draw(_history[_currentStateIndex].image);
-    }
-
 
     crop(args) {
         args = args || {};
@@ -149,6 +98,32 @@ class Editor {
         this.canvasContext.drawImage(_history[_currentStateIndex].image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
 
     }
+
+
+    currentState() {
+        return Object.assign({}, _history[_currentStateIndex]);
+    }
+
+
+    draw(image) {
+        this.canvasContext.clearRect(0, 0, image.width, image.height);
+        this.canvas.height = image.height * _zoom;
+        this.canvas.width = image.width  * _zoom;
+        this.canvasContext.drawImage(image, 0, 0, image.width * _zoom, image.height * _zoom);
+    }
+
+    redo() {
+        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? _currentStateIndex : _currentStateIndex + 1;
+        this.draw(_history[_currentStateIndex].image);
+        _fireHistoryEvent(this.canvas);
+
+    }
+
+    redrawImage() {
+        this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.draw(_history[_currentStateIndex].image);
+    }
+
 
     rotate(deg) {
         deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
@@ -184,6 +159,49 @@ class Editor {
         // give the link the values it needs
 
     }
+
+    saveState() {
+        var newImage = document.createElement('img');
+        newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
+        _history = _history.slice(0, _currentStateIndex + 1);
+        _history.push({image: newImage});
+        _currentStateIndex += 1;
+        _fireHistoryEvent(this.canvas);
+    }
+
+    scale(percentage) {
+        console.log("scale" + percentage + "%");
+        var newHeight = this.originalImage.height * percentage * .01;
+        var newWidth = this.originalImage.width * percentage * .01;
+        this.canvas.height = newHeight;
+        this.canvas.width = newWidth;
+        this.canvasContext.clearRect(0, 0, newWidth, newHeight);
+        this.canvasContext.drawImage(_history[_currentStateIndex].image, 0, 0, _history[_currentStateIndex].image.width, _history[_currentStateIndex].image.height, 0, 0, newWidth, newHeight);
+    }
+
+    undo() {
+        _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
+        this.draw(_history[_currentStateIndex].image);
+        _fireHistoryEvent(this.canvas);
+
+    }
+
+    zoom(percentage) {
+        if(!percentage){
+            return _zoom * 100;
+        }
+        if (typeof percentage === 'number' && percentage > 0 && percentage <= 100) {
+            _zoom = percentage / 100;
+            this.draw(_history[_currentStateIndex].image);
+            return _zoom * 100;
+        } else {
+            throw new Error("zoom parameters must be of type number");
+        }
+
+
+    }
+
+
 }
 
 export default Editor;

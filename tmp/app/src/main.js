@@ -282,6 +282,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     function startOver(event) {
         editorBox.removeChild(myEditor.canvas);
         myEditor = null;
+        fileInput.value = null;
         uploadInstructions.className = uploadInstructions.className.replace("is-hidden", "").trim();
     }
 
