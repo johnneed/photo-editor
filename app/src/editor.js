@@ -4,8 +4,45 @@ let _history = [];
 let _currentStateIndex = 0;
 let _tempState = {};
 let _workingImage;
+let _fireHistoryEvent = function (element) {
 
+    let historyIndexChange = new CustomEvent(
+        "historyIndexChange",
+        {
+            detail: {
+                message: "History Index Changed",
+                history: _history[_currentStateIndex],
+                isLast: _currentStateIndex === (_history.length - 1),
+                isFirst: (_currentStateIndex === 0),
+                index : _currentStateIndex
+            },
+            bubbles: true,
+            cancelable: true
+        }
+    );
+    element.dispatchEvent(historyIndexChange);
 
+};
+let _fireImageLoadedEvent = function(element){
+    let imageLoaded = new CustomEvent(
+        "imageLoaded",
+        {
+            detail: {
+                message: "Image was loaded",
+            },
+            bubbles: true,
+            cancelable: true
+        }
+    );
+    element.dispatchEvent(imageLoaded);
+};
+let _getRotatedDims = function(image, rotation){
+    var newWidth = Math.abs(Math.round(Math.sin(rotation),10) * image.height - Math.round(Math.cos(rotation),10)  * image.width);
+    var newHeight = Math.abs(Math.round(Math.sin(rotation),10) * image.width - Math.round(Math.cos(rotation),10) * image.height);
+    return {height: newHeight, width : newWidth};
+};
+
+window.getRotatedDims = _getRotatedDims;
 class Editor {
     constructor(file) {
         var reader = new FileReader();
@@ -42,6 +79,9 @@ class Editor {
             _history = [firstState];
             _currentStateIndex = 0;
             me.draw(me.originalImage);
+            _fireImageLoadedEvent(me.canvas);
+            _fireHistoryEvent(me.canvas);
+
         };
 
         reader.readAsDataURL(file);
@@ -49,13 +89,12 @@ class Editor {
 
     scale(percentage) {
         console.log("scale" + percentage + "%");
-        var newHeight = _history[_currentStateIndex].image.height * percentage * .01;
-        var newWidth = _history[_currentStateIndex].image.width * percentage * .01;
+        var newHeight = this.originalImage.height * percentage * .01;
+        var newWidth = this.originalImage.width * percentage * .01;
         this.canvas.height = newHeight;
         this.canvas.width = newWidth;
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
         this.canvasContext.drawImage(_history[_currentStateIndex].image, 0, 0, _history[_currentStateIndex].image.width, _history[_currentStateIndex].image.height, 0, 0, newWidth, newHeight);
-
     }
 
     draw(image) {
@@ -66,18 +105,22 @@ class Editor {
     }
 
 
-    static currentState() {
+   currentState() {
         return Object.assign({}, _history[_currentStateIndex]);
     }
 
     undo() {
         _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
         this.draw(_history[_currentStateIndex].image);
+        _fireHistoryEvent(this.canvas);
+
     }
 
     redo() {
-        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ?  _currentStateIndex : _currentStateIndex + 1;
+        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? _currentStateIndex : _currentStateIndex + 1;
         this.draw(_history[_currentStateIndex].image);
+        _fireHistoryEvent(this.canvas);
+
     }
 
     saveState() {
@@ -86,11 +129,11 @@ class Editor {
         _history = _history.slice(0, _currentStateIndex + 1);
         _history.push({image: newImage});
         _currentStateIndex += 1;
-        console.log(_history);
+        _fireHistoryEvent(this.canvas);
     }
 
-    redrawImage(){
-        this.canvasContext.clearRect(0, 0, this.canvas.width,this.canvas.height);
+    redrawImage() {
+        this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.draw(_history[_currentStateIndex].image);
     }
 
@@ -108,23 +151,24 @@ class Editor {
     }
 
     rotate(deg) {
-        deg = (deg/Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
+        deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
         var num = parseFloat(deg);
         var rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180) % (2 * Math.PI);
         var myImage = _history[_currentStateIndex].image;
-        if(rad) {
-            this.canvas.height = myImage.width;
-            this.canvas.width = myImage.height;
+        if (rad) {
+            let newDims = _getRotatedDims(myImage, rad);
+            this.canvas.height = newDims.height;
+            this.canvas.width = newDims.width;
             this.canvasContext.clearRect(0, 0, myImage.height, myImage.Width);
             this.canvasContext.save();
             this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
             this.canvasContext.rotate(rad);
             this.canvasContext.drawImage(myImage, -(myImage.width / 2), -(myImage.height / 2));
             this.canvasContext.restore();
-        } else{
+        } else {
             this.canvas.width = myImage.width;
             this.canvas.height = myImage.height;
-            this.canvasContext.drawImage(myImage,0,0,myImage.width, myImage.height);
+            this.canvasContext.drawImage(myImage, 0, 0, myImage.width, myImage.height);
 
         }
 

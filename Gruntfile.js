@@ -314,7 +314,7 @@ module.exports = function(grunt) {
                 tasks: ["eslint:tests"]
             },
             styles: {
-                files: "<%= paths.less %>",
+                files: "<%= paths.less %>/**/*.less",
                 tasks: ["less:dev"]
             },
             ts: {

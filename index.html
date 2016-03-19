@@ -14,26 +14,36 @@
 </head>
 <body>
 
-<div class="photo-widget is-column-layout">
+<div class="photo-widget is-row-layout">
     <div id="workspace" class="photo-widget_workspace">
+        <div id="uploadInstructions" class="photo-widget_upload-instructions">
+            <p><span class="hasDrag">Drag a file here</span>
+                <span class="hasDrag">or</span>
+                <label><span class="hasDrag">select a file</span>
+                    <span class="doesNotHaveDrag">Select a file to edit</span>
+                    <input id="fileInput" type="file" accept="image/*"/></label>
+            </p>
+        </div>
         <div id="editor" class="photo-widget_editor"></div>
     </div>
     <div id="tools" class="photo-widget_tools">
         <div class="photo-widget_toolbar">
-            <label><span>Upload File&nbsp;</span>
-                <input id="fileInput" type="file" accept="image/*"/></label>
+
             <label><span>Scale Image&nbsp;</span>
                 <em>1%</em><input id="scaleImageControl" type="range" min="1" max="100"
                                   value="100"/><em>100%</em></label>
-            <label class='photo-widget_boolean-button'>
-                <input id="moveImageControl"
-                       type="checkbox"/><span>Move</span>
-            </label>
+
             <label class='photo-widget_boolean-button'>
                 <input id="cropImageControl"
                        type="checkbox"/><span>Crop</span>
             </label>
-            <a class="button" id="save" href="#" download>save</a>
+            <label>
+                <span>Undo</span>
+                <button id="undoControl" title="Undo"><i class="icon-undo2"></i></button>
+            </label>
+            <label><span>Redo</span>
+                <button id="redoControl" title="Redo"><i class="icon-redo2"></i></button>
+            </label>
             <label>
                 <span>Rotate Left</span>
                 <button id="rotateLeft" title="Rotate Left" value="-90"><i class="icon-undo"></i></button>
@@ -41,6 +51,10 @@
             <label><span>Rotate Right</span>
                 <button id="rotateRight" title="Rotate Right" value="90"><i class="icon-redo"></i></button>
             </label>
+            <label>
+                <a class="button" id="save" href="#" download>save</a>
+            </label>
+            <label><span>Clear Image</span><button id="clearImageControl">Clear Image</button></label>
         </div>
     </div>
 </div>

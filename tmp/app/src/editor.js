@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _editorState = require('./editor-state');
+var _editorState = require("./editor-state");
 
 var _editorState2 = _interopRequireDefault(_editorState);
 
@@ -18,6 +18,38 @@ var _history = [];
 var _currentStateIndex = 0;
 var _tempState = {};
 var _workingImage = void 0;
+var _fireHistoryEvent = function _fireHistoryEvent(element) {
+
+    var historyIndexChange = new CustomEvent("historyIndexChange", {
+        detail: {
+            message: "History Index Changed",
+            history: _history[_currentStateIndex],
+            isLast: _currentStateIndex === _history.length - 1,
+            isFirst: _currentStateIndex === 0,
+            index: _currentStateIndex
+        },
+        bubbles: true,
+        cancelable: true
+    });
+    element.dispatchEvent(historyIndexChange);
+};
+var _fireImageLoadedEvent = function _fireImageLoadedEvent(element) {
+    var imageLoaded = new CustomEvent("imageLoaded", {
+        detail: {
+            message: "Image was loaded"
+        },
+        bubbles: true,
+        cancelable: true
+    });
+    element.dispatchEvent(imageLoaded);
+};
+var _getRotatedDims = function _getRotatedDims(image, rotation) {
+    var newWidth = Math.abs(Math.round(Math.sin(rotation), 10) * image.height - Math.round(Math.cos(rotation), 10) * image.width);
+    var newHeight = Math.abs(Math.round(Math.sin(rotation), 10) * image.width - Math.round(Math.cos(rotation), 10) * image.height);
+    return { height: newHeight, width: newWidth };
+};
+
+window.getRotatedDims = _getRotatedDims;
 
 var Editor = function () {
     function Editor(file) {
@@ -57,24 +89,26 @@ var Editor = function () {
             _history = [firstState];
             _currentStateIndex = 0;
             me.draw(me.originalImage);
+            _fireImageLoadedEvent(me.canvas);
+            _fireHistoryEvent(me.canvas);
         };
 
         reader.readAsDataURL(file);
     }
 
     _createClass(Editor, [{
-        key: 'scale',
+        key: "scale",
         value: function scale(percentage) {
             console.log("scale" + percentage + "%");
-            var newHeight = _history[_currentStateIndex].image.height * percentage * .01;
-            var newWidth = _history[_currentStateIndex].image.width * percentage * .01;
+            var newHeight = this.originalImage.height * percentage * .01;
+            var newWidth = this.originalImage.width * percentage * .01;
             this.canvas.height = newHeight;
             this.canvas.width = newWidth;
             this.canvasContext.clearRect(0, 0, newWidth, newHeight);
             this.canvasContext.drawImage(_history[_currentStateIndex].image, 0, 0, _history[_currentStateIndex].image.width, _history[_currentStateIndex].image.height, 0, 0, newWidth, newHeight);
         }
     }, {
-        key: 'draw',
+        key: "draw",
         value: function draw(image) {
             this.canvas.height = image.height;
             this.canvas.width = image.width;
@@ -82,35 +116,42 @@ var Editor = function () {
             this.canvasContext.drawImage(image, 0, 0, image.width, image.height);
         }
     }, {
-        key: 'undo',
+        key: "currentState",
+        value: function currentState() {
+            return Object.assign({}, _history[_currentStateIndex]);
+        }
+    }, {
+        key: "undo",
         value: function undo() {
             _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
             this.draw(_history[_currentStateIndex].image);
+            _fireHistoryEvent(this.canvas);
         }
     }, {
-        key: 'redo',
+        key: "redo",
         value: function redo() {
             _currentStateIndex = _currentStateIndex >= _history.length - 1 ? _currentStateIndex : _currentStateIndex + 1;
             this.draw(_history[_currentStateIndex].image);
+            _fireHistoryEvent(this.canvas);
         }
     }, {
-        key: 'saveState',
+        key: "saveState",
         value: function saveState() {
             var newImage = document.createElement('img');
             newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
             _history = _history.slice(0, _currentStateIndex + 1);
             _history.push({ image: newImage });
             _currentStateIndex += 1;
-            console.log(_history);
+            _fireHistoryEvent(this.canvas);
         }
     }, {
-        key: 'redrawImage',
+        key: "redrawImage",
         value: function redrawImage() {
             this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.draw(_history[_currentStateIndex].image);
         }
     }, {
-        key: 'crop',
+        key: "crop",
         value: function crop(args) {
             args = args || {};
             console.log('crop ' + JSON.stringify(args));
@@ -122,15 +163,16 @@ var Editor = function () {
             this.canvasContext.drawImage(_history[_currentStateIndex].image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
         }
     }, {
-        key: 'rotate',
+        key: "rotate",
         value: function rotate(deg) {
             deg = deg / Math.abs(deg) * 90; //just doing a 90 deg rotate for now
             var num = parseFloat(deg);
             var rad = (isNaN(deg) ? 0 : num) * Math.PI / 180 % (2 * Math.PI);
             var myImage = _history[_currentStateIndex].image;
             if (rad) {
-                this.canvas.height = myImage.width;
-                this.canvas.width = myImage.height;
+                var newDims = _getRotatedDims(myImage, rad);
+                this.canvas.height = newDims.height;
+                this.canvas.width = newDims.width;
                 this.canvasContext.clearRect(0, 0, myImage.height, myImage.Width);
                 this.canvasContext.save();
                 this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
@@ -144,7 +186,7 @@ var Editor = function () {
             }
         }
     }, {
-        key: 'save',
+        key: "save",
         value: function save() {
             var imgdata = this.canvas.toDataURL(this.mimeType);
             // standard data to url
@@ -153,11 +195,6 @@ var Editor = function () {
             var newdata = imgdata.replace(/^data:image\/png/, 'data:application/octet-stream');
             return newdata;
             // give the link the values it needs
-        }
-    }], [{
-        key: 'currentState',
-        value: function currentState() {
-            return Object.assign({}, _history[_currentStateIndex]);
         }
     }]);
 

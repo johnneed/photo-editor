@@ -28,6 +28,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var rotateLeft = document.getElementById("rotateLeft");
     var undoControl = document.getElementById("undoControl");
     var redoControl = document.getElementById("redoControl");
+    var uploadInstructions = document.getElementById('uploadInstructions');
+    var clearImageControl = document.getElementById('clearImageControl');
 
     var myEditor;
 
@@ -44,7 +46,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     };
 
     function addPic(event) {
-        myEditor = new _editor2.default(event.target.files[0]);
+        event.stopPropagation();
+        event.preventDefault();
+
+        myEditor = new _editor2.default((event.target.files || event.dataTransfer.files)[0]);
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
@@ -56,39 +61,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
         window.editor = myEditor;
         saveButton.setAttribute('href', myEditor.save());
+
+        uploadInstructions.className += " is-hidden";
     }
 
-    function scalePic(event) {
-        console.log('scalePic : ' + event.target.value);
-        myEditor.scale(event.target.value);
+    function dragEnd(event) {
+        console.log('drag end');
+        event.preventDefault();
+        event.stopPropagation();
+        uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
     }
 
-    function saveState(event) {
-        myEditor.saveState();
-    }
-
-    function startMove(e) {
-        console.log(e);
-        appState.mouseStartX = parseInt(e.clientX, 10);
-        appState.mouseStartY = parseInt(e.clientY, 10);
-        console.log('start-move : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
-        // set the move flag
-        appState.isMoving = true;
-    }
-
-    function moving(e) {
-        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
-        // if the move flag is set, clear the canvas and draw the image
-        if (appState.isMoving) {
-            console.log('move : X ' + canMouseX + ' Y ' + canMouseY);
-            myEditor.move({
-                x: canMouseX,
-                y: canMouseY
-            });
-            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
-        }
+    function dragStart(event) {
+        console.log('drag start');
+        event.preventDefault();
+        event.stopPropagation();
+        uploadInstructions.className += " is-dragover";
     }
 
     function endMove(e) {
@@ -105,70 +93,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         }
         // clear the move flag
         appState.isMoving = false;
-    }
-
-    function startCrop(e) {
-        console.log(e);
-
-        appState.mouseStartX = parseInt(e.clientX, 10);
-        appState.mouseStartY = parseInt(e.clientY, 10);
-        console.log('start-crop : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
-
-        // set the crop flag
-        appState.isCropping = true;
-    }
-
-    function cropping(e) {
-        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
-        // if the crop flag is set, clear the canvas and draw the image
-        if (appState.isCropping) {
-            // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
-
-            drawInvertedBox({
-                x: appState.mouseStartX - appState.offset.left,
-                y: appState.mouseStartY - appState.offset.top,
-                width: canMouseX,
-                height: canMouseY
-            });
-            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
-        }
-    }
-
-    function endCrop(e) {
-        console.log(e);
-        appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
-
-        console.log('end-crop : X ' + appState.mouseEndX + ' Y ' + appState.mouseEndY);
-        if (appState.isCropping) {
-            myEditor.crop({
-                x: appState.mouseEndX > 0 ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
-                y: appState.mouseEndY > 0 ? appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
-                width: Math.abs(appState.mouseEndX),
-                height: Math.abs(appState.mouseEndY)
-            });
-        }
-        // clear the crop flag
-        appState.isCropping = false;
-    }
-
-    function movePic(event) {
-
-        if (event.target.checked) {
-            myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-moving").trim());
-            myEditor.canvas.addEventListener('mousedown', startMove);
-            myEditor.canvas.addEventListener('mousemove', moving);
-            myEditor.canvas.addEventListener('mouseup', endMove);
-            myEditor.canvas.addEventListener('mouseout', endMove);
-        } else {
-            myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-moving", "").trim());
-            myEditor.canvas.removeEventListener('mousedown', startMove);
-            myEditor.canvas.removeEventListener('mousemove', moving);
-            myEditor.canvas.removeEventListener('mouseup', endMove);
-            myEditor.canvas.removeEventListener('mouseout', endMove);
-        }
     }
 
     function cropPic(event) {
@@ -189,24 +113,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         }
     }
 
-    function save(event) {
-        saveButton.href = myEditor.canvas.toDataURL(myEditor.mimeType);
-        saveButton.download = myEditor.fileName;
-    }
+    function cropping(e) {
+        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
+        // if the crop flag is set, clear the canvas and draw the image
+        if (appState.isCropping) {
+            // console.log('crop : X ' + mouseStartX - offset.left + ' Y ' +  mouseStartY - offset.top);
 
-    function rotate(event) {
-        console.log('rotate ' + parseFloat(event.currentTarget.value));
-
-        myEditor.rotate(parseFloat(event.currentTarget.value));
-        myEditor.saveState();
-    }
-
-    function undo() {
-        myEditor.undo();
-    }
-
-    function redo() {
-        myEditor.redo();
+            drawInvertedBox({
+                x: appState.mouseStartX - appState.offset.left,
+                y: appState.mouseStartY - appState.offset.top,
+                width: canMouseX,
+                height: canMouseY
+            });
+            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
+        }
     }
 
     function drawBox(args) {
@@ -219,7 +141,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     function drawInvertedBox(args) {
 
         args = args || {};
-        console.log(args);
 
         var canvasWidth = myEditor.canvas.width;
         var canvasHeight = myEditor.canvas.height;
@@ -245,6 +166,131 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         myEditor.canvasContext.fillRect(args.x, args.y + args.height, args.width, canvasHeight - args.height - args.y);
     }
 
+    function endCrop(e) {
+        console.log(e);
+        appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
+
+        console.log('end-crop : X ' + appState.mouseEndX + ' Y ' + appState.mouseEndY);
+        if (appState.isCropping) {
+            myEditor.crop({
+                x: appState.mouseEndX > 0 ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
+                y: appState.mouseEndY > 0 ? appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
+                width: Math.abs(appState.mouseEndX),
+                height: Math.abs(appState.mouseEndY)
+            });
+        }
+        // clear the crop flag
+        appState.isCropping = false;
+    }
+
+    function historyChange(event) {
+        console.log('history');
+        console.log(event);
+        if (event.detail.isFirst) {
+            undoControl.setAttribute('disabled', 'disabled');
+        } else {
+            undoControl.removeAttribute('disabled');
+        }
+        if (event.detail.isLast) {
+            redoControl.setAttribute('disabled', 'disabled');
+        } else {
+            redoControl.removeAttribute('disabled');
+        }
+    }
+
+    function moving(e) {
+        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
+        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
+        // if the move flag is set, clear the canvas and draw the image
+        if (appState.isMoving) {
+            console.log('move : X ' + canMouseX + ' Y ' + canMouseY);
+            myEditor.move({
+                x: canMouseX,
+                y: canMouseY
+            });
+            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
+        }
+    }
+
+    function movePic(event) {
+
+        if (event.target.checked) {
+            myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-moving").trim());
+            myEditor.canvas.addEventListener('mousedown', startMove);
+            myEditor.canvas.addEventListener('mousemove', moving);
+            myEditor.canvas.addEventListener('mouseup', endMove);
+            myEditor.canvas.addEventListener('mouseout', endMove);
+        } else {
+            myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-moving", "").trim());
+            myEditor.canvas.removeEventListener('mousedown', startMove);
+            myEditor.canvas.removeEventListener('mousemove', moving);
+            myEditor.canvas.removeEventListener('mouseup', endMove);
+            myEditor.canvas.removeEventListener('mouseout', endMove);
+        }
+    }
+
+    function redo() {
+        myEditor.redo();
+    }
+
+    function rotate(event) {
+        console.log('rotate ' + parseFloat(event.currentTarget.value));
+
+        myEditor.rotate(parseFloat(event.currentTarget.value));
+        myEditor.saveState();
+    }
+
+    function save(event) {
+        saveButton.href = myEditor.canvas.toDataURL(myEditor.mimeType);
+        saveButton.download = myEditor.fileName;
+    }
+
+    function saveState(event) {
+
+        myEditor.saveState();
+        scaleControl.max = myEditor.originalImage.height / myEditor.getCurrentState().image.height * 100;
+        scaleControl.value = 100;
+    }
+
+    function scalePic(event) {
+        console.log('scalePic : ' + event.target.value);
+        myEditor.scale(event.target.value);
+    }
+
+    function startCrop(e) {
+        console.log(e);
+
+        appState.mouseStartX = parseInt(e.clientX, 10);
+        appState.mouseStartY = parseInt(e.clientY, 10);
+        console.log('start-crop : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
+
+        // set the crop flag
+        appState.isCropping = true;
+    }
+
+    function startMove(e) {
+        console.log(e);
+        appState.mouseStartX = parseInt(e.clientX, 10);
+        appState.mouseStartY = parseInt(e.clientY, 10);
+        console.log('start-move : X ' + appState.mouseStartX + ' Y ' + appState.mouseStartY);
+        // set the move flag
+        appState.isMoving = true;
+    }
+
+    function startOver(event) {
+        editorBox.removeChild(myEditor.canvas);
+        myEditor = null;
+        uploadInstructions.className = uploadInstructions.className.replace("is-hidden", "").trim();
+    }
+
+    function undo() {
+        myEditor.undo();
+    }
+
+    document.body.addEventListener('historyIndexChange', historyChange);
+
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);
@@ -253,7 +299,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     cropControl.addEventListener('change', cropPic);
     saveButton.addEventListener('click', save);
-    rotateLeft.addEventListener('click', drawInvertedBox);
+    rotateLeft.addEventListener('click', rotate);
     rotateRight.addEventListener('click', rotate);
+
+    clearImageControl.addEventListener('click', startOver);
+
+    if (isAdvancedUpload) {
+        uploadInstructions.className += " has-advanced-upload";
+        uploadInstructions.addEventListener("dragover", dragStart);
+        uploadInstructions.addEventListener("dragleave", dragEnd);
+        uploadInstructions.addEventListener("drop", addPic);
+    }
 })();
 //# sourceMappingURL=main.js.map

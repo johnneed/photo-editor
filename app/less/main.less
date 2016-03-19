@@ -8,7 +8,6 @@ html, body {
   font-size: 67.2%;
 }
 
-
 body {
   height: 100vh;
   width: 100vw;
@@ -20,9 +19,8 @@ body {
 }
 
 .photo-widget {
-  
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   box-sizing: border-box;
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -33,7 +31,7 @@ body {
   align-content: stretch;
   align-items: flex-start;
 
-  &.is-column-layout{
+  &.is-column-layout {
     flex-direction: column;
   }
 
@@ -41,65 +39,110 @@ body {
     flex-direction: column-reverse;
   }
 
-  &.is-row-reverse-layout{
+  &.is-row-reverse-layout {
     flex-direction: row-reverse;
   }
 
   .photo-widget_tools {
     order: 0;
-    flex: 0 1 auto;
+    flex: 0 0 16rem;
     align-self: stretch;
+    background-color: #EEE;
+    height: 100vh;
   }
   .photo-widget_workspace {
     order: 0;
     flex: 1 1 auto;
     align-self: stretch;
+    overflow: hidden;
+    height: 100vh;
+    background: purple;
   }
 
-}
+  .photo-widget_upload-instructions {
+    overflow: hidden;
+    outline : 2px dashed #AAA;
+    outline-offset: -6px;
+    margin: 0;
+    background-color: white;
 
-.photo-widget_editor {
-  padding: 0;
-  border: solid 1px @border-color;
-  position: relative;
-  overflow: hidden;
-  height: @height;
-  width: @width;
-  margin: 2rem auto;
-}
+    height: 100%;
 
-.photo-widget_editor canvas {
-  display: block;
-  border: solid 1px @border-color;
-  margin: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  &.is-moving {
-    cursor: move;
+    p {
+      text-align: center;
+      font-size: 2rem;
+      line-height: 100%;
+      label {
+        color: lightblue;
+        transition: 0.5s color;
+        cursor: pointer;
+        &:hover {
+          color: blue;
+        }
+        input {
+          display: none;
+        }
+      }
+
+    }
+    .hasDrag {
+      display: none;
+    }
+    .doesNotHaveDrag {
+      display: block;
+    }
+
+    &.has-advanced-upload {
+
+
+
+      .hasDrag {
+        display: block;
+      }
+      .doesNotHaveDrag {
+        display: none;
+      }
+    }
+
+    &.is-dragover {
+      background-color: grey;
+    }
   }
-  &.is-cropping {
-    cursor : nwse-resize;
+  .photo-widget_editor {
+    display: none;
   }
-}
+  .photo-widget_upload-instructions.is-hidden+.photo-widget_editor{display:block;}
+  .photo-widget_editor canvas {
+    display: block;
+    border: solid 1px @border-color;
+    margin: 0;
 
-.photo-widget_toolbar {
-  min-height: 3rem;
-  border: solid 1px @border-color;
-  padding: 0.5rem 1rem;
+    &.is-moving {
+      cursor: move;
+    }
+    &.is-cropping {
+      cursor: nwse-resize;
+    }
+  }
 
-  vertical-align: middle;
-  > label {
+  .photo-widget_toolbar {
+    min-height: 3rem;
+    padding: 0.5rem 1rem;
+    border: none;
+
     vertical-align: middle;
-    font-size: 1rem;
-    display: inline-block;
-    margin-right: 2rem;
-    height: 2rem;
-    background-color: #EEE;
-    padding: .5rem;
+    > label {
+      vertical-align: middle;
+      font-size: 1rem;
+      display: inline-block;
+      margin-right: 2rem;
+      height: 2rem;
+      background-color: #EEE;
+      padding: .5rem;
+      display: block;
+    }
   }
 }
-
 .photo-widget_boolean-button {
 
   input {
@@ -142,5 +185,9 @@ body {
 .is-clippped-polygon {
   clip-path: polygon(5% 5%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
   /* Note that percentages work as well as px */
+}
+
+.is-hidden {
+  display: none;
 }
 
