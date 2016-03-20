@@ -177,6 +177,74 @@ body {
   margin: .5rem 0;
   padding: .5rem;
 }
+
+.spinner{
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  background-color : rgba(255,255,100, 0.5);
+  margin: 5rem auto;
+  position: relative;
+  span:first-child{
+    display:block;
+    //border-radius : 50% 0 0 50%;
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    height: 0px;
+    width:  0px;
+    border-left: solid 90px transparent;
+    border-right: solid 90px transparent;
+    border-top: solid 90px rgba(255, 100, 100, 0.5);
+    border-bottom: solid 90px transparent;
+    border-radius : 50% 50% 0 0 ;
+    transform : translate(-50px, -50px);
+    animation : spin 3s linear infinite;
+  }
+  span:nth-child(2){
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display:block;
+    //border-radius : 50% 0 0 50%;
+    height: 0px;
+    width:  0px;
+    border-left: solid 40px transparent;
+    border-right: solid 40px transparent;
+    border-top: solid 40px rgba(100, 100, 255, 0.5);
+    border-bottom: solid 40px transparent;
+    border-radius : 50% 50% 0 0 ;
+    transform : translate(-50px, -50px);
+    animation : spinBackwards 2s linear infinite;
+  }
+  span:last-child{
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    display:block;
+    //border-radius : 50% 0 0 50%;
+    height: 0px;
+    width:  0px;
+    border-left: solid 60px transparent;
+    border-right: solid 60px transparent;
+    border-top: solid 60px rgba(100, 255, 100, 0.5);
+    border-bottom: solid 60px transparent;
+    border-radius : 50% 50% 0 0 ;
+    transform : translate(-50px, -50px);
+    animation : spin 12s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0%  {transform : rotate(0deg);}
+  100% {transform : rotate(360deg);}
+}
+
+@keyframes spinBackwards {
+  0%  {transform : rotate(0deg);}
+  100% {transform : rotate(-360deg);}
+}
+
 .is-clippped-circle {
   clip-path: circle(60px at center);
   /* OLD VALUE example: circle(245px, 140px, 50px); */
