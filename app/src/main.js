@@ -273,6 +273,21 @@ import EditorState from "./editor-state";
         myEditor.zoom(parseInt(event.target.value, 10));
     }
 
+    function toggleSpinner(action){
+        var isHidden = /is-hidden/.test(spinner.className);
+        switch (action){
+            case 'hide' :
+                spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
+                break;
+            case 'show' :
+                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() : spinner.className.trim();
+                break;
+            default :
+                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() :  spinner.className + " is-hidden";
+                break;
+        }
+    }
+
     document.body.addEventListener('historyIndexChange', historyChange);
 
 
