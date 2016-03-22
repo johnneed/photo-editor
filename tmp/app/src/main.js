@@ -31,6 +31,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var uploadInstructions = document.getElementById('uploadInstructions');
     var clearImageControl = document.getElementById('clearImageControl');
     var zoomControl = document.getElementById('zoomControl');
+    var spinner = document.getElementById('spinner');
     var myEditor;
 
     var appState = {

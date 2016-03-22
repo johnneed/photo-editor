@@ -21,6 +21,7 @@ import EditorState from "./editor-state";
     var uploadInstructions = document.getElementById('uploadInstructions');
     var clearImageControl = document.getElementById('clearImageControl');
     var zoomControl = document.getElementById('zoomControl');
+    var spinner = document.getElementById('spinner');
     var myEditor;
 
     let appState = {
