@@ -22,6 +22,8 @@ import EditorState from "./editor-state";
     var clearImageControl = document.getElementById('clearImageControl');
     var zoomControl = document.getElementById('zoomControl');
     var spinner = document.getElementById('spinner');
+    var scaleValue = document.getElementById('scaleValue');
+
     var myEditor;
 
     let appState = {
@@ -33,8 +35,13 @@ import EditorState from "./editor-state";
         canvasWidth: null,
         canvasHeight: null,
         isMoving: null,
-        isCropping: null
+        isCropping: null,
+        scale : 100,
+        rotation : 0,
+        zoom : 100
     };
+
+
 
     function addPic(event) {
         event.stopPropagation();
@@ -54,6 +61,7 @@ import EditorState from "./editor-state";
         saveButton.setAttribute('href', myEditor.save());
 
         uploadInstructions.className += " is-hidden";
+        setControlValues();
     }
 
     function dragEnd(event) {
@@ -242,6 +250,13 @@ import EditorState from "./editor-state";
 
     function scalePic(event) {
         myEditor.scale(event.target.value);
+        setAppState({scale : event.target.value});
+    }
+
+
+    function setControlValues(){
+        scaleControl.innerHTML = appState.scale;
+
     }
 
     function startCrop(e) {
@@ -303,6 +318,7 @@ import EditorState from "./editor-state";
     rotateRight.addEventListener('click', rotate);
     clearImageControl.addEventListener('click', startOver);
     zoomControl.addEventListener('input', zoomPic);
+
     if (isAdvancedUpload) {
         uploadInstructions.className += " has-advanced-upload";
         uploadInstructions.addEventListener("dragover", dragStart);
