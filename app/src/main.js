@@ -21,6 +21,7 @@ import EditorState from "./editor-state";
     var uploadInstructions = document.getElementById('uploadInstructions');
     var clearImageControl = document.getElementById('clearImageControl');
     var zoomControl = document.getElementById('zoomControl');
+    var spinner = document.getElementById('spinner');
     var myEditor;
 
     let appState = {
@@ -270,6 +271,21 @@ import EditorState from "./editor-state";
 
     function zoomPic(event){
         myEditor.zoom(parseInt(event.target.value, 10));
+    }
+
+    function toggleSpinner(action){
+        var isHidden = /is-hidden/.test(spinner.className);
+        switch (action){
+            case 'hide' :
+                spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
+                break;
+            case 'show' :
+                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() : spinner.className.trim();
+                break;
+            default :
+                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() :  spinner.className + " is-hidden";
+                break;
+        }
     }
 
     document.body.addEventListener('historyIndexChange', historyChange);
