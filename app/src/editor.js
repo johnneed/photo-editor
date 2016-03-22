@@ -144,7 +144,6 @@ class Editor {
             this.canvas.width = myImage.width;
             this.canvas.height = myImage.height;
             this.canvasContext.drawImage(myImage, 0, 0, myImage.width, myImage.height);
-
         }
 
     }
@@ -154,8 +153,8 @@ class Editor {
         // standard data to url
 
         // modify the dataUrl so the browser starts downloading it instead of just showing it
-        var newdata = imgdata.replace(/^data:image\/png/, 'data:application/octet-stream');
-        return newdata;
+        return imgdata.replace(/^data:image\/png/, 'data:application/octet-stream');
+
         // give the link the values it needs
 
     }
