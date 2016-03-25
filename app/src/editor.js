@@ -1,4 +1,6 @@
 import EditorState from "./editor-state";
+import {EventEmitter} from "events";
+import {constants} from "./constants";
 
 let _history = [];
 let _currentStateIndex = 0;
@@ -44,8 +46,10 @@ let _getRotatedDims = function (image, rotation) {
 let _zoom = 1;
 
 window.getRotatedDims = _getRotatedDims;
-class Editor {
+class Editor extends EventEmitter {
+
     constructor(file) {
+        super();
         var reader = new FileReader();
         var me = this;
         this.canvas = document.createElement('canvas');
@@ -86,6 +90,11 @@ class Editor {
         reader.readAsDataURL(file);
     }
 
+    addListener(callback) { }
+    removeListener(callback) { }
+    emit() {
+        this.emit(CHANGE_EVENT);
+    }
 
     crop(args) {
         args = args || {};

@@ -3,8 +3,11 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
+    "events": "^1.1.0",
     "history": "^1.13.1",
+    "keymirror": "^0.1.1",
     "modernizr": "^3.2.0",
+    "npm": "^3.8.2",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-router": "^1.0.0",
@@ -21,7 +24,7 @@
     "eslint": "^1.9.0",
     "eslint-plugin-babel": "^2.1.1",
     "eslint-plugin-react": "^3.8.0",
-    "grunt": "~0.4.5",
+    "grunt": "^0.4.5",
     "grunt-babel": "^6.0.0",
     "grunt-browser-sync": "^2.2.0",
     "grunt-contrib-clean": "^0.7.0",
