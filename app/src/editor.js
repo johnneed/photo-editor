@@ -3,28 +3,24 @@ import {EventEmitter} from "events";
 import {constants} from "./constants";
 
 let _history = [];
+var _state = {
+    zoom: 100,
+    scale : 100,
+    height: null,
+    width: null,
+    rotation : 0,
+    fileName : null,
+    description : null,
+    fileSize : 0,
+    mimeType : null,
+    lastModifiedDate : null,
+    isFirstInHistory : true,
+    isLastInHistory: true,
+    historyIndex : 0
+};
 let _currentStateIndex = 0;
 let _tempState = {};
 let _workingImage;
-let _fireHistoryEvent = function (element) {
-
-    let historyIndexChange = new CustomEvent(
-        "historyIndexChange",
-        {
-            detail: {
-                message: "History Index Changed",
-                history: _history[_currentStateIndex],
-                isLast: _currentStateIndex === (_history.length - 1),
-                isFirst: (_currentStateIndex === 0),
-                index: _currentStateIndex
-            },
-            bubbles: true,
-            cancelable: true
-        }
-    );
-    element.dispatchEvent(historyIndexChange);
-
-};
 let _fireImageLoadedEvent = function (element) {
     let imageLoaded = new CustomEvent(
         "imageLoaded",
@@ -44,6 +40,10 @@ let _getRotatedDims = function (image, rotation) {
     return {height: newHeight, width: newWidth};
 };
 let _zoom = 1;
+
+function _setState(newState){
+
+}
 
 window.getRotatedDims = _getRotatedDims;
 class Editor extends EventEmitter {
@@ -90,10 +90,16 @@ class Editor extends EventEmitter {
         reader.readAsDataURL(file);
     }
 
-    addListener(callback) { }
-    removeListener(callback) { }
+    addListener(callback) {
+        this.on(constants.CHANGE_EVENT, callback);
+    }
+
+    removeListener(callback) {
+        this.removeListener(constants.CHANGE_EVENT, callback);
+    }
+
     emit() {
-        this.emit(CHANGE_EVENT);
+        this.emit(constants.CHANGE_EVENT);
     }
 
     crop(args) {
@@ -105,7 +111,6 @@ class Editor extends EventEmitter {
         this.canvas.width = newWidth;
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
         this.canvasContext.drawImage(_history[_currentStateIndex].image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
-
     }
 
 
@@ -132,7 +137,6 @@ class Editor extends EventEmitter {
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.draw(_history[_currentStateIndex].image);
     }
-
 
     rotate(deg) {
         deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
