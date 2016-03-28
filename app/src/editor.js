@@ -1,41 +1,7 @@
-import EditorState from "./editor-state";
+import history from "./history";
+import {EventEmitter} from "events";
 
-let _history = [];
-let _currentStateIndex = 0;
-let _tempState = {};
 let _workingImage;
-let _fireHistoryEvent = function (element) {
-
-    let historyIndexChange = new CustomEvent(
-        "historyIndexChange",
-        {
-            detail: {
-                message: "History Index Changed",
-                history: _history[_currentStateIndex],
-                isLast: _currentStateIndex === (_history.length - 1),
-                isFirst: (_currentStateIndex === 0),
-                index: _currentStateIndex
-            },
-            bubbles: true,
-            cancelable: true
-        }
-    );
-    element.dispatchEvent(historyIndexChange);
-
-};
-let _fireImageLoadedEvent = function (element) {
-    let imageLoaded = new CustomEvent(
-        "imageLoaded",
-        {
-            detail: {
-                message: "Image was loaded",
-            },
-            bubbles: true,
-            cancelable: true
-        }
-    );
-    element.dispatchEvent(imageLoaded);
-};
 let _getRotatedDims = function (image, rotation) {
     var newWidth = Math.abs(Math.round(Math.sin(rotation), 10) * image.height - Math.round(Math.cos(rotation), 10) * image.width);
     var newHeight = Math.abs(Math.round(Math.sin(rotation), 10) * image.width - Math.round(Math.cos(rotation), 10) * image.height);
@@ -43,7 +9,6 @@ let _getRotatedDims = function (image, rotation) {
 };
 let _zoom = 1;
 
-window.getRotatedDims = _getRotatedDims;
 class Editor {
     constructor(file) {
         var reader = new FileReader();
@@ -72,11 +37,16 @@ class Editor {
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
-            firstState = ({
-                image: me.originalImage
+            history.append({
+                image: me.originalImage,
+                zoom : 100,
+                scale : 100,
+                rotation : 0,
+                description : me.description,
+                name : me.name,
+                
             });
-            _history = [firstState];
-            _currentStateIndex = 0;
+
             me.draw(me.originalImage);
             _fireImageLoadedEvent(me.canvas);
             _fireHistoryEvent(me.canvas);
