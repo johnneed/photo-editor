@@ -1,11 +1,10 @@
  
-import history from "./history";
+import {history} from "./history";
 import {EventEmitter} from "events";
  
  
 import {constants} from "./constants";
 
-let _history = [];
 var _state = {
     zoom: 100,
     scale : 100,

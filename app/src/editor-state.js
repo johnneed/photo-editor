@@ -12,7 +12,7 @@ function _prune(obj){
 }
 
 
-export default class EditorState {
+export class EditorState {
     constructor(state) {
         state = state || {};
         this.image = state.image;
@@ -38,6 +38,10 @@ export default class EditorState {
     }
     combine(state){
         this.image = state.image || this.image;
-
+    }
+    static create(state)  {
+        var instance = new EditorState(state || {});
+        return instance;
     }
 }
+

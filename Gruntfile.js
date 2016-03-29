@@ -435,8 +435,8 @@ module.exports = function(grunt) {
         }
     });
     // Default task.
-    grunt.registerTask("default", ["clean:dist", "copy", "less:prod", "ts", "babel:dist", "webpack:dev", "uglify"]);
-    grunt.registerTask("debug", ["clean:debug", "copy", "less:dev", "ts", "babel:dist", "babel:ts", "webpack:dev", "browserSync", "watch"]);
+    grunt.registerTask("default", ["clean:dist", "copy", "less:prod",   "babel:dist", "webpack:dev", "uglify"]);
+    grunt.registerTask("debug", ["clean:debug", "copy", "less:dev",  "babel:dist", "babel:ts", "webpack:dev", "browserSync", "watch"]);
     grunt.registerTask("test", ["eslint:app", "jest"]);
     grunt.registerTask("doc", ["clean:doc", "clean:debug", "copy", "babel", "jsdoc:dist"]);
 };
