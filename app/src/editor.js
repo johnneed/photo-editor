@@ -1,51 +1,37 @@
  
 import {history} from "./history";
-import {EventEmitter} from "events";
+import events from "events";
  
  
 import {constants} from "./constants";
 
 var _state = {
-    zoom: 100,
-    scale : 100,
+    image : null,
+    zoom: 1,
+    scale : 1,
     height: null,
     width: null,
     rotation : 0,
     fileName : null,
     description : null,
-    fileSize : 0,
-    mimeType : null,
     lastModifiedDate : null,
     isFirstInHistory : true,
     isLastInHistory: true,
     historyIndex : 0
 };
-let _currentStateIndex = 0;
+
 let _tempState = {};
-let _workingImage;
-let _fireImageLoadedEvent = function (element) {
-    let imageLoaded = new CustomEvent(
-        "imageLoaded",
-        {
-            detail: {
-                message: "Image was loaded",
-            },
-            bubbles: true,
-            cancelable: true
-        }
-    );
-    element.dispatchEvent(imageLoaded);
-};
+
+
  
 let _getRotatedDims = function (image, rotation) {
     var newWidth = Math.abs(Math.round(Math.sin(rotation), 10) * image.height - Math.round(Math.cos(rotation), 10) * image.width);
     var newHeight = Math.abs(Math.round(Math.sin(rotation), 10) * image.width - Math.round(Math.cos(rotation), 10) * image.height);
     return {height: newHeight, width: newWidth};
 };
-let _zoom = 1;
 
   
-class Editor extends EventEmitter {
+class Editor extends events.EventEmitter {
  
     constructor(file) {
         super();
@@ -57,12 +43,11 @@ class Editor extends EventEmitter {
         this.fileName = file.name;
         this.mimeType = file.type;
         this.lastModifiedDate = file.lastModifiedDate;
-        this.fileSize = file.size;
+        this.originalFileSize = file.size;
         this.scale = this.scale.bind(this);
         //this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
         this.setState = this.saveState.bind(this);
-        // this.currentState = this.currentState.bind(this);
 
         //SetData from image
         reader.onload = function (e) {
@@ -70,24 +55,18 @@ class Editor extends EventEmitter {
 
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
-            _workingImage = document.createElement('img')
-            _workingImage.setAttribute('src', e.target.result);
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
 
-            history.append({
+
+            me.draw( history.append({
                 image: me.originalImage,
-                zoom : 100,
-                scale : 100,
+                zoom : 1,
+                scale : 1,
                 rotation : 0,
                 description : me.description,
-                name : me.name,
-                
-            });
-
-            me.draw(me.originalImage);
-            _fireImageLoadedEvent(me.canvas);
-
+                name : me.name
+            }));
 
         };
 
@@ -114,39 +93,43 @@ class Editor extends EventEmitter {
         this.canvas.height = newHeight;
         this.canvas.width = newWidth;
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
-        this.canvasContext.drawImage(_history[_currentStateIndex].image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
+        this.canvasContext.drawImage(history.getCurrentState().image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
     }
 
 
     currentState() {
-        return Object.assign({}, _history[_currentStateIndex]);
+        return Object.assign({}, history.getCurrentState());
     }
 
 
-    draw(image) {
-        this.canvasContext.clearRect(0, 0, image.width, image.height);
-        this.canvas.height = image.height * _zoom;
-        this.canvas.width = image.width  * _zoom;
-        this.canvasContext.drawImage(image, 0, 0, image.width * _zoom, image.height * _zoom);
+    draw(state) {
+        var newWidth = state.image.width * state.zoom;
+        var newHeight = state.image.height * state.zoom;
+        this.canvasContext.save();
+        this.canvasContext.translate(-((newWidth-state.image.width)/2), -((newHeight-state.image.height)/2));
+        this.canvasContext.scale(state.zoom, state.zoom);
+        this.canvasContext.clearRect(0, 0, state.image.width, state.image.height);
+        this.canvasContext.drawImage(state.image, 0, 0, state.image.width, state.image.height);
+        this.canvasContext.restore();
     }
 
     redo() {
         _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? _currentStateIndex : _currentStateIndex + 1;
-        this.draw(_history[_currentStateIndex].image);
+        this.draw(history.getCurrentState().image);
         _fireHistoryEvent(this.canvas);
 
     }
 
     redrawImage() {
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.draw(_history[_currentStateIndex].image);
+        this.draw(history.getCurrentState().image);
     }
 
     rotate(deg) {
         deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
         var num = parseFloat(deg);
         var rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180) % (2 * Math.PI);
-        var myImage = _history[_currentStateIndex].image;
+        var myImage = history.getCurrentState().image;
         if (rad) {
             let newDims = _getRotatedDims(myImage, rad);
             this.canvas.height = newDims.height;
@@ -192,24 +175,23 @@ class Editor extends EventEmitter {
         this.canvas.height = newHeight;
         this.canvas.width = newWidth;
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
-        this.canvasContext.drawImage(_history[_currentStateIndex].image, 0, 0, _history[_currentStateIndex].image.width, _history[_currentStateIndex].image.height, 0, 0, newWidth, newHeight);
+        this.canvasContext.drawImage(history.getCurrentState().image, 0, 0, history.getCurrentState().image.width, history.getCurrentState().image.height, 0, 0, newWidth, newHeight);
     }
 
     undo() {
         _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
-        this.draw(_history[_currentStateIndex].image);
-        _fireHistoryEvent(this.canvas);
+        this.draw(history.getCurrentState().image);
 
     }
 
     zoom(percentage) {
         if(!percentage){
-            return _zoom * 100;
+            return _state.zoom * 100;
         }
         if (typeof percentage === 'number' && percentage > 0 ) {
-            _zoom = percentage / 100;
-            this.draw(_history[_currentStateIndex].image);
-            return _zoom * 100;
+            _state.zoom = percentage / 100;
+            this.draw(history.getCurrentState().image);
+            return _state.zoom * 100;
         } else {
             throw new Error("zoom parameters must be of type number. You passed : " + percentage);
         }

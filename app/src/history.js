@@ -11,12 +11,12 @@ function _append(state) {
     newState = EditorState.create(state);
     _history = _history.slice(0, _stateIndex + 1);
     _history.push(newState);
-    _stateIndex += 1;
+    _stateIndex = (_stateIndex >= _history.length - 1) ? _history.length - 1 : _stateIndex + 1;
     return _history[_stateIndex];
 }
 
 function _back() {
-    if (_stateIndex !== 0) {
+    if (_stateIndex > 0) {
         _stateIndex -= 1;
     }
     return _history[_stateIndex];
