@@ -1,7 +1,7 @@
 import {EditorState} from "./editor-state";
 
 var _history = [];
-var _stateIndex = 0;
+var _stateIndex = -1;
 
 function _append(state) {
     var newState;
@@ -24,6 +24,7 @@ function _back() {
 
 function _clearHistory() {
     _history = [];
+    _stateIndex = -1;
 }
 
 function _currentIndex() {
