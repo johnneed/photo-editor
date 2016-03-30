@@ -87,7 +87,7 @@ class Editor extends EventEmitter {
 
             me.draw(me.originalImage);
             _fireImageLoadedEvent(me.canvas);
-            _fireHistoryEvent(me.canvas);
+
 
         };
 

@@ -46,7 +46,7 @@ import EditorState from "./editor-state";
     function addPic(event) {
         event.stopPropagation();
         event.preventDefault();
-
+        dragEnd(event);
         myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
@@ -65,6 +65,7 @@ import EditorState from "./editor-state";
     }
 
     function dragEnd(event) {
+        
         event.preventDefault();
         event.stopPropagation();
         uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
@@ -322,6 +323,7 @@ import EditorState from "./editor-state";
     if (isAdvancedUpload) {
         uploadInstructions.className += " has-advanced-upload";
         uploadInstructions.addEventListener("dragover", dragStart);
+        uploadInstructions.addEventListener("dragend", dragEnd);
         uploadInstructions.addEventListener("dragleave", dragEnd);
         uploadInstructions.addEventListener("drop", addPic);
     }
