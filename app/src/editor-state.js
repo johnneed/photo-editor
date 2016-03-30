@@ -40,8 +40,7 @@ export class EditorState {
         this.image = state.image || this.image;
     }
     static create(state)  {
-        var instance = new EditorState(state || {});
-        return instance;
+        return new EditorState(state || {});
     }
 }
 

@@ -41,8 +41,6 @@ import EditorState from "./editor-state";
         zoom : 100
     };
 
-
-
     function addPic(event) {
         event.stopPropagation();
         event.preventDefault();
@@ -254,7 +252,6 @@ import EditorState from "./editor-state";
         setAppState({scale : event.target.value});
     }
 
-
     function setControlValues(){
         scaleControl.innerHTML = appState.scale;
 
@@ -303,10 +300,7 @@ import EditorState from "./editor-state";
                 break;
         }
     }
-
-    document.body.addEventListener('historyIndexChange', historyChange);
-
-
+ 
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);
