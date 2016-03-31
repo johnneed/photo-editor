@@ -1,14 +1,16 @@
 import {default as Editor} from './editor';
 import {getOffset} from "./utilities";
 import EditorState from "./editor-state";
-
+import {constants} from "./constants";
 
 (function () {
     "use strict";
+    //Do we have drag and drop?
     var isAdvancedUpload = function () {
         var div = document.createElement('div');
         return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
     }();
+    //find our controls
     var fileInput = document.getElementById("fileInput");
     var scaleControl = document.getElementById("scaleImageControl");
     var cropControl = document.getElementById("cropImageControl");
@@ -41,11 +43,21 @@ import EditorState from "./editor-state";
         zoom : 100
     };
 
+    function handleRedraw(){
+        var editorState = myEditor.getState();
+        console.loge(editorState);
+    }
+
     function addPic(event) {
         event.stopPropagation();
         event.preventDefault();
         dragEnd(event);
+
         myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
+        //Attach listeners;
+        myEditor.addListener(constants.DRAW_EVENT,handleRedraw);
+
+        //get rid of old canvas
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
@@ -300,7 +312,8 @@ import EditorState from "./editor-state";
                 break;
         }
     }
- 
+
+
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);
@@ -321,5 +334,7 @@ import EditorState from "./editor-state";
         uploadInstructions.addEventListener("dragleave", dragEnd);
         uploadInstructions.addEventListener("drop", addPic);
     }
+
+
 
 }());

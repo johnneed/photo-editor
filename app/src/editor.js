@@ -1,9 +1,8 @@
- 
+
 import {history} from "./history";
 import events from "events";
- 
- 
 import {constants} from "./constants";
+
 
 var _state = {
     image : null,
@@ -74,16 +73,26 @@ class Editor extends events.EventEmitter {
         reader.readAsDataURL(file);
     }
 
-    addListener(callback) {
-        this.on(constants.CHANGE_EVENT, callback);
+    getState(){
+        return Object.assign({},_state);
     }
 
-    removeListener(callback) {
-        this.removeListener(constants.CHANGE_EVENT, callback);
+    /**
+     * @param {function} callback
+     */
+    addListener(event, callback) {
+        this.on(event, callback);
     }
 
-    emit() {
-        this.emit(constants.CHANGE_EVENT);
+    /**
+     * @param {function} callback
+     */
+    removeListener(event, callback) {
+        this.removeListener(event, callback);
+    }
+
+    emit(event) {
+        this.emit(event);
     }
 
     crop(args) {
@@ -97,11 +106,9 @@ class Editor extends events.EventEmitter {
         this.canvasContext.drawImage(history.getCurrentState().image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
     }
 
-
     currentState() {
         return Object.assign({}, history.getCurrentState());
     }
-
 
     draw(state) {
         console.log(_state);
@@ -117,7 +124,7 @@ class Editor extends events.EventEmitter {
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
         this.canvasContext.drawImage(_state.image, 0, 0, newWidth, newHeight);
         this.canvasContext.restore();
-        this.emit(constants.CHANGE_EVENT);
+      //  this.emit(constants.DRAW_EVENT);
     }
 
     redo() {
