@@ -200,8 +200,12 @@ class Editor extends events.EventEmitter {
         }
         return _state.zoom * 100;
     }
-
-
+    subscribeOnChangeEvent(callback){
+        this.on(constants.CHANGE_EVENT,callback);
+    }
+    unsubscribeChangeEvent(czallback){
+         
+    }
 }
 
 export default Editor;
