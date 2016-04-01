@@ -50,7 +50,6 @@ class Editor extends events.EventEmitter {
         this.scale = this.scale.bind(this);
         //this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
-        this.setState = this.saveState.bind(this);
 
         //SetData from image
         reader.onload = function (e) {
@@ -91,10 +90,6 @@ class Editor extends events.EventEmitter {
         this.removeListener(event, callback);
     }
 
-    emit(event) {
-        this.emit(event);
-    }
-
     crop(args) {
         args = args || {};
         console.log('crop ' + JSON.stringify(args));
@@ -124,14 +119,12 @@ class Editor extends events.EventEmitter {
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
         this.canvasContext.drawImage(_state.image, 0, 0, newWidth, newHeight);
         this.canvasContext.restore();
-      //  this.emit(constants.DRAW_EVENT);
+        this.emit(constants.DRAW_EVENT);
     }
 
     redo() {
-        _currentStateIndex = _currentStateIndex >= (_history.length - 1) ? _currentStateIndex : _currentStateIndex + 1;
-        this.draw(history.getCurrentState().image);
-        _fireHistoryEvent(this.canvas);
-
+        history.redo();
+        this.draw(history.getCurrentState());
     }
 
     redrawImage() {
@@ -173,28 +166,20 @@ class Editor extends events.EventEmitter {
 
     }
 
-    saveState() {
-        var newImage = document.createElement('img');
-        newImage.setAttribute('src', this.canvas.toDataURL(this.mimeType));
-        _history = _history.slice(0, _currentStateIndex + 1);
-        _history.push({image: newImage});
-        _currentStateIndex += 1;
-        _fireHistoryEvent(this.canvas);
-    }
+    saveState(state) {
+        history.append(state)
+     }
 
     scale(percentage) {
         console.log("scale" + percentage + "%");
-        var newHeight = this.originalImage.height * percentage * .01;
-        var newWidth = this.originalImage.width * percentage * .01;
-        this.canvas.height = newHeight;
-        this.canvas.width = newWidth;
-        this.canvasContext.clearRect(0, 0, newWidth, newHeight);
-        this.canvasContext.drawImage(history.getCurrentState().image, 0, 0, history.getCurrentState().image.width, history.getCurrentState().image.height, 0, 0, newWidth, newHeight);
+        this.draw({scale: percentage / 100})
+         return _state.scale * 100;
+
     }
 
     undo() {
-        _currentStateIndex = _currentStateIndex < 0 ? 0 : _currentStateIndex - 1;
-        this.draw(history.getCurrentState().image);
+        history.undo();
+        this.draw(history.getCurrentState());
 
     }
 
@@ -207,12 +192,7 @@ class Editor extends events.EventEmitter {
         }
         return _state.zoom * 100;
     }
-    subscribeOnChangeEvent(callback){
-        this.on(constants.CHANGE_EVENT,callback);
-    }
-    unsubscribeChangeEvent(czallback){
-         
-    }
+    
 }
 
 export default Editor;

@@ -24,7 +24,13 @@ import {constants} from "./constants";
     var clearImageControl = document.getElementById('clearImageControl');
     var zoomControl = document.getElementById('zoomControl');
     var spinner = document.getElementById('spinner');
+    //find our labels
+    var zoomValue = document.getElementById('zoomValue');
     var scaleValue = document.getElementById('scaleValue');
+    //var heightValue = document.getElementById('heightValue');
+    //var widthValue = document.getElementById('widthValue');
+    var rotationValue = document.getElementById('rotationValue');
+
 
     var myEditor;
 
@@ -38,29 +44,39 @@ import {constants} from "./constants";
         canvasHeight: null,
         isMoving: null,
         isCropping: null,
-        scale : 100,
-        rotation : 0,
-        zoom : 100
+        scale: 100,
+        rotation: 0,
+        zoom: 100
     };
 
-    function handleRedraw(){
+    function handleRedraw() {
         var editorState = myEditor.getState();
-        console.loge(editorState);
+        zoomValue.innerHTML = editorState.zoom * 100;
+        scaleValue.innerHTML = editorState.scale * 100;
+        rotationValue.innerHTML = editorState.rotation * 180 / Math.PI;
+
+
     }
 
     function addPic(event) {
         event.stopPropagation();
-        event.preventDefault();
-        dragEnd(event);
 
-        myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
-        //Attach listeners;
-        myEditor.addListener(constants.DRAW_EVENT,handleRedraw);
+        event.preventDefault();
+
+        dragEnd(event);
 
         //get rid of old canvas
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
+        if (myEditor) {
+            myEditor.removeListener(constants.DRAW_EVENT, handleRedraw);
+        }
+        myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
+        //Attach listeners;
+        myEditor.addListener(constants.DRAW_EVENT, handleRedraw);
+
+
         editorBox.appendChild(myEditor.canvas);
         appState.offset = getOffset(myEditor.canvas);
 
@@ -68,6 +84,7 @@ import {constants} from "./constants";
         appState.canvasHeight = myEditor.canvas.height;
 
         window.editor = myEditor;
+
         saveButton.setAttribute('href', myEditor.save());
 
         uploadInstructions.className += " is-hidden";
@@ -75,7 +92,7 @@ import {constants} from "./constants";
     }
 
     function dragEnd(event) {
-        
+
         event.preventDefault();
         event.stopPropagation();
         uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
@@ -252,19 +269,16 @@ import {constants} from "./constants";
     }
 
     function saveState(event) {
-
         myEditor.saveState();
         scaleControl.max = (myEditor.originalImage.height / myEditor.currentState().image.height) * 100;
         scaleControl.value = 100;
-
     }
 
     function scalePic(event) {
         myEditor.scale(event.target.value);
-        setAppState({scale : event.target.value});
-    }
+     }
 
-    function setControlValues(){
+    function setControlValues() {
         scaleControl.innerHTML = appState.scale;
 
     }
@@ -294,13 +308,13 @@ import {constants} from "./constants";
         myEditor.undo();
     }
 
-    function zoomPic(event){
+    function zoomPic(event) {
         myEditor.zoom(parseInt(event.target.value, 10));
     }
 
-    function toggleSpinner(action){
+    function toggleSpinner(action) {
         var isHidden = /is-hidden/.test(spinner.className);
-        switch (action){
+        switch (action) {
             case 'hide' :
                 spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
                 break;
@@ -308,7 +322,7 @@ import {constants} from "./constants";
                 spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() : spinner.className.trim();
                 break;
             default :
-                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() :  spinner.className + " is-hidden";
+                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() : spinner.className + " is-hidden";
                 break;
         }
     }
@@ -334,7 +348,6 @@ import {constants} from "./constants";
         uploadInstructions.addEventListener("dragleave", dragEnd);
         uploadInstructions.addEventListener("drop", addPic);
     }
-
 
 
 }());

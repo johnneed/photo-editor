@@ -32,7 +32,7 @@ function _currentIndex() {
 }
 
 function _currentState() {
-    return _history[_stateIndex];
+    return Object.assign({}, _history[_stateIndex]);
 }
 
 function _forward() {
