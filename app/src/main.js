@@ -1,7 +1,6 @@
-import {default as Editor} from './editor';
+import {Editor} from './editor';
 import {getOffset} from "./utilities";
-import EditorState from "./editor-state";
-import {constants} from "./constants";
+ import {constants} from "./constants";
 
 (function () {
     "use strict";
@@ -51,10 +50,23 @@ import {constants} from "./constants";
 
     function handleRedraw() {
         var editorState = myEditor.getState();
-        zoomValue.innerHTML = editorState.zoom * 100;
-        scaleValue.innerHTML = editorState.scale * 100;
-        rotationValue.innerHTML = editorState.rotation * 180 / Math.PI;
+        zoomValue.innerHTML = Math.round(editorState.zoom * 100);
+        scaleValue.innerHTML = Math.round(editorState.scale * 100);
+        rotationValue.innerHTML = Math.round(editorState.rotation * 180 / Math.PI);
+        //undo & redo buttons
+        if (editorState.isFirstInHistory) {
+            undoControl.setAttribute('disabled', 'disabled');
+        } else {
+            undoControl.removeAttribute('disabled');
 
+        }
+        if (editorState.isLastInHistory) {
+            redoControl.setAttribute('disabled', 'disabled');
+
+        } else {
+            redoControl.removeAttribute('disabled');
+
+        }
 
     }
 
@@ -74,7 +86,7 @@ import {constants} from "./constants";
         }
         myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
         //Attach listeners;
-        myEditor.addListener(constants.DRAW_EVENT, handleRedraw);
+        myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
 
 
         editorBox.appendChild(myEditor.canvas);
@@ -188,36 +200,22 @@ import {constants} from "./constants";
     }
 
     function endCrop(e) {
-        appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
-        if (appState.isCropping) {
-            myEditor.crop({
-                x: (appState.mouseEndX > 0) ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
-                y: (appState.mouseEndY > 0) ? appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
-                width: Math.abs(appState.mouseEndX),
-                height: Math.abs(appState.mouseEndY)
-            })
+        if(e.clientX && e.clientY) {
+            appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
+            appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
+            if (appState.isCropping) {
+                myEditor.crop({
+                    x: (appState.mouseEndX > 0) ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
+                    y: (appState.mouseEndY > 0) ? appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
+                    width: Math.abs(appState.mouseEndX),
+                    height: Math.abs(appState.mouseEndY)
+                })
+            }
         }
         // clear the crop flag
         appState.isCropping = false;
     }
 
-    function historyChange(event) {
-
-        if (event.detail.isFirst) {
-            undoControl.setAttribute('disabled', 'disabled');
-        } else {
-            undoControl.removeAttribute('disabled');
-
-        }
-        if (event.detail.isLast) {
-            redoControl.setAttribute('disabled', 'disabled');
-
-        } else {
-            redoControl.removeAttribute('disabled');
-
-        }
-    }
 
     function moving(e) {
         var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
@@ -259,8 +257,6 @@ import {constants} from "./constants";
     function rotate(event) {
         myEditor.rotate(parseFloat(event.currentTarget.value));
         myEditor.saveState();
-
-
     }
 
     function save(event) {
@@ -269,9 +265,8 @@ import {constants} from "./constants";
     }
 
     function saveState(event) {
+        event.preventDefault();
         myEditor.saveState();
-        scaleControl.max = (myEditor.originalImage.height / myEditor.currentState().image.height) * 100;
-        scaleControl.value = 100;
     }
 
     function scalePic(event) {
@@ -298,6 +293,7 @@ import {constants} from "./constants";
     }
 
     function startOver(event) {
+        event.preventDefault();
         editorBox.removeChild(myEditor.canvas);
         myEditor = null;
         fileInput.value = null;

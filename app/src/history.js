@@ -5,10 +5,11 @@ var _stateIndex = -1;
 
 function _append(state) {
     var newState;
-    if (!state.image) {
-        state.image = _history[_stateIndex].image;
-    }
+
+    state.image = state.image || _history[_stateIndex].image;
+
     newState = EditorState.create(state);
+
     _history = _history.slice(0, _stateIndex + 1);
     _history.push(newState);
     _stateIndex = (_stateIndex >= _history.length - 1) ? _history.length - 1 : _stateIndex + 1;

@@ -5,7 +5,6 @@ import {constants} from "./constants";
 
 
 var _state = {
-    image : null,
     zoom: 1,
     scale : 1,
     height: null,
@@ -20,13 +19,10 @@ var _state = {
 };
 
 window.myState = _state;
-let _tempState = {};
-
-
  
 let _getRotatedDims = function (image, rotation) {
-    var newWidth = Math.abs(Math.round(Math.sin(rotation), 10) * image.height - Math.round(Math.cos(rotation), 10) * image.width);
-    var newHeight = Math.abs(Math.round(Math.sin(rotation), 10) * image.width - Math.round(Math.cos(rotation), 10) * image.height);
+    var newWidth = Math.round(Math.abs(Math.sin(rotation) * image.height - Math.cos(rotation) * image.width));
+    var newHeight = Math.round(Math.abs(Math.sin(rotation) * image.width - Math.cos(rotation) * image.height));
     return {height: newHeight, width: newWidth};
 };
 
@@ -34,8 +30,15 @@ function mergeStates(state){
     _state = Object.assign(_state,state);
 }
 
-class Editor extends events.EventEmitter {
- 
+export class Editor extends events.EventEmitter {
+    canvas;
+    canvasContext;
+    fileName;
+    mimeType;
+    lastModifiedDate;
+    originalFileSize;
+
+
     constructor(file) {
         super();
         var reader = new FileReader();
@@ -48,12 +51,10 @@ class Editor extends events.EventEmitter {
         this.lastModifiedDate = file.lastModifiedDate;
         this.originalFileSize = file.size;
         this.scale = this.scale.bind(this);
-        //this.move = this.move.bind(this);
         this.draw = this.draw.bind(this);
 
         //SetData from image
         reader.onload = function (e) {
-            var firstState;
 
             me.originalImage = document.createElement('img');
             me.originalImage.setAttribute('src', e.target.result);
@@ -72,36 +73,39 @@ class Editor extends events.EventEmitter {
         reader.readAsDataURL(file);
     }
 
-    getState(){
+   getState(){
         return Object.assign({},_state);
     }
 
     /**
+     * @param {object} event
      * @param {function} callback
      */
-    addListener(event, callback) {
+    addEventListener(event, callback) {
         this.on(event, callback);
     }
 
     /**
+     * @param {object} event
      * @param {function} callback
      */
-    removeListener(event, callback) {
+    removeEventListener(event, callback) {
         this.removeListener(event, callback);
     }
 
     crop(args) {
-        args = args || {};
         console.log('crop ' + JSON.stringify(args));
-        var newHeight = args.height;
-        var newWidth = args.width;
-        this.canvas.height = newHeight;
-        this.canvas.width = newWidth;
-        this.canvasContext.clearRect(0, 0, newWidth, newHeight);
-        this.canvasContext.drawImage(history.getCurrentState().image, args.x, args.y, newWidth, newHeight, 0, 0, newWidth, newHeight);
+        var newImage = document.createElement('img');
+        args = args || {};
+        this.canvas.height = args.height;
+        this.canvas.width = args.width;
+        this.canvasContext.clearRect(0, 0, args.width, args.height);
+        this.canvasContext.drawImage(history.getCurrentState().image, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
+        newImage.src = this.canvas.toDataURL(this.mimeType);
+        history.append({image : newImage});
     }
 
-    currentState() {
+    currentHistory() {
         return Object.assign({}, history.getCurrentState());
     }
 
@@ -109,11 +113,10 @@ class Editor extends events.EventEmitter {
         console.log(_state);
         mergeStates(state);
         console.log(_state);
-        var newWidth = _state.image.width * _state.zoom;
-        var newHeight = _state.image.height * _state.zoom;
+        var newWidth = _state.image.width * _state.zoom * _state.scale;
+        var newHeight = _state.image.height * _state.zoom * _state.scale;
         this.canvasContext.save();
         this.canvasContext.translate(-((newWidth-_state.image.width)/2), -((newHeight-_state.image.height)/2));
-        this.canvasContext.scale(_state.zoom, _state.zoom);
         this.canvas.width = newWidth;
         this.canvas.height =  newHeight;
         this.canvasContext.clearRect(0, 0, newWidth, newHeight);
@@ -135,13 +138,13 @@ class Editor extends events.EventEmitter {
     rotate(deg) {
         deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
         var num = parseFloat(deg);
-        var rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180) % (2 * Math.PI);
+        var rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180) % (2 * Math.PI) + _state.rotation;
         var myImage = history.getCurrentState().image;
         if (rad) {
             let newDims = _getRotatedDims(myImage, rad);
             this.canvas.height = newDims.height;
             this.canvas.width = newDims.width;
-            this.canvasContext.clearRect(0, 0, myImage.height, myImage.Width);
+            this.canvasContext.clearRect(0, 0, myImage.height, myImage.width);
             this.canvasContext.save();
             this.canvasContext.translate(myImage.height / 2, myImage.width / 2);
             this.canvasContext.rotate(rad);
@@ -152,7 +155,7 @@ class Editor extends events.EventEmitter {
             this.canvas.height = myImage.height;
             this.canvasContext.drawImage(myImage, 0, 0, myImage.width, myImage.height);
         }
-
+        _state.rotation = rad;
     }
 
     save() {
@@ -166,13 +169,14 @@ class Editor extends events.EventEmitter {
 
     }
 
-    saveState(state) {
-        history.append(state)
+    saveState() {
+
+        history.append(_state)
      }
 
     scale(percentage) {
         console.log("scale" + percentage + "%");
-        this.draw({scale: percentage / 100})
+        this.draw({scale: percentage / 100});
          return _state.scale * 100;
 
     }
@@ -192,7 +196,6 @@ class Editor extends events.EventEmitter {
         }
         return _state.zoom * 100;
     }
-    
+
 }
 
-export default Editor;
