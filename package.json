@@ -3,6 +3,7 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
+    "core-js": "^2.2.1",
     "events": "^1.1.0",
     "history": "^1.13.1",
     "keymirror": "^0.1.1",

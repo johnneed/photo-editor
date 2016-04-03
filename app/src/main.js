@@ -1,6 +1,7 @@
 import {Editor} from './editor';
 import {getOffset} from "./utilities";
- import {constants} from "./constants";
+import {constants} from "./constants";
+require('core-js');
 
 (function () {
     "use strict";

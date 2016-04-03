@@ -103,17 +103,25 @@ export class Editor extends events.EventEmitter {
     }
 
     draw(state) {
-        console.log(_state);
+        var myImage = history.getCurrentState().image;
+        var newWidth;
+        var newHeight;
+        var dims;
+
         mergeStates(state);
         console.log(_state);
-        var newWidth = _state.image.width * _state.zoom * _state.scale;
-        var newHeight = _state.image.height * _state.zoom * _state.scale;
+
+        newWidth = _state.image.width * _state.zoom * _state.scale;
+        newHeight = _state.image.height * _state.zoom * _state.scale;
+        dims = _getRotatedDims({width:newWidth,height:newHeight}, _state.rotation);
+        this.canvas.width = dims.width;
+        this.canvas.height = dims.height;
         this.canvasContext.save();
-        this.canvasContext.translate(-((newWidth - _state.image.width) / 2), -((newHeight - _state.image.height) / 2));
-        this.canvas.width = newWidth;
-        this.canvas.height = newHeight;
-        this.canvasContext.clearRect(0, 0, newWidth, newHeight);
-        this.canvasContext.drawImage(_state.image, 0, 0, newWidth, newHeight);
+        this.canvasContext.translate(dims.width / 2, dims.height / 2);
+        this.canvasContext.clearRect(0, 0, dims.width, dims.height);
+        this.canvasContext.rotate(_state.rotation);
+        this.canvasContext.drawImage(myImage,   -(newWidth/ 2), -(newHeight / 2), newWidth, newHeight);
+     //   this.canvasContext.drawImage(myImage, 0, 0, dims.width, dims.height);
         this.canvasContext.restore();
         this.emit(constants.DRAW_EVENT);
     }
@@ -131,27 +139,16 @@ export class Editor extends events.EventEmitter {
     rotate(deg) {
         var rotation;
         var num;
-        var newDims;
         var rad;
         var rotation;
-        var myImage = history.getCurrentState().image;
-        console.log('deg ' + deg);
+
         deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
         num = parseFloat(deg);
         rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180);
         rotation = (rad + _state.rotation) % (2 * Math.PI);
-        newDims = _getRotatedDims(myImage, rotation);
-        console.log(newDims);
-        this.canvas.height = newDims.height;
-        this.canvas.width = newDims.width;
-        this.canvasContext.clearRect(0, 0,newDims.width, newDims.height);
-        this.canvasContext.save();
-        this.canvasContext.translate(newDims.width / 2, newDims.height / 2);
-        this.canvasContext.rotate(rotation);
-        this.canvasContext.drawImage(myImage, -(myImage.width/ 2), -(myImage.height / 2));
-        this.canvasContext.restore();
-        _state.rotation = rotation;
-        this.emit(constants.DRAW_EVENT);
+
+        this.draw({rotation: rotation});
+ 
     }
 
     save() {
