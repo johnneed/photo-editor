@@ -5,7 +5,7 @@ var _stateIndex = -1;
 
 function _append(state) {
     var newState;
-
+    if(state.image){console.log(state);}
     state.image = state.image || _history[_stateIndex].image;
 
     newState = EditorState.create(state);

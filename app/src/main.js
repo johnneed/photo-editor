@@ -30,7 +30,6 @@ import {getOffset} from "./utilities";
     //var widthValue = document.getElementById('widthValue');
     var rotationValue = document.getElementById('rotationValue');
 
-
     var myEditor;
 
     let appState = {

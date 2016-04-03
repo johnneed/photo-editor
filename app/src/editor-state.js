@@ -13,14 +13,17 @@ function _prune(obj){
 
 
 export class EditorState {
+    image;
+    zoom;
+    rotation;
+    scale;
+    
     constructor(state) {
         state = state || {};
         this.image = state.image;
         this.zoom = state.zoom;
         this.rotation = state.rotation;
         this.scale = state.scale;
-        this.description = state.description;
-        this.fileName = state.fileName;
     }
 
     prune(){
