@@ -126,8 +126,7 @@ export class Editor extends events.EventEmitter {
     }
 
     redo() {
-        history.forward();
-        this.draw(history.getCurrentState());
+        this.draw(history.forward());
     }
 
     redrawImage() {
@@ -173,8 +172,7 @@ export class Editor extends events.EventEmitter {
     }
 
     undo() {
-        history.back();
-        this.draw(history.getCurrentState());
+        this.draw(history.back());
 
     }
 

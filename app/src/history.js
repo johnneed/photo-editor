@@ -40,8 +40,8 @@ function _currentState() {
 }
 
 function _forward() {
-    if (_stateIndex >= _history.length - 1) {
-        _stateIndex += _stateIndex;
+    if (_stateIndex <= _history.length - 1) {
+        _stateIndex += 1
     }
     return _history[_stateIndex];
 }
