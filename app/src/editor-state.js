@@ -33,15 +33,18 @@ export class EditorState {
     merge(state){
         return Object.assign(this,_prune(state));
     }
+    
     fill (state){
         Object.keys(this).forEach((key) => {
             this[key] = (typeof this[key] === "undefined") ? state[key] : this[key];
         });
         return this;
     }
+    
     combine(state){
         this.image = state.image || this.image;
     }
+    
     static create(state)  {
         return new EditorState(state || {});
     }

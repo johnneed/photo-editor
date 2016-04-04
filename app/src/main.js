@@ -54,18 +54,17 @@ require('core-js');
         scaleValue.innerHTML = Math.round(editorState.scale * 100);
         rotationValue.innerHTML = Math.round(editorState.rotation * 180 / Math.PI);
         //undo & redo buttons
-        if (editorState.isFirstInHistory) {
+        if (editorState.isFirstHistory) {
             undoControl.setAttribute('disabled', 'disabled');
         } else {
             undoControl.removeAttribute('disabled');
 
         }
-        if (editorState.isLastInHistory) {
+        if (editorState.isLastHistory) {
             redoControl.setAttribute('disabled', 'disabled');
 
         } else {
             redoControl.removeAttribute('disabled');
-
         }
 
     }

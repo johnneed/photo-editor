@@ -6,8 +6,6 @@ import {constants} from "./constants";
 var _state = {
     zoom: 1,
     scale: 1,
-    height: null,
-    width: null,
     rotation: 0
 };
 
@@ -30,7 +28,6 @@ export class Editor extends events.EventEmitter {
     mimeType;
     lastModifiedDate;
     originalFileSize;
-
 
     constructor(file) {
         super();
@@ -57,9 +54,7 @@ export class Editor extends events.EventEmitter {
                 image: me.originalImage,
                 zoom: 1,
                 scale: 1,
-                rotation: 0,
-                description: me.description,
-                fileName: me.name
+                rotation: 0
             }));
         };
 
@@ -67,7 +62,11 @@ export class Editor extends events.EventEmitter {
     }
 
     getState() {
-        return Object.assign({}, _state);
+
+        return Object.assign({
+            isFirstHistory: history.isFirst(),
+            isLastHistory: history.isLast()
+        }, _state);
     }
 
     /**
@@ -113,15 +112,15 @@ export class Editor extends events.EventEmitter {
 
         newWidth = _state.image.width * _state.zoom * _state.scale;
         newHeight = _state.image.height * _state.zoom * _state.scale;
-        dims = _getRotatedDims({width:newWidth,height:newHeight}, _state.rotation);
+        dims = _getRotatedDims({width: newWidth, height: newHeight}, _state.rotation);
         this.canvas.width = dims.width;
         this.canvas.height = dims.height;
         this.canvasContext.save();
         this.canvasContext.translate(dims.width / 2, dims.height / 2);
         this.canvasContext.clearRect(0, 0, dims.width, dims.height);
         this.canvasContext.rotate(_state.rotation);
-        this.canvasContext.drawImage(myImage,   -(newWidth/ 2), -(newHeight / 2), newWidth, newHeight);
-     //   this.canvasContext.drawImage(myImage, 0, 0, dims.width, dims.height);
+        this.canvasContext.drawImage(myImage, -(newWidth / 2), -(newHeight / 2), newWidth, newHeight);
+        //   this.canvasContext.drawImage(myImage, 0, 0, dims.width, dims.height);
         this.canvasContext.restore();
         this.emit(constants.DRAW_EVENT);
     }
@@ -146,9 +145,9 @@ export class Editor extends events.EventEmitter {
         num = parseFloat(deg);
         rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180);
         rotation = (rad + _state.rotation) % (2 * Math.PI);
+        _state.rotation = rotation;
+        this.draw(history.append(_state));
 
-        this.draw({rotation: rotation});
- 
     }
 
     save() {
