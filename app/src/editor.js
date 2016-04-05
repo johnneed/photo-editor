@@ -85,7 +85,7 @@ export class Editor extends events.EventEmitter {
     }
 
     crop(args) {
-        console.log('crop ' + JSON.stringify(args));
+
         var newImage = document.createElement('img');
         args = args || {};
         this.canvas.height = args.height;
@@ -105,10 +105,7 @@ export class Editor extends events.EventEmitter {
         var newWidth;
         var newHeight;
         var dims;
-console.log('width:' + myImage.width + " height:" + myImage.height);
-
         mergeStates(state);
-        console.log(_state);
 
         newWidth = myImage.width * _state.zoom * _state.scale;
         newHeight = myImage.height * _state.zoom * _state.scale;
@@ -163,7 +160,7 @@ console.log('width:' + myImage.width + " height:" + myImage.height);
     }
 
     scale(percentage) {
-        console.log("scale" + percentage + "%");
+
         this.draw({scale: percentage / 100});
         return _state.scale * 100;
 
