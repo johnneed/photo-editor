@@ -70,11 +70,11 @@ require('core-js');
     }
 
     function addPic(event) {
+        console.log('addPIc');
         event.stopPropagation();
-
         event.preventDefault();
 
-        dragEnd(event);
+        uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
 
         //get rid of old canvas
         while (editorBox.hasChildNodes()) {
@@ -89,10 +89,7 @@ require('core-js');
 
 
         editorBox.appendChild(myEditor.canvas);
-        appState.offset = getOffset(myEditor.canvas);
 
-        appState.canvasWidth = myEditor.canvas.width;
-        appState.canvasHeight = myEditor.canvas.height;
 
         window.editor = myEditor;
 
@@ -103,13 +100,13 @@ require('core-js');
     }
 
     function dragEnd(event) {
-
+        console.log('dragEnd');
         event.preventDefault();
-        event.stopPropagation();
         uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
     }
 
     function dragStart(event) {
+        console.log('dragStart');
         event.preventDefault();
         event.stopPropagation();
         uploadInstructions.className += (/is-dragover/).test(uploadInstructions.className) ? "" : " is-dragover";
@@ -214,7 +211,6 @@ require('core-js');
         // clear the crop flag
         appState.isCropping = false;
     }
-
 
     function moving(e) {
         var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
