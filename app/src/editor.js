@@ -105,12 +105,13 @@ export class Editor extends events.EventEmitter {
         var newWidth;
         var newHeight;
         var dims;
+console.log('width:' + myImage.width + " height:" + myImage.height);
 
         mergeStates(state);
         console.log(_state);
 
-        newWidth = _state.image.width * _state.zoom * _state.scale;
-        newHeight = _state.image.height * _state.zoom * _state.scale;
+        newWidth = myImage.width * _state.zoom * _state.scale;
+        newHeight = myImage.height * _state.zoom * _state.scale;
         dims = _getRotatedDims({width: newWidth, height: newHeight}, _state.rotation);
         this.canvas.width = dims.width;
         this.canvas.height = dims.height;
