@@ -52,7 +52,6 @@ export class Editor extends events.EventEmitter {
             me.name = me.originalImage.name || me.fileName;
             me.draw(history.append({
                 image: me.originalImage,
-                zoom: 1,
                 scale: 1,
                 rotation: 0
             }));
@@ -120,7 +119,6 @@ export class Editor extends events.EventEmitter {
         this.canvasContext.clearRect(0, 0, dims.width, dims.height);
         this.canvasContext.rotate(_state.rotation);
         this.canvasContext.drawImage(myImage, -(newWidth / 2), -(newHeight / 2), newWidth, newHeight);
-        //   this.canvasContext.drawImage(myImage, 0, 0, dims.width, dims.height);
         this.canvasContext.restore();
         this.emit(constants.DRAW_EVENT);
     }
@@ -145,8 +143,7 @@ export class Editor extends events.EventEmitter {
         rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180);
         rotation = (rad + _state.rotation) % (2 * Math.PI);
         _state.rotation = rotation;
-        this.draw(history.append(_state));
-
+        this.draw(_state);
     }
 
     save() {
