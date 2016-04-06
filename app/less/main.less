@@ -57,96 +57,114 @@ body {
     overflow: hidden;
     height: 100vh;
     background: white;
+    position: relative;
+    &.has-photo {
+      .photo-widget_editor {
+        z-index: 3;
+      }
+      .photo-widget_upload-instructions {
+        z-index: 2;
+      }
+    }
   }
+}
 
-  .photo-widget_upload-instructions {
-    overflow: hidden;
-    outline : 2px dashed #AAA;
-    outline-offset: -6px;
-    margin: 0;
-    background-color: white;
+.photo-widget_editor {
 
-    height: 100%;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+}
 
-    p {
-      text-align: center;
-      font-size: 2rem;
-      line-height: 100%;
-      label {
-        color: lightblue;
-        transition: 0.5s color;
-        cursor: pointer;
-        &:hover {
-          color: blue;
-        }
-        input {
-          display: none;
-        }
+.photo-widget_upload-instructions {
+  overflow: hidden;
+  outline: 2px dashed #AAA;
+  outline-offset: -6px;
+  margin: 0;
+  background-color: white;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  p {
+    text-align: center;
+    font-size: 2rem;
+    line-height: 100%;
+    label {
+      color: lightblue;
+      transition: 0.5s color;
+      cursor: pointer;
+      &:hover {
+        color: blue;
       }
-
-    }
-    .hasDrag {
-      display: none;
-    }
-    .doesNotHaveDrag {
-      display: block;
-    }
-
-    &.has-advanced-upload {
-
-
-
-      .hasDrag {
-        display: block;
-      }
-      .doesNotHaveDrag {
+      input {
         display: none;
       }
     }
 
-    &.is-dragover {
-      background-color: grey;
-    }
   }
-  .photo-widget_editor {
+  .hasDrag {
     display: none;
-    height: 100%;
-    width: 100%;
-    overflow:auto;
   }
-  .photo-widget_upload-instructions.is-hidden+.photo-widget_editor{display:block;}
-  .photo-widget_editor canvas {
+  .doesNotHaveDrag {
     display: block;
-    border: solid 1px @border-color;
-    margin: 0;
+  }
 
-    &.is-moving {
-      cursor: move;
+  &.has-advanced-upload {
+    .hasDrag {
+      display: block;
     }
-    &.is-cropping {
-      cursor: nwse-resize;
+    .doesNotHaveDrag {
+      display: none;
     }
   }
 
-  .photo-widget_toolbar {
-    min-height: 3rem;
-    padding: 0.5rem 1rem;
-    border: none;
-
-    vertical-align: middle;
-    > label {
-      font-size: 1rem;
-      display: block;
-      margin: 0.1rem;
-      min-height: 2rem;
-      background-color: #EEE;
-      padding: 0.1rem;
-      display: block;
-    }
-    .photo-widget_blocky-label{display:block;}
-
+  &.is-dragover {
+    background-color: grey;
   }
 }
+
+.photo-widget_editor canvas {
+  display: block;
+  border: solid 1px @border-color;
+  margin: 0;
+
+  &.is-moving {
+    cursor: move;
+  }
+  &.is-cropping {
+    cursor: nwse-resize;
+  }
+}
+
+.photo-widget_toolbar {
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  border: none;
+
+  vertical-align: middle;
+  > label {
+    font-size: 1rem;
+    display: block;
+    margin: 0.1rem;
+    min-height: 2rem;
+    background-color: #EEE;
+    padding: 0.1rem;
+    display: block;
+  }
+  .photo-widget_blocky-label {
+    display: block;
+  }
+
+}
+
+
 .photo-widget_boolean-button {
 
   input {
@@ -175,81 +193,89 @@ body {
   }
 }
 
-.photo-widget_control-group{
+.photo-widget_control-group {
   border: solid 1px #888;
-  box-shadow: 1px 1px rgba(255,255,255, 1);
+  box-shadow: 1px 1px rgba(255, 255, 255, 1);
   margin: .5rem 0;
   padding: .5rem;
 }
 
-.spinner{
+.spinner {
   position: fixed;
-  top:50%;
-  left:50%;
+  top: 50%;
+  left: 50%;
   margin: -40px -40px 0 0;
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  background-color : rgba(255,255,100, 0.5);
+  background-color: rgba(255, 255, 100, 0.5);
 
-  span:first-child{
-    display:block;
+  span:first-child {
+    display: block;
     //border-radius : 50% 0 0 50%;
     position: absolute;
     top: -40px;
     left: -40px;
     height: 0px;
-    width:  0px;
+    width: 0px;
     border-left: solid 90px transparent;
     border-right: solid 90px transparent;
     border-top: solid 90px rgba(255, 100, 100, 0.5);
     border-bottom: solid 90px transparent;
-    border-radius : 50% 50% 0 0 ;
-    transform : translate(-50px, -50px);
-    animation : spin 3s linear infinite;
+    border-radius: 50% 50% 0 0;
+    transform: translate(-50px, -50px);
+    animation: spin 3s linear infinite;
   }
-  span:nth-child(2){
+  span:nth-child(2) {
     position: absolute;
     top: 10px;
     left: 10px;
-    display:block;
+    display: block;
     //border-radius : 50% 0 0 50%;
     height: 0px;
-    width:  0px;
+    width: 0px;
     border-left: solid 40px transparent;
     border-right: solid 40px transparent;
     border-top: solid 40px rgba(100, 100, 255, 0.5);
     border-bottom: solid 40px transparent;
-    border-radius : 50% 50% 0 0 ;
-    transform : translate(-50px, -50px);
-    animation : spinBackwards 2s linear infinite;
+    border-radius: 50% 50% 0 0;
+    transform: translate(-50px, -50px);
+    animation: spinBackwards 2s linear infinite;
   }
-  span:last-child{
+  span:last-child {
     position: absolute;
     top: -10px;
     left: -10px;
-    display:block;
+    display: block;
     //border-radius : 50% 0 0 50%;
     height: 0px;
-    width:  0px;
+    width: 0px;
     border-left: solid 60px transparent;
     border-right: solid 60px transparent;
     border-top: solid 60px rgba(100, 255, 100, 0.5);
     border-bottom: solid 60px transparent;
-    border-radius : 50% 50% 0 0 ;
-    transform : translate(-50px, -50px);
-    animation : spin 12s linear infinite;
+    border-radius: 50% 50% 0 0;
+    transform: translate(-50px, -50px);
+    animation: spin 12s linear infinite;
   }
 }
 
 @keyframes spin {
-  0%  {transform : rotate(0deg);}
-  100% {transform : rotate(360deg);}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spinBackwards {
-  0%  {transform : rotate(0deg);}
-  100% {transform : rotate(-360deg);}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
 }
 
 .is-clippped-circle {

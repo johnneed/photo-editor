@@ -21,6 +21,7 @@ require('core-js');
     var undoControl = document.getElementById("undoControl");
     var redoControl = document.getElementById("redoControl");
     var uploadInstructions = document.getElementById('uploadInstructions');
+    var workspace = document.getElementById('workspace');
     var clearImageControl = document.getElementById('clearImageControl');
     var zoomControl = document.getElementById('zoomControl');
     var spinner = document.getElementById('spinner');
@@ -76,34 +77,34 @@ require('core-js');
         if (myEditor) {
             myEditor.removeListener(constants.DRAW_EVENT, handleRedraw);
         }
-        uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
 
         //get rid of old canvas
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
         myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
-        console.log((event.target.files || event.dataTransfer.files)[0]);
+
         //Attach listeners;
         myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
         saveButton.setAttribute('href', myEditor.save());
-        uploadInstructions.className += " is-hidden";
+        workspace.className = workspace.className.replace('is-dragover', "").trim()  + " has-photo";
         editorBox.appendChild(myEditor.canvas);
+        //TODO : remove this hack
         window.editor = myEditor;
-        console.log('canvas1 width'+myEditor.canvas.width+' height' + myEditor.canvas.height);
+
     }
 
     function dragEnd(event) {
         console.log('dragEnd');
         event.preventDefault();
-        uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
+        workspace.className = workspace.className.replace('is-dragover', "").trim();
     }
 
     function dragStart(event) {
         console.log('dragStart');
         event.preventDefault();
         event.stopPropagation();
-        uploadInstructions.className += (/is-dragover/).test(uploadInstructions.className) ? "" : " is-dragover";
+        workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
     }
 
     function endMove(e) {
@@ -206,38 +207,38 @@ require('core-js');
         appState.isCropping = false;
     }
 
-    function moving(e) {
-        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
-        // if the move flag is set, clear the canvas and draw the image
-        if (appState.isMoving) {
-            myEditor.move({
-                x: canMouseX,
-                y: canMouseY
-            });
-            //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-            //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
-        }
-    }
+    // function moving(e) {
+    //     var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
+    //     var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
+    //     // if the move flag is set, clear the canvas and draw the image
+    //     if (appState.isMoving) {
+    //         myEditor.move({
+    //             x: canMouseX,
+    //             y: canMouseY
+    //         });
+    //         //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+    //         //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
+    //     }
+    // }
 
-    function movePic(event) {
-
-        if (event.target.checked) {
-            myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-moving").trim());
-            myEditor.canvas.addEventListener('mousedown', startMove);
-            myEditor.canvas.addEventListener('mousemove', moving);
-            myEditor.canvas.addEventListener('mouseup', endMove);
-            myEditor.canvas.addEventListener('mouseout', endMove);
-
-
-        } else {
-            myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-moving", "").trim());
-            myEditor.canvas.removeEventListener('mousedown', startMove);
-            myEditor.canvas.removeEventListener('mousemove', moving);
-            myEditor.canvas.removeEventListener('mouseup', endMove);
-            myEditor.canvas.removeEventListener('mouseout', endMove);
-        }
-    }
+    // function movePic(event) {
+    //
+    //     if (event.target.checked) {
+    //         myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-moving").trim());
+    //         myEditor.canvas.addEventListener('mousedown', startMove);
+    //         myEditor.canvas.addEventListener('mousemove', moving);
+    //         myEditor.canvas.addEventListener('mouseup', endMove);
+    //         myEditor.canvas.addEventListener('mouseout', endMove);
+    //
+    //
+    //     } else {
+    //         myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-moving", "").trim());
+    //         myEditor.canvas.removeEventListener('mousedown', startMove);
+    //         myEditor.canvas.removeEventListener('mousemove', moving);
+    //         myEditor.canvas.removeEventListener('mouseup', endMove);
+    //         myEditor.canvas.removeEventListener('mouseout', endMove);
+    //     }
+    // }
 
     function redo() {
         myEditor.redo();
@@ -323,10 +324,10 @@ require('core-js');
 
     if (isAdvancedUpload) {
         uploadInstructions.className += " has-advanced-upload";
-        uploadInstructions.addEventListener("dragover", dragStart);
-        uploadInstructions.addEventListener("dragend", dragEnd);
-        uploadInstructions.addEventListener("dragleave", dragEnd);
-        uploadInstructions.addEventListener("drop", addPic);
+        workspace.addEventListener("dragover", dragStart);
+        workspace.addEventListener("dragend", dragEnd);
+        workspace.addEventListener("dragleave", dragEnd);
+        workspace.addEventListener("drop", addPic);
     }
 
 
