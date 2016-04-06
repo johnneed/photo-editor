@@ -73,30 +73,24 @@ require('core-js');
         console.log('addPIc');
         event.stopPropagation();
         event.preventDefault();
-
+        if (myEditor) {
+            myEditor.removeListener(constants.DRAW_EVENT, handleRedraw);
+        }
         uploadInstructions.className = uploadInstructions.className.replace('is-dragover', "").trim();
 
         //get rid of old canvas
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
-        if (myEditor) {
-            myEditor.removeListener(constants.DRAW_EVENT, handleRedraw);
-        }
         myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
+        console.log((event.target.files || event.dataTransfer.files)[0]);
         //Attach listeners;
         myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
-
-
-        editorBox.appendChild(myEditor.canvas);
-
-
-        window.editor = myEditor;
-
         saveButton.setAttribute('href', myEditor.save());
-
         uploadInstructions.className += " is-hidden";
-        setControlValues();
+        editorBox.appendChild(myEditor.canvas);
+        window.editor = myEditor;
+        console.log('canvas1 width'+myEditor.canvas.width+' height' + myEditor.canvas.height);
     }
 
     function dragEnd(event) {
@@ -267,11 +261,6 @@ require('core-js');
     function scalePic(event) {
         myEditor.scale(event.target.value);
      }
-
-    function setControlValues() {
-        scaleControl.innerHTML = appState.scale;
-
-    }
 
     function startCrop(e) {
         appState.mouseStartX = parseInt(e.clientX, 10);
