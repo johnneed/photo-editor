@@ -70,7 +70,6 @@ body {
 }
 
 .photo-widget_editor {
-
   height: 100%;
   width: 100%;
   overflow: auto;
@@ -78,6 +77,9 @@ body {
   z-index: 2;
   top: 0;
   left: 0;
+  background: white;
+  line-height: 100vh;
+  text-align: center;
 }
 
 .photo-widget_upload-instructions {
@@ -134,6 +136,8 @@ body {
   display: block;
   border: solid 1px @border-color;
   margin: 0;
+  display: inline-block;
+  vertical-align: middle;
 
   &.is-moving {
     cursor: move;

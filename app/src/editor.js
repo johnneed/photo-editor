@@ -2,7 +2,6 @@ import {history} from "./history";
 import events from "events";
 import {constants} from "./constants";
 
-
 var _state = {
     zoom: 1,
     scale: 1,
@@ -33,6 +32,7 @@ export class Editor extends events.EventEmitter {
         super();
         var reader = new FileReader();
         var me = this;
+        history.clearHistory();
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'editorCanvas');
         this.canvasContext = this.canvas.getContext("2d");
@@ -192,5 +192,8 @@ export class Editor extends events.EventEmitter {
         return _state.zoom * 100;
     }
 
+    clearHistory(){
+        history.clearHistory();
+    }
 }
 
