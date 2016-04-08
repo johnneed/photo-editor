@@ -83,7 +83,7 @@ require('core-js');
 
 
     function addPic(event) {
-        console.log('addPIc');
+
         event.stopPropagation();
         event.preventDefault();
         if (myEditor) {
@@ -108,13 +108,13 @@ require('core-js');
     }
 
     function dragEnd(event) {
-        console.log('dragEnd');
+      
         event.preventDefault();
         workspace.className = workspace.className.replace('is-dragover', "").trim();
     }
 
     function dragStart(event) {
-        console.log('dragStart');
+
         event.preventDefault();
         event.stopPropagation();
         workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
