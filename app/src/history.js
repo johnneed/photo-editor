@@ -54,12 +54,15 @@ function _goto(index) {
 }
 
 function _isLast(){
-
+    console.log("is last "  + _stateIndex +" of " + _history.length);
+    console.log((_history.length - 1) === _stateIndex);
     return (_history.length - 1) === _stateIndex;
 }
 
 function _isFirst(){
-    return _stateIndex  < 1;
+    console.log("is first " +_stateIndex);
+    console.log( _stateIndex < 1);
+    return _stateIndex < 1;
 }
 
 export var history = {
