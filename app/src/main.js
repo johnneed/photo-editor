@@ -49,26 +49,38 @@ require('core-js');
         zoom: 100
     };
 
-    function handleRedraw() {
-        var editorState = myEditor.getState();
-        zoomValue.innerHTML = Math.round(editorState.zoom * 100);
-        scaleValue.innerHTML = Math.round(editorState.scale * 100);
-        rotationValue.innerHTML = Math.round(editorState.rotation * 180 / Math.PI);
+
+    function setRedoUndoButtons(isLast,isFirst){
         //undo & redo buttons
-        if (editorState.isFirstHistory) {
+        if (isFirst) {
             undoControl.setAttribute('disabled', 'disabled');
         } else {
             undoControl.removeAttribute('disabled');
 
         }
-        if (editorState.isLastHistory) {
+        if (isLast) {
             redoControl.setAttribute('disabled', 'disabled');
 
         } else {
             redoControl.removeAttribute('disabled');
         }
+    }
+
+    function handleRedraw() {
+        var editorState = myEditor.getState();
+        zoomValue.innerHTML = Math.round(editorState.zoom * 100);
+        scaleValue.innerHTML = Math.round(editorState.scale * 100);
+        rotationValue.innerHTML = Math.round(editorState.rotation * 180 / Math.PI);
+        setRedoUndoButtons(editorState.isLastHistory, editorState.isFirstHistory);
 
     }
+
+    function handleHistoryChange(){
+        var editorState = myEditor.getState();
+        setRedoUndoButtons(editorState.isLastHistory, editorState.isFirstHistory);
+    }
+
+
 
     function addPic(event) {
         console.log('addPIc');
@@ -86,6 +98,7 @@ require('core-js');
 
         //Attach listeners;
         myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
+        myEditor.addEventListener(constants.HISTORY_CHANGE, handleHistoryChange);
         saveButton.setAttribute('href', myEditor.save());
         workspace.className = workspace.className.replace('is-dragover', "").trim()  + " has-photo";
         editorBox.appendChild(myEditor.canvas);
@@ -279,10 +292,16 @@ require('core-js');
 
     function startOver(event) {
         event.preventDefault();
-        editorBox.removeChild(myEditor.canvas);
         myEditor = null;
+        while (editorBox.hasChildNodes()) {
+            editorBox.removeChild(editorBox.lastChild);
+        }
         fileInput.value = null;
-        uploadInstructions.className = uploadInstructions.className.replace("is-hidden", "").trim();
+        workspace.className = workspace.className.replace('is-dragover', "").replace("has-photo","").trim();
+        zoomValue.innerHTML = "100";
+        scaleValue.innerHTML = "100";
+        rotationValue.innerHTML = "0";
+        setRedoUndoButtons(false,  false);
     }
 
     function undo() {
