@@ -34,23 +34,28 @@ require('core-js');
 
     var myEditor;
 
-    let appState = {
-        mouseStartX: null,
-        mouseStartY: null,
-        mouseEndX: null,
-        mouseEndY: null,
-        offset: null,
-        canvasWidth: null,
-        canvasHeight: null,
-        isMoving: null,
-        isCropping: null,
-        scale: 100,
-        rotation: 0,
-        zoom: 100
-    };
+
+    var appState;
+
+    function resetAppState() {
+        appState = {
+            mouseStartX: null,
+            mouseStartY: null,
+            mouseEndX: null,
+            mouseEndY: null,
+            offset: null,
+            canvasWidth: null,
+            canvasHeight: null,
+            isMoving: null,
+            isCropping: null,
+            scale: 100,
+            rotation: 0,
+            zoom: 100
+        };
+    }
 
 
-    function setRedoUndoButtons(isLast,isFirst){
+    function setRedoUndoButtons(isLast, isFirst) {
         //undo & redo buttons
         if (isFirst) {
             undoControl.setAttribute('disabled', 'disabled');
@@ -75,11 +80,10 @@ require('core-js');
 
     }
 
-    function handleHistoryChange(){
+    function handleHistoryChange() {
         var editorState = myEditor.getState();
         setRedoUndoButtons(editorState.isLastHistory, editorState.isFirstHistory);
     }
-
 
 
     function addPic(event) {
@@ -100,7 +104,7 @@ require('core-js');
         myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
         myEditor.addEventListener(constants.HISTORY_CHANGE, handleHistoryChange);
         saveButton.setAttribute('href', myEditor.save());
-        workspace.className = workspace.className.replace('is-dragover', "").trim()  + " has-photo";
+        workspace.className = workspace.className.replace('is-dragover', "").trim() + " has-photo";
         editorBox.appendChild(myEditor.canvas);
         //TODO : remove this hack
         window.editor = myEditor;
@@ -108,7 +112,7 @@ require('core-js');
     }
 
     function dragEnd(event) {
-      
+
         event.preventDefault();
         workspace.className = workspace.className.replace('is-dragover', "").trim();
     }
@@ -134,20 +138,32 @@ require('core-js');
         appState.isMoving = false;
     }
 
-    function cropPic(event) {
-
-        if (event.target.checked) {
+    function activateCropControls() {
+        if (myEditor) {
             myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-cropping").trim());
             myEditor.canvas.addEventListener('mousedown', startCrop);
             myEditor.canvas.addEventListener('mousemove', cropping);
             myEditor.canvas.addEventListener('mouseup', endCrop);
             myEditor.canvas.addEventListener('mouseout', endCrop);
-        } else {
+        }
+    }
+
+    function deactivateCropControls() {
+        if (myEditor) {
             myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-cropping", "").trim());
             myEditor.canvas.removeEventListener('mousedown', startCrop);
             myEditor.canvas.removeEventListener('mousemove', cropping);
             myEditor.canvas.removeEventListener('mouseup', endCrop);
             myEditor.canvas.removeEventListener('mouseout', endCrop);
+        }
+    }
+
+    function cropPic(event) {
+
+        if (event.target.checked) {
+            activateCropControls();
+        } else {
+            deactivateCropControls();
         }
     }
 
@@ -202,9 +218,9 @@ require('core-js');
     }
 
     function endCrop(e) {
-        console.log("end crop "+ e.clientX + " : "+e.clientY);
+        console.log("end crop " + e.clientX + " : " + e.clientY);
 
-        if(e.clientX && e.clientY) {
+        if (e.clientX && e.clientY) {
             appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
             appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
             if (appState.isCropping) {
@@ -274,10 +290,10 @@ require('core-js');
 
     function scalePic(event) {
         myEditor.scale(event.target.value);
-     }
+    }
 
     function startCrop(e) {
-        console.log("start crop "+ e.clientX + " : "+e.clientY);
+        console.log("start crop " + e.clientX + " : " + e.clientY);
         appState.offset = getOffset(myEditor.canvas);
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
@@ -299,11 +315,13 @@ require('core-js');
             editorBox.removeChild(editorBox.lastChild);
         }
         fileInput.value = null;
-        workspace.className = workspace.className.replace('is-dragover', "").replace("has-photo","").trim();
+        workspace.className = workspace.className.replace('is-dragover', "").replace("has-photo", "").trim();
         zoomValue.innerHTML = "100";
         scaleValue.innerHTML = "100";
         rotationValue.innerHTML = "0";
-        setRedoUndoButtons(false,  false);
+        setRedoUndoButtons(true, true);
+        resetAppState();
+        deactivateCropControls();
     }
 
     function undo() {
@@ -329,6 +347,7 @@ require('core-js');
         }
     }
 
+    resetAppState();
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);

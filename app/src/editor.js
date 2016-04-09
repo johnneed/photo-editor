@@ -89,7 +89,7 @@ export class Editor extends events.EventEmitter {
      * @param {function} callback
      */
     addEventListener(event, callback) {
-        this.on(event, callback);
+    this.on(event, callback);
     }
 
     /**
