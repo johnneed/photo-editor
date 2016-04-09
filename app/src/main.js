@@ -137,7 +137,6 @@ require('core-js');
     function cropPic(event) {
 
         if (event.target.checked) {
-            appState.offset = getOffset(myEditor.canvas);
             myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-cropping").trim());
             myEditor.canvas.addEventListener('mousedown', startCrop);
             myEditor.canvas.addEventListener('mousemove', cropping);
@@ -200,10 +199,11 @@ require('core-js');
         myEditor.canvasContext.beginPath();
         myEditor.canvasContext.fillRect(args.x, args.y + args.height, args.width, canvasHeight - args.height - args.y);
 
-
     }
 
     function endCrop(e) {
+        console.log("end crop "+ e.clientX + " : "+e.clientY);
+
         if(e.clientX && e.clientY) {
             appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
             appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
@@ -277,6 +277,8 @@ require('core-js');
      }
 
     function startCrop(e) {
+        console.log("start crop "+ e.clientX + " : "+e.clientY);
+        appState.offset = getOffset(myEditor.canvas);
         appState.mouseStartX = parseInt(e.clientX, 10);
         appState.mouseStartY = parseInt(e.clientY, 10);
         // set the crop flag
