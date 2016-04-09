@@ -1,4 +1,4 @@
-import {history} from "./history";
+import {History} from "./history";
 import events from "events";
 import {constants} from "./constants";
 
@@ -37,13 +37,12 @@ export class Editor extends events.EventEmitter {
     mimeType;
     lastModifiedDate;
     originalFileSize;
-
+    history;
 
     constructor(file) {
         super();
         var reader = new FileReader();
         var me = this;
-        history.clearHistory();
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'editorCanvas');
         this.canvasContext = this.canvas.getContext("2d");
@@ -60,11 +59,12 @@ export class Editor extends events.EventEmitter {
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
             me.originalImage.onload = function () {
-                me.draw(history.append({
+                me.history = new History({
                     image: me.originalImage,
                     scale: 1,
                     rotation: 0
-                }));
+                });
+                me.draw(me.history.currentState());
             };
             me.originalImage.setAttribute('src', e.target.result);
         };
@@ -78,8 +78,8 @@ export class Editor extends events.EventEmitter {
      */
     getState() {
         return Object.assign({
-            isFirstHistory: history.isFirst(),
-            isLastHistory: history.isLast()
+            isFirstHistory: this.history.isFirst(),
+            isLastHistory: this.history.isLast()
         }, _state);
     }
 
@@ -112,9 +112,9 @@ export class Editor extends events.EventEmitter {
         this.canvas.height = args.height;
         this.canvas.width = args.width;
         this.canvasContext.clearRect(0, 0, args.width, args.height);
-        this.canvasContext.drawImage(history.getCurrentState().image, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
+        this.canvasContext.drawImage(this.history.getCurrentState().image, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
         newImage.onload = function () {
-            history.append({image: newImage});
+            this.history.append({image: newImage});
         };
         newImage.src = this.canvas.toDataURL(this.mimeType);
     }
@@ -124,7 +124,7 @@ export class Editor extends events.EventEmitter {
      * @returns {*}
      */
     currentHistory() {
-        return Object.assign({}, history.getCurrentState());
+        return Object.assign({}, this.history.currentState());
     }
 
     /**
@@ -134,7 +134,7 @@ export class Editor extends events.EventEmitter {
      */
     draw(state) {
         console.log('editor draw');
-        var myImage = history.getCurrentState().image;
+        var myImage = this.history.currentState().image;
         var newWidth;
         var newHeight;
         var dims;
@@ -163,7 +163,7 @@ export class Editor extends events.EventEmitter {
      * @returns {void}
      */
     redo() {
-        this.draw(history.forward());
+        this.draw(this.history.forward());
     }
 
     /**
@@ -173,7 +173,7 @@ export class Editor extends events.EventEmitter {
     redrawImage() {
         console.log('editor redrawImage');
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.draw(history.getCurrentState().image);
+        this.draw(this.history.currentState().image);
     }
 
     /**
@@ -208,7 +208,7 @@ export class Editor extends events.EventEmitter {
      * @returns {void}
      */
     saveState() {
-        history.append(_state);
+        this.history.append(_state);
         this.emit(constants.HISTORY_CHANGE);
     }
 
@@ -227,7 +227,7 @@ export class Editor extends events.EventEmitter {
      * @returns {void}
      */
     undo() {
-        this.draw(history.back());
+        this.draw(this.history.back());
     }
 
     /**
@@ -250,7 +250,7 @@ export class Editor extends events.EventEmitter {
      * @returns {void}
      */
     clearHistory() {
-        history.clearHistory();
+        this.history.resetHistory();
         this.emit(constants.HISTORY_CHANGE);
     }
 }

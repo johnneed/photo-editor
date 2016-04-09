@@ -1,84 +1,89 @@
 import {EditorState} from "./editor-state";
 
-var _history = [];
-var _stateIndex = -1;
+//Using WeakMaps for Private properties
+var _history = new WeakMap();
+var _stateIndex = new WeakMap();
 
-function _append(state) {
-    var newState;
 
-     state.image = state.image || _history[_stateIndex].image;
-
-    newState = EditorState.create(state);
-
-    _history = _history.slice(0, _stateIndex + 1);
-    _history.push(newState);
-    _stateIndex = (_stateIndex >= _history.length - 1) ? _history.length - 1 : _stateIndex + 1;
-    console.log('append');
-    console.log(_stateIndex);
-    console.log(_history);
-    return _history[_stateIndex];
-}
-
-function _back() {
-    if (_stateIndex > 0) {
-        _stateIndex -= 1;
+export class History {
+    constructor(initialState) {
+        _history.set(this, [EditorState.create(initialState)]);
+        _stateIndex.set(this, 0);
     }
-    return _history[_stateIndex];
-}
 
-function _clearHistory() {
-    _history = [];
-    _stateIndex = -1;
-}
 
-function _currentIndex() {
-    return _stateIndex;
-}
-
-function _currentState() {
-    return Object.assign({}, _history[_stateIndex]);
-}
-
-function _forward() {
-    if (_stateIndex <= _history.length - 1) {
-        _stateIndex += 1
+    append(state) {
+        var newState;
+        var history = _history.get(this);
+        var stateIndex = _stateIndex.get(this);
+        state.image = state.image || history[stateIndex].image;
+        newState = EditorState.create(state);
+        history = history.slice(0, stateIndex + 1);
+        history.push(newState);
+        stateIndex = (stateIndex >= history.length - 1) ? history.length - 1 : stateIndex + 1;
+        _stateIndex.set(this, stateIndex);
+        _history.set(this, history);
+        return history[stateIndex];
     }
-    return _history[_stateIndex];
-}
 
-function _goto(index) {
-    if (index >= 0 && index < _history.length) {
-        _stateIndex = index;
+    back() {
+        var history = _history.get(this);
+        var stateIndex = _stateIndex.get(this);
+        if (stateIndex > 0) {
+            stateIndex -= 1;
+            _stateIndex.set(this, stateIndex);
+        }
+
+        return history[stateIndex];
     }
-    return _history[_stateIndex];
+
+    resetHistory() {
+        var history = _history.get(this);
+        _history.set(this, [history[0]]);
+        _stateIndex.set(this, 0);
+    }
+
+
+    getIndex() {
+        return _stateIndex.get(this);
+    }
+
+    currentState() {
+        var history = _history.get(this);
+        var stateIndex = _stateIndex.get(this);
+        return Object.assign({}, history[stateIndex]);
+    }
+
+    forward() {
+        var history = _history.get(this);
+        var stateIndex = _stateIndex.get(this);
+        if (stateIndex <= history.length - 1) {
+            stateIndex += 1;
+            _stateIndex.set(this, stateIndex);
+        }
+
+        return history[stateIndex];
+    }
+
+    goto(index) {
+        var history = _history.get(this);
+        var stateIndex = _stateIndex.get(this);
+        if (index >= 0 && index < history.length) {
+            stateIndex = index;
+        }
+        _stateIndex.set(this, stateIndex);
+        return history[stateIndex];
+    }
+
+    isLast() {
+        var history = _history.get(this);
+        var stateIndex = _stateIndex.get(this);
+        return (history.length - 1) === stateIndex;
+    }
+
+    isFirst() {
+        var stateIndex = _stateIndex.get(this);
+        return stateIndex < 1;
+    }
+
 }
-
-function _isLast(){
-    console.log("is last "  + _stateIndex +" of " + _history.length);
-    console.log((_history.length - 1) === _stateIndex);
-    return (_history.length - 1) === _stateIndex;
-}
-
-function _isFirst(){
-    console.log("is first " +_stateIndex);
-    console.log( _stateIndex < 1);
-    return _stateIndex < 1;
-}
-
-export var history = {
-    append: _append,
-    back: _back,
-    clearHistory: _clearHistory,
-    forward: _forward,
-    getCurrentState: _currentState,
-    getIndex: _currentIndex,
-    goto: _goto,
-    isLast : _isLast,
-    isFirst : _isFirst
-};
-
-
-
-window.myHistory = history;
-window.myHistoryArray = _history;
-window.myHistoryIndex = _stateIndex;
