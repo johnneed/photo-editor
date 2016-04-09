@@ -327,7 +327,6 @@ require('core-js');
         }
     }
 
-
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
     scaleControl.addEventListener('blur', saveState);
