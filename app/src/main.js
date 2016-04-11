@@ -1,9 +1,8 @@
-import {Editor} from './editor';
+import {Editor} from "./editor";
 import {getOffset} from "./utilities";
 import {constants} from "./constants";
 import {AppState} from "./app-state";
 require('core-js');
-
 
 (function () {
     "use strict";
@@ -39,11 +38,9 @@ require('core-js');
 
     var appState = new AppState();
 
-
     function resetAppState() {
         setAppState(new AppState());
     }
-
 
     function setAppState(state) {
         function setControls(state) {
@@ -140,7 +137,7 @@ require('core-js');
             scale: Math.round(editorState.scale * 100),
             isLastHistory: editorState.isLastHistory,
             isFirstHistory: editorState.isFirstHistory,
-            rotation : editorState.rotation
+            rotation: editorState.rotation
         });
     }
 
@@ -151,7 +148,7 @@ require('core-js');
             isFirstHistory: editorState.isFirstHistory,
             zoom: Math.round(editorState.zoom * 100),
             scale: Math.round(editorState.scale * 100),
-            rotation : editorState.rotation
+            rotation: editorState.rotation
         });
     }
 
@@ -197,7 +194,6 @@ require('core-js');
         event.stopPropagation();
         setAppState({isDragging: true});
     }
-
 
     function cropButtonClick(event) {
         event.stopPropagation();
@@ -346,13 +342,13 @@ require('core-js');
     clearImageControl.addEventListener('click', startOver);
     zoomControl.addEventListener('input', zoomPic);
 
-   if (isAdvancedUpload) {
+    if (isAdvancedUpload) {
         workspace.addEventListener("drop", addPic);
         uploadInstructions.className += " has-advanced-upload";
         workspace.addEventListener("dragover", dragStart);
         workspace.addEventListener("dragend", dragEnd);
         workspace.addEventListener("dragleave", dragEnd);
-  }
+    }
 
 
 }());
