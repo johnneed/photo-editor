@@ -42,7 +42,7 @@ export class AppState {
         this.scale = state.scale || 1;
         this.rotation = state.rotation || 0;
         this.zoom = state.zoom || 100;
-        this.isCropping = (!!state.isCropping === state.isCropping) ? state.isCropping : true;
+        this.isCropping = (!!state.isCropping === state.isCropping) ? state.isCropping : false;
         this.isLastHistory = (!!state.isLastHistory === state.isLastHistory) ? state.isLastHistory : true;
         this.isFirstHistory = (!!state.isFirstHistory === state.isFirstHistory) ? state.isFirstHistory : true;
         this.hasPhoto = (!!state.hasPhoto === state.hasPhoto) ? state.hasPhoto : false;

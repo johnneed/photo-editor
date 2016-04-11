@@ -59,6 +59,8 @@ require('core-js');
                             rotationValue.innerHTML = state.rotation;
                             break;
                         case "isCropping" :
+                            console.log('crop case');
+                            console.log(state.isCropping);
                             if (state.isCropping) {
                                 cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
                                 if (myEditor) {
@@ -154,7 +156,7 @@ require('core-js');
     }
 
     function addPic(event) {
-console.log('addpic');
+        console.log('addpic');
         event.stopPropagation();
         event.preventDefault();
         setAppState({spinnerIsVisible: true});
@@ -185,18 +187,20 @@ console.log('addpic');
     }
 
     function dragEnd(event) {
+        event.preventDefault();
         event.stopPropagation();
         setAppState({isDragging: false});
     }
 
     function dragStart(event) {
-        console.log('dragstart');
+        event.preventDefault();
         event.stopPropagation();
         setAppState({isDragging: true});
     }
 
 
     function cropButtonClick(event) {
+        event.stopPropagation();
         setAppState({isCropping: !appState.isCropping});
     }
 
@@ -342,13 +346,13 @@ console.log('addpic');
     clearImageControl.addEventListener('click', startOver);
     zoomControl.addEventListener('input', zoomPic);
 
-    if (isAdvancedUpload) {
+   if (isAdvancedUpload) {
+        workspace.addEventListener("drop", addPic);
         uploadInstructions.className += " has-advanced-upload";
         workspace.addEventListener("dragover", dragStart);
         workspace.addEventListener("dragend", dragEnd);
         workspace.addEventListener("dragleave", dragEnd);
-        workspace.addEventListener("drop", addPic);
-    }
+  }
 
 
 }());

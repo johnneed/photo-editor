@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Photo Editor</title>
 
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
-
     <link rel="stylesheet" href="css/main.css">
 
 </head>
@@ -36,7 +33,9 @@
     <div id="tools" class="photo-widget_tools">
         <div class="photo-widget_toolbar">
             <div class="photo-widget_control-group">
-                <label><span class="photo-widget_blocky-label">Scale Image&nbsp;<span id="scaleValue" class="photo-widget_control-value">100</span><span class="photo-widget_control-value">%</span></span>
+                <label><span class="photo-widget_blocky-label">Scale Image&nbsp;<span id="scaleValue"
+                                                                                      class="photo-widget_control-value">100</span><span
+                        class="photo-widget_control-value">%</span></span>
                <span class="photo-widget_blocky-label">
                 <em>1%</em>
                     <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
@@ -45,7 +44,7 @@
                 </label>
             </div>
             <div class="photo-widget_control-group">
-                     <button class="photo-widget_boolean-button" id="cropImageControl"><span>Crop</span></button>
+                <button class="photo-widget_boolean-button" id="cropImageControl"><span>Crop</span></button>
 
             </div>
             <div class="photo-widget_control-group">
@@ -59,11 +58,12 @@
             </div>
             <div class="photo-widget_control-group">
                 <label>
-                    <span class="photo-widget_blocky-label">Rotate Image&nbsp;<span id="rotationValue" class="photo-widget_control-value">0</span>
+                    <span class="photo-widget_blocky-label">Rotate Image&nbsp;<span id="rotationValue"
+                                                                                    class="photo-widget_control-value">0</span>
                         <sup class="photo-widget_control-value">&deg;</sup>
                         </span>
 
-</label>
+                </label>
                 <label>
                     <span>Rotate Left</span>
                     <button id="rotateLeft" title="Rotate Left" value="-90"><i class="icon-undo"></i></button>
@@ -86,7 +86,6 @@
                 <label><span class="photo-widget_blocky-label">Zoom&nbsp; </span>
                     <span id="zoomValue" class="photo-widget_control-value">100</span>
                     <span>%</span>
-
                <span class="photo-widget_blocky-label">
                    <em>1%</em>
                 <input id="zoomControl" type="range" min="1" max="500" value="100"/>
