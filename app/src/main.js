@@ -1,7 +1,9 @@
 import {Editor} from './editor';
 import {getOffset} from "./utilities";
 import {constants} from "./constants";
+import {AppState} from "./app-state";
 require('core-js');
+
 
 (function () {
     "use strict";
@@ -10,6 +12,7 @@ require('core-js');
         var div = document.createElement('div');
         return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
     }();
+
     //find our controls
     var fileInput = document.getElementById("fileInput");
     var scaleControl = document.getElementById("scaleImageControl");
@@ -34,64 +37,131 @@ require('core-js');
 
     var myEditor;
 
+    var appState = new AppState();
 
-    var appState;
 
     function resetAppState() {
-        appState = {
-            mouseStartX: null,
-            mouseStartY: null,
-            mouseEndX: null,
-            mouseEndY: null,
-            offset: null,
-            canvasWidth: null,
-            canvasHeight: null,
-            isMoving: null,
-            isCropping: null,
-            scale: 100,
-            rotation: 0,
-            zoom: 100
-        };
+        setAppState(new AppState());
     }
 
 
-    function setRedoUndoButtons(isLast, isFirst) {
-        //undo & redo buttons
-        if (isFirst) {
-            undoControl.setAttribute('disabled', 'disabled');
-        } else {
-            undoControl.removeAttribute('disabled');
+    function setAppState(state) {
+        function setControls(state) {
+            Object.keys(state).forEach(key => {
+                    switch (key) {
+                        case "scale" :
+                            scaleValue.innerHTML = state.scale;
+                            break;
+                        case "zoom" :
+                            zoomValue.innerHTML = state.zoom;
+                            break;
+                        case "rotation" :
+                            rotationValue.innerHTML = state.rotation;
+                            break;
+                        case "isCropping" :
+                            if (state.isCropping) {
+                                cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
+                                if (myEditor) {
+                                    myEditor.canvas.setAttribute('class', (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
+                                    myEditor.canvas.addEventListener('mousedown', startCrop);
+                                    myEditor.canvas.addEventListener('mousemove', cropping);
+                                    myEditor.canvas.addEventListener('mouseup', endCrop);
+                                    myEditor.canvas.addEventListener('mouseout', endCrop);
+                                }
+                                break;
+                            }
+                            cropControl.className = cropControl.className.replace(/is-active/g, "").trim();
+                            if (myEditor) {
+                                myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-cropping", "").trim());
+                                myEditor.canvas.removeEventListener('mousedown', startCrop);
+                                myEditor.canvas.removeEventListener('mousemove', cropping);
+                                myEditor.canvas.removeEventListener('mouseup', endCrop);
+                                myEditor.canvas.removeEventListener('mouseout', endCrop);
+                            }
+                            break;
+                        case "isLastHistory" :
+                            if (state.isLastHistory) {
+                                redoControl.setAttribute('disabled', 'disabled');
+                                break;
+                            }
+                            redoControl.removeAttribute('disabled');
+                            break;
+                        case "isFirstHistory" :
+                            if (state.isFirstHistory) {
+                                undoControl.setAttribute('disabled', 'disabled');
+                                break;
+                            }
+                            undoControl.removeAttribute('disabled');
+                            break;
+                        case "hasPhoto" :
+                            if (state.hasPhoto) {
+                                workspace.className = workspace.className + " has-photo";
+                                break;
+                            }
+                            workspace.className = workspace.className.replace(/has-photo/g, "").trim();
+                            fileInput.value = null;
+                            break;
+                        case "isDragging" :
+                            console.log('drag case');
+                            console.log(state.isDragging);
+                            if (state.isDragging) {
+                                workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
+                                break;
+                            }
+                            workspace.className = workspace.className.replace(/is-dragover/g, "").trim();
+                            break;
+                        case "spinnerIsVisible" :
+                            var isHidden = /is-hidden/.test(spinner.className);
+
+                            if (state.spinnerIsVisible) {
+                                spinner.className = isHidden ? spinner.className.replace(/is-hidden/g, "").trim() : spinner.className.trim();
+                                break;
+                            }
+                            spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
+                            break;
+
+                    }
+                }
+            );
 
         }
-        if (isLast) {
-            redoControl.setAttribute('disabled', 'disabled');
 
-        } else {
-            redoControl.removeAttribute('disabled');
-        }
+        appState = AppState.merge(appState, state);
+        setControls(state);
     }
+
 
     function handleRedraw() {
         var editorState = myEditor.getState();
-        zoomValue.innerHTML = Math.round(editorState.zoom * 100);
-        scaleValue.innerHTML = Math.round(editorState.scale * 100);
-        rotationValue.innerHTML = Math.round(editorState.rotation * 180 / Math.PI);
-        setRedoUndoButtons(editorState.isLastHistory, editorState.isFirstHistory);
-
+        setAppState({
+            zoom: Math.round(editorState.zoom * 100),
+            scale: Math.round(editorState.scale * 100),
+            isLastHistory: editorState.isLastHistory,
+            isFirstHistory: editorState.isFirstHistory,
+            rotation : editorState.rotation
+        });
     }
 
     function handleHistoryChange() {
         var editorState = myEditor.getState();
-        setRedoUndoButtons(editorState.isLastHistory, editorState.isFirstHistory);
+        setAppState({
+            isLastHistory: editorState.isLastHistory,
+            isFirstHistory: editorState.isFirstHistory,
+            zoom: Math.round(editorState.zoom * 100),
+            scale: Math.round(editorState.scale * 100),
+            rotation : editorState.rotation
+        });
     }
 
-
     function addPic(event) {
-
+console.log('addpic');
         event.stopPropagation();
         event.preventDefault();
+        setAppState({spinnerIsVisible: true});
         if (myEditor) {
             myEditor.removeListener(constants.DRAW_EVENT, handleRedraw);
+            myEditor.removeListener(constants.HISTORY_CHANGE, handleHistoryChange);
+            myEditor.removeListener(constants.IMAGE_LOADED, resetAppState);
         }
 
         //get rid of old canvas
@@ -103,8 +173,11 @@ require('core-js');
         //Attach listeners;
         myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
         myEditor.addEventListener(constants.HISTORY_CHANGE, handleHistoryChange);
+        myEditor.addEventListener(constants.IMAGE_LOADED, setAppState.bind(this, {
+            hasPhoto: true,
+            spinnerIsVisible: false
+        }));
         saveButton.setAttribute('href', myEditor.save());
-        workspace.className = workspace.className.replace('is-dragover', "").trim() + " has-photo";
         editorBox.appendChild(myEditor.canvas);
         //TODO : remove this hack
         window.editor = myEditor;
@@ -112,59 +185,19 @@ require('core-js');
     }
 
     function dragEnd(event) {
-
-        event.preventDefault();
-        workspace.className = workspace.className.replace('is-dragover', "").trim();
+        event.stopPropagation();
+        setAppState({isDragging: false});
     }
 
     function dragStart(event) {
-
-        event.preventDefault();
+        console.log('dragstart');
         event.stopPropagation();
-        workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
+        setAppState({isDragging: true});
     }
 
-    function endMove(e) {
-        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
-        if (appState.isMoving) {
-            myEditor.move({
-                x: (canMouseX),
-                y: (canMouseY)
-            });
-            myEditor.saveState();
-        }
-        // clear the move flag
-        appState.isMoving = false;
-    }
 
-    function activateCropControls() {
-        if (myEditor) {
-            myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-cropping").trim());
-            myEditor.canvas.addEventListener('mousedown', startCrop);
-            myEditor.canvas.addEventListener('mousemove', cropping);
-            myEditor.canvas.addEventListener('mouseup', endCrop);
-            myEditor.canvas.addEventListener('mouseout', endCrop);
-        }
-    }
-
-    function deactivateCropControls() {
-        if (myEditor) {
-            myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-cropping", "").trim());
-            myEditor.canvas.removeEventListener('mousedown', startCrop);
-            myEditor.canvas.removeEventListener('mousemove', cropping);
-            myEditor.canvas.removeEventListener('mouseup', endCrop);
-            myEditor.canvas.removeEventListener('mouseout', endCrop);
-        }
-    }
-
-    function cropPic(event) {
-
-        if (event.target.checked) {
-            activateCropControls();
-        } else {
-            deactivateCropControls();
-        }
+    function cropButtonClick(event) {
+        setAppState({isCropping: !appState.isCropping});
     }
 
     function cropping(e) {
@@ -221,8 +254,11 @@ require('core-js');
         console.log("end crop " + e.clientX + " : " + e.clientY);
 
         if (e.clientX && e.clientY) {
-            appState.mouseEndX = parseInt(e.clientX, 10) - appState.mouseStartX;
-            appState.mouseEndY = parseInt(e.clientY, 10) - appState.mouseStartY;
+            setAppState({
+                mouseEndX: parseInt(e.clientX, 10) - appState.mouseStartX,
+                mouseEndY: parseInt(e.clientY, 10) - appState.mouseStartY
+            });
+
             if (appState.isCropping) {
                 myEditor.crop({
                     x: (appState.mouseEndX > 0) ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
@@ -233,52 +269,22 @@ require('core-js');
             }
         }
         // clear the crop flag
-        appState.isCropping = false;
+        setAppState({isCropping: false});
     }
 
-    // function moving(e) {
-    //     var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
-    //     var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
-    //     // if the move flag is set, clear the canvas and draw the image
-    //     if (appState.isMoving) {
-    //         myEditor.move({
-    //             x: canMouseX,
-    //             y: canMouseY
-    //         });
-    //         //   myEditor.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-    //         //   myEditor.canvasContext.drawImage(myEditor.originalImage, canMouseX - 128 / 2, canMouseY - 120 / 2, 128, 120);
-    //     }
-    // }
-
-    // function movePic(event) {
-    //
-    //     if (event.target.checked) {
-    //         myEditor.canvas.setAttribute('class', (myEditor.canvas.className + " is-moving").trim());
-    //         myEditor.canvas.addEventListener('mousedown', startMove);
-    //         myEditor.canvas.addEventListener('mousemove', moving);
-    //         myEditor.canvas.addEventListener('mouseup', endMove);
-    //         myEditor.canvas.addEventListener('mouseout', endMove);
-    //
-    //
-    //     } else {
-    //         myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-moving", "").trim());
-    //         myEditor.canvas.removeEventListener('mousedown', startMove);
-    //         myEditor.canvas.removeEventListener('mousemove', moving);
-    //         myEditor.canvas.removeEventListener('mouseup', endMove);
-    //         myEditor.canvas.removeEventListener('mouseout', endMove);
-    //     }
-    // }
 
     function redo() {
         myEditor.redo();
     }
 
     function rotate(event) {
+        event.stopPropagation();
         myEditor.rotate(parseFloat(event.currentTarget.value));
         myEditor.saveState();
     }
 
     function save(event) {
+        event.stopPropagation();
         saveButton.href = myEditor.canvas.toDataURL(myEditor.mimeType);
         saveButton.download = myEditor.fileName;
     }
@@ -289,24 +295,20 @@ require('core-js');
     }
 
     function scalePic(event) {
+        event.stopPropagation();
         myEditor.scale(event.target.value);
     }
 
     function startCrop(e) {
         console.log("start crop " + e.clientX + " : " + e.clientY);
-        appState.offset = getOffset(myEditor.canvas);
-        appState.mouseStartX = parseInt(e.clientX, 10);
-        appState.mouseStartY = parseInt(e.clientY, 10);
-        // set the crop flag
-        appState.isCropping = true;
+        setAppState({
+            offset: getOffset(myEditor.canvas),
+            mouseStartX: parseInt(e.clientX, 10),
+            mouseStartY: parseInt(e.clientY, 10),
+            isCropping: true
+        });
     }
 
-    function startMove(e) {
-        appState.mouseStartX = parseInt(e.clientX, 10);
-        appState.mouseStartY = parseInt(e.clientY, 10);
-        // set the move flag
-        appState.isMoving = true;
-    }
 
     function startOver(event) {
         event.preventDefault();
@@ -314,14 +316,7 @@ require('core-js');
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
-        fileInput.value = null;
-        workspace.className = workspace.className.replace('is-dragover', "").replace("has-photo", "").trim();
-        zoomValue.innerHTML = "100";
-        scaleValue.innerHTML = "100";
-        rotationValue.innerHTML = "0";
-        setRedoUndoButtons(true, true);
         resetAppState();
-        deactivateCropControls();
     }
 
     function undo() {
@@ -332,20 +327,6 @@ require('core-js');
         myEditor.zoom(parseInt(event.target.value, 10));
     }
 
-    function toggleSpinner(action) {
-        var isHidden = /is-hidden/.test(spinner.className);
-        switch (action) {
-            case 'hide' :
-                spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
-                break;
-            case 'show' :
-                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() : spinner.className.trim();
-                break;
-            default :
-                spinner.className = isHidden ? spinner.className.replace("is-hidden", "").trim() : spinner.className + " is-hidden";
-                break;
-        }
-    }
 
     resetAppState();
     fileInput.addEventListener('change', addPic);
@@ -354,7 +335,7 @@ require('core-js');
     undoControl.addEventListener('click', undo);
     redoControl.addEventListener('click', redo);
 
-    cropControl.addEventListener('change', cropPic);
+    cropControl.addEventListener('click', cropButtonClick);
     saveButton.addEventListener('click', save);
     rotateLeft.addEventListener('click', rotate);
     rotateRight.addEventListener('click', rotate);

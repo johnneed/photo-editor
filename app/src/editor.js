@@ -65,6 +65,8 @@ export class Editor extends events.EventEmitter {
                     rotation: 0
                 });
                 me.draw(me.history.currentState());
+                me.emit(constants.IMAGE_LOADED);
+
             };
             me.originalImage.setAttribute('src', e.target.result);
         };

@@ -25,6 +25,13 @@
             </p>
         </div>
         <div id="editor" class="photo-widget_editor"></div>
+        <div id="spinner" class="spinner-box is-hidden">
+            <div class="spinner">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
     </div>
     <div id="tools" class="photo-widget_tools">
         <div class="photo-widget_toolbar">
@@ -38,10 +45,8 @@
                 </label>
             </div>
             <div class="photo-widget_control-group">
-                <label class='photo-widget_boolean-button'>
-                    <input id="cropImageControl"
-                           type="checkbox"/><span>Crop</span>
-                </label>
+                     <button class="photo-widget_boolean-button" id="cropImageControl"><span>Crop</span></button>
+
             </div>
             <div class="photo-widget_control-group">
                 <label>
@@ -92,11 +97,7 @@
         </div>
     </div>
 </div>
-<div id="spinner" class="spinner is-hidden">
-    <span></span>
-    <span></span>
-    <span></span>
-</div>
+
 <script src="scripts/photo-editor.js"></script>
 
 </body>

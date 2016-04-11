@@ -138,7 +138,7 @@ body {
 
   border: solid 1px @border-color;
   margin: 0;
-   vertical-align: middle;
+  vertical-align: middle;
 
   &.is-moving {
     cursor: move;
@@ -169,24 +169,17 @@ body {
 
 }
 
+button {
 
-.photo-widget_boolean-button {
+  border: solid 1px @border-color;
+  background: #DDD;
+  padding: .25rem .5rem;
+  border-radius: 4px;
+  text-align: center;
+  transition: background-color 0.25s;
+  cursor: pointer;
 
-  input {
-    display: none;
-  }
-  input + span {
-    border: solid 1px @border-color;
-    background: #DDD;
-    padding: .25rem .5rem;
-    border-radius: 4px;
-    display: block;
-    text-align: center;
-    transition: background-color 0.25s;
-    cursor: pointer;
-  }
-
-  input:checked + span {
+  &.is-active {
     background-color: rgb(105, 211, 91);
     line-height: 1.6rem;
     &:before {
@@ -205,11 +198,20 @@ body {
   padding: .5rem;
 }
 
-.spinner {
-  position: fixed;
+.spinner-box {
+  position: relative;
   top: 50%;
-  left: 50%;
-  margin: -40px -40px 0 0;
+  z-index: 4;
+  transform: translateY(-50%);
+  height: 140px;
+  padding-top: 40px;
+  width: 182px;
+  margin: 0 auto;
+}
+
+.spinner {
+  position: relative;
+  margin: 0 auto;
   height: 100px;
   width: 100px;
   border-radius: 50%;

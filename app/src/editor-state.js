@@ -4,8 +4,8 @@
 function _prune(obj){
     obj = (typeof obj === "object")? obj : {};
     return  Object.keys(obj).reduce((pojo,key) => {
-        if (typeof this[key] !== 'undefined') {
-            pojo[key] = this[key];
+        if (typeof obj[key] !== 'undefined') {
+            pojo[key] = obj[key];
         }
         return pojo;
     },{});
