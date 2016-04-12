@@ -21,6 +21,7 @@ export class AppState {
     canvasWidth;
     canvasHeight;
     isCropping;
+    isCropMode;
     scale;
     rotation;
     zoom;
@@ -43,6 +44,7 @@ export class AppState {
         this.rotation = state.rotation || 0;
         this.zoom = state.zoom || 100;
         this.isCropping = (!!state.isCropping === state.isCropping) ? state.isCropping : false;
+        this.isCropMode = (!!state.isCropMode  === state.isCropMode ) ? state.isCropMode  : false;
         this.isLastHistory = (!!state.isLastHistory === state.isLastHistory) ? state.isLastHistory : true;
         this.isFirstHistory = (!!state.isFirstHistory === state.isFirstHistory) ? state.isFirstHistory : true;
         this.hasPhoto = (!!state.hasPhoto === state.hasPhoto) ? state.hasPhoto : false;

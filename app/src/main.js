@@ -55,10 +55,10 @@ require('core-js');
                         case "rotation" :
                             rotationValue.innerHTML = state.rotation;
                             break;
-                        case "isCropping" :
+                        case "isCropMode" :
                             console.log('crop case');
-                            console.log(state.isCropping);
-                            if (state.isCropping) {
+                            console.log(state.isCropMode);
+                            if (state.isCropMode) {
                                 cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
                                 if (myEditor) {
                                     myEditor.canvas.setAttribute('class', (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
@@ -142,6 +142,7 @@ require('core-js');
         }
 
         appState = AppState.merge(appState, state);
+
         setControls(state);
     }
 
@@ -210,9 +211,18 @@ require('core-js');
         setAppState({isDragging: true});
     }
 
+
     function cropButtonClick(event) {
         event.stopPropagation();
-        setAppState({isCropping: !appState.isCropping});
+        if(appState.isCropMode){
+            setAppState({isCropMode: false, isCropping: false});
+            return;
+        }
+        setAppState({
+            offset: getOffset(myEditor.canvas),
+            isCropMode: true
+        });
+
     }
 
     function cropping(e) {
@@ -316,12 +326,13 @@ require('core-js');
 
     function startCrop(e) {
         console.log("start crop " + e.clientX + " : " + e.clientY);
-        setAppState({
-            offset: getOffset(myEditor.canvas),
-            mouseStartX: parseInt(e.clientX, 10),
-            mouseStartY: parseInt(e.clientY, 10),
-            isCropping: true
-        });
+        if(appState.isCropMode) {
+            setAppState({
+                isCropping: true,
+                mouseStartX: parseInt(e.clientX, 10),
+                mouseStartY: parseInt(e.clientY, 10)
+            });
+        }
     }
 
 
