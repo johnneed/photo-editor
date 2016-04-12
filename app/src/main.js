@@ -95,9 +95,25 @@ require('core-js');
                         case "hasPhoto" :
                             if (state.hasPhoto) {
                                 workspace.className = workspace.className + " has-photo";
+                                scaleControl.removeAttribute('disabled');
+                                cropControl.removeAttribute('disabled');
+                                clearImageControl.removeAttribute('disabled');
+                                zoomControl.removeAttribute('disabled');
+                                rotateRight.removeAttribute('disabled');
+                                rotateLeft.removeAttribute('disabled');
+                                saveButton.removeAttribute('disabled');
                                 break;
                             }
                             workspace.className = workspace.className.replace(/has-photo/g, "").trim();
+                            scaleControl.setAttribute('disabled','disabled');
+                            cropControl.setAttribute('disabled','disabled');
+                            clearImageControl.setAttribute('disabled','disabled');
+                            zoomControl.setAttribute('disabled','disabled');
+                            undoControl.setAttribute('disabled','disabled');
+                            redoControl.setAttribute('disabled','disabled');
+                            rotateRight.setAttribute('disabled','disabled');
+                            rotateLeft.setAttribute('disabled','disabled');
+                            saveButton.setAttribute('disabled','disabled');
                             fileInput.value = null;
                             break;
                         case "isDragging" :
@@ -128,7 +144,6 @@ require('core-js');
         appState = AppState.merge(appState, state);
         setControls(state);
     }
-
 
     function handleRedraw() {
         var editorState = myEditor.getState();
