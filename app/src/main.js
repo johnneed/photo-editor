@@ -105,15 +105,15 @@ require('core-js');
                                 break;
                             }
                             workspace.className = workspace.className.replace(/has-photo/g, "").trim();
-                            scaleControl.setAttribute('disabled','disabled');
-                            cropControl.setAttribute('disabled','disabled');
-                            clearImageControl.setAttribute('disabled','disabled');
-                            zoomControl.setAttribute('disabled','disabled');
-                            undoControl.setAttribute('disabled','disabled');
-                            redoControl.setAttribute('disabled','disabled');
-                            rotateRight.setAttribute('disabled','disabled');
-                            rotateLeft.setAttribute('disabled','disabled');
-                            saveButton.setAttribute('disabled','disabled');
+                            scaleControl.setAttribute('disabled', 'disabled');
+                            cropControl.setAttribute('disabled', 'disabled');
+                            clearImageControl.setAttribute('disabled', 'disabled');
+                            zoomControl.setAttribute('disabled', 'disabled');
+                            undoControl.setAttribute('disabled', 'disabled');
+                            redoControl.setAttribute('disabled', 'disabled');
+                            rotateRight.setAttribute('disabled', 'disabled');
+                            rotateLeft.setAttribute('disabled', 'disabled');
+                            saveButton.setAttribute('disabled', 'disabled');
                             fileInput.value = null;
                             break;
                         case "isDragging" :
@@ -164,7 +164,8 @@ require('core-js');
             isFirstHistory: editorState.isFirstHistory,
             zoom: Math.round(editorState.zoom * 100),
             scale: Math.round(editorState.scale * 100),
-            rotation: editorState.rotation
+            rotation: editorState.rotation,
+            offset: getOffset(myEditor.canvas)
         });
     }
 
@@ -192,7 +193,7 @@ require('core-js');
             hasPhoto: true,
             spinnerIsVisible: false
         }));
-     
+
         saveButton.setAttribute('href', myEditor.save());
         editorBox.appendChild(myEditor.canvas);
         //TODO : remove this hack
@@ -215,7 +216,7 @@ require('core-js');
 
     function cropButtonClick(event) {
         event.stopPropagation();
-        if(appState.isCropMode){
+        if (appState.isCropMode) {
             setAppState({isCropMode: false, isCropping: false});
             return;
         }
@@ -327,7 +328,7 @@ require('core-js');
 
     function startCrop(e) {
         console.log("start crop " + e.clientX + " : " + e.clientY);
-        if(appState.isCropMode) {
+        if (appState.isCropMode) {
             setAppState({
                 isCropping: true,
                 mouseStartX: parseInt(e.clientX, 10),
