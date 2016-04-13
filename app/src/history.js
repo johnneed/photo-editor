@@ -10,8 +10,7 @@ export class History {
         _history.set(this, [EditorState.create(initialState)]);
         _stateIndex.set(this, 0);
     }
-
-
+ 
     append(state) {
         var newState;
         var history = _history.get(this);

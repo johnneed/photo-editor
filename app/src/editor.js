@@ -29,7 +29,7 @@ function _getRotatedDims(image, rotation) {
 function mergeStates(state) {
     _state = Object.assign(_state, state);
 }
-
+ 
 export class Editor extends events.EventEmitter {
     canvas;
     canvasContext;
@@ -110,18 +110,26 @@ export class Editor extends events.EventEmitter {
     crop(args) {
         console.log('crop');
         var me = this;
-        var newImage = document.createElement('img');
+        var croppedImage = document.createElement('img');
+        var flattenedImage = document.createElement('img');
         args = args || {};
-        this.canvas.height = args.height;
-        this.canvas.width = args.width;
-        this.canvasContext.clearRect(0, 0, args.width, args.height);
-        this.canvasContext.drawImage(this.history.currentState().image, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
-        newImage.onload = function () {
-            me.history.append({image: newImage, scale: 1, rotation: 0});
-            me.emit(constants.HISTORY_CHANGE);
+        flattenedImage.onload = function(){
+            me.canvas.height = args.height;
+            me.canvas.width = args.width;
+            me.canvasContext.clearRect(0, 0, args.width, args.height);
+            me.canvasContext.drawImage(flattenedImage, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
+            croppedImage.onload = function () {
+                me.history.append({image: croppedImage , scale: 1, rotation: 0});
+                me.emit(constants.HISTORY_CHANGE);
+                me.draw({image: croppedImage, scale: 1, rotation: 0});
+            };
+            croppedImage.src = me.canvas.toDataURL(me.mimeType);
         };
-        newImage.src = this.canvas.toDataURL(this.mimeType);
+        flattenedImage.src = this.canvas.toDataURL(this.mimeType);
+
+
     }
+
 
     /**
      * Get the current history object

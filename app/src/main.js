@@ -192,6 +192,7 @@ require('core-js');
             hasPhoto: true,
             spinnerIsVisible: false
         }));
+     
         saveButton.setAttribute('href', myEditor.save());
         editorBox.appendChild(myEditor.canvas);
         //TODO : remove this hack
