@@ -1,12 +1,19 @@
 import {History} from "./history";
 import events from "events";
 import {constants} from "./constants";
+//Using WeakMaps for Private properties
 
-var _state = {
-    zoom: 1,
-    scale: 1,
-    rotation: 0
-};
+var _state = new WeakMap();
+
+function setState(editor,key,value){
+   var myState = _state.get(editor);
+    myState[key] = value;
+    _state.set(editor, myState);
+}
+
+function getState(editor){
+    _state.get(editor);
+}
 
 /**
  * Calculates the height and width of an image after rotation
@@ -29,7 +36,24 @@ function _getRotatedDims(image, rotation) {
 function mergeStates(state) {
     _state = Object.assign(_state, state);
 }
- 
+
+/**
+ * Settor and Gettor for editor state.
+ * @param editor
+ * @param stateKey
+ * @param {*} [value]
+ * @returns {*}
+ */
+function editorState(editor, stateKey, value){//need a curry here
+    var myState = _state.get(editor);
+    if(!value) {
+        return myState[stateKey];
+    }
+        myState[stateKey] = value;
+    return myState;
+}
+
+
 export class Editor extends events.EventEmitter {
     canvas;
     canvasContext;
@@ -113,13 +137,13 @@ export class Editor extends events.EventEmitter {
         var croppedImage = document.createElement('img');
         var flattenedImage = document.createElement('img');
         args = args || {};
-        flattenedImage.onload = function(){
+        flattenedImage.onload = function () {
             me.canvas.height = args.height;
             me.canvas.width = args.width;
             me.canvasContext.clearRect(0, 0, args.width, args.height);
             me.canvasContext.drawImage(flattenedImage, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
             croppedImage.onload = function () {
-                me.history.append({image: croppedImage , scale: 1, rotation: 0});
+                me.history.append({image: croppedImage, scale: 1, rotation: 0});
                 me.emit(constants.HISTORY_CHANGE);
                 me.draw({image: croppedImage, scale: 1, rotation: 0});
             };
@@ -259,11 +283,16 @@ export class Editor extends events.EventEmitter {
     }
 
     /**
-     * Clears the history cache
+     * Clears the history cache and resets to original State
      * @returns {void}
      */
     clearHistory() {
         this.history.resetHistory();
+        _state = {
+            zoom: 1,
+            scale: 1,
+            rotation: 0
+        };
         this.emit(constants.HISTORY_CHANGE);
     }
 }

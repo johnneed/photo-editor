@@ -198,7 +198,6 @@ require('core-js');
         editorBox.appendChild(myEditor.canvas);
         //TODO : remove this hack
         window.editor = myEditor;
-
     }
 
     function dragEnd(event) {
@@ -279,7 +278,7 @@ require('core-js');
 
     function endCrop(e) {
         console.log("end crop " + e.clientX + " : " + e.clientY);
-
+        var zoomRatio = appState.zoom / 100;
         if (e.clientX && e.clientY) {
             setAppState({
                 mouseEndX: parseInt(e.clientX, 10) - appState.mouseStartX,
@@ -288,10 +287,10 @@ require('core-js');
 
             if (appState.isCropping) {
                 myEditor.crop({
-                    x: (appState.mouseEndX > 0) ? appState.mouseStartX - appState.offset.left : parseInt(e.clientX, 10) - appState.offset.left,
-                    y: (appState.mouseEndY > 0) ? appState.mouseStartY - appState.offset.top : parseInt(e.clientY, 10) - appState.offset.top,
-                    width: Math.abs(appState.mouseEndX),
-                    height: Math.abs(appState.mouseEndY)
+                    x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left) * zoomRatio : (parseInt(e.clientX, 10) - appState.offset.left) * zoomRatio,
+                    y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) * zoomRatio : (parseInt(e.clientY, 10) - appState.offset.top) * zoomRatio,
+                    width: Math.abs(appState.mouseEndX * zoomRatio),
+                    height: Math.abs(appState.mouseEndY * zoomRatio)
                 })
             }
         }
