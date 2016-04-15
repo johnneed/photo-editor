@@ -48,9 +48,11 @@ require('core-js');
                     switch (key) {
                         case "scale" :
                             scaleValue.innerHTML = state.scale;
+                            scaleControl.value = state.scale;
                             break;
                         case "zoom" :
                             zoomValue.innerHTML = state.zoom;
+                            zoomControl.value = state.zoom;
                             break;
                         case "rotation" :
                             rotationValue.innerHTML = state.rotation;
