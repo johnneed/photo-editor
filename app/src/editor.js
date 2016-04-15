@@ -3,17 +3,8 @@ import events from "events";
 import {constants} from "./constants";
 //Using WeakMaps for Private properties
 
-var _state = new WeakMap();
+var _states = new WeakMap();
 
-function setState(editor,key,value){
-   var myState = _state.get(editor);
-    myState[key] = value;
-    _state.set(editor, myState);
-}
-
-function getState(editor){
-    _state.get(editor);
-}
 
 /**
  * Calculates the height and width of an image after rotation
@@ -34,24 +25,10 @@ function _getRotatedDims(image, rotation) {
  * @private
  */
 function mergeStates(state) {
-    _state = Object.assign(_state, state);
+    _states.set(this,Object.assign(_states.get(this), state));
 }
 
-/**
- * Settor and Gettor for editor state.
- * @param editor
- * @param stateKey
- * @param {*} [value]
- * @returns {*}
- */
-function editorState(editor, stateKey, value){//need a curry here
-    var myState = _state.get(editor);
-    if(!value) {
-        return myState[stateKey];
-    }
-        myState[stateKey] = value;
-    return myState;
-}
+
 
 
 export class Editor extends events.EventEmitter {
@@ -67,6 +44,11 @@ export class Editor extends events.EventEmitter {
         super();
         var reader = new FileReader();
         var me = this;
+        _states.set(this,{
+            zoom: 1,
+            scale: 1,
+            rotation: 0
+        });
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'editorCanvas');
         this.canvasContext = this.canvas.getContext("2d");
@@ -106,7 +88,7 @@ export class Editor extends events.EventEmitter {
         return Object.assign({
             isFirstHistory: this.history.isFirst(),
             isLastHistory: this.history.isLast()
-        }, _state);
+        },_states.get(this));
     }
 
     /**
@@ -170,12 +152,13 @@ export class Editor extends events.EventEmitter {
      */
     draw(state) {
         console.log('editor draw');
+        var _state = _states.get(this);
         var newWidth;
         var newHeight;
         var dims;
         console.log('imageWidth ' + (state.image && state.image.width) + ' imageHeight ' + (state.image && state.image.height));
         console.log('imageWidth ' + (_state.image && _state.image.width) + ' imageHeight ' + (_state.image && _state.image.height));
-        mergeStates(state);
+        mergeStates.call(this,state);
         console.log('imageWidth ' + _state.image.width + ' imageHeight ' + _state.image.height);
         console.log("zoom " + _state.zoom);
         console.log("scale " + _state.scale);
@@ -221,7 +204,7 @@ export class Editor extends events.EventEmitter {
         var rotation;
         var num;
         var rad;
-
+        var _state = _states.get(this);
         deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
         num = parseFloat(deg);
         rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180);
@@ -229,6 +212,7 @@ export class Editor extends events.EventEmitter {
         _state.rotation = rotation;
 
         this.draw(_state);
+        _states.set(_state);
     }
 
     /**
@@ -245,7 +229,7 @@ export class Editor extends events.EventEmitter {
      * @returns {void}
      */
     saveState() {
-        this.history.append(_state);
+        this.history.append(_states.get(this));
         this.emit(constants.HISTORY_CHANGE);
     }
 
@@ -256,7 +240,7 @@ export class Editor extends events.EventEmitter {
      */
     scale(percentage) {
         this.draw({scale: percentage / 100});
-        return _state.scale * 100;
+        return _states.get(this).scale * 100;
     }
 
     /**
@@ -279,7 +263,7 @@ export class Editor extends events.EventEmitter {
         } else {
             throw new Error("zoom parameters must be of type number. You passed : " + percentage);
         }
-        return _state.zoom * 100;
+        return _states.get(this).zoom * 100;
     }
 
     /**
@@ -288,11 +272,11 @@ export class Editor extends events.EventEmitter {
      */
     clearHistory() {
         this.history.resetHistory();
-        _state = {
+        _states.set(this,{
             zoom: 1,
             scale: 1,
             rotation: 0
-        };
+        });
         this.emit(constants.HISTORY_CHANGE);
     }
 }
