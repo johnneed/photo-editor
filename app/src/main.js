@@ -42,6 +42,12 @@ require('core-js');
         setAppState(new AppState());
     }
 
+    function setEditorBoxClass(state) {
+        state = state || "";
+        var stateRegex = /(is\-cropping)|(is\-scaling)|(is\-dragging)|(is\-rotating)|(is\-zooming)|(is\-loading)|(is\-saving)|(is\-busy)/g;
+        editorBox.className = (editorBox.className.replace(stateRegex, "").trim() + (!!state ? " " : "") + state);
+    }
+
     function setAppState(state) {
         function setControls(state) {
             Object.keys(state).forEach(key => {
@@ -49,18 +55,22 @@ require('core-js');
                         case "scale" :
                             scaleValue.innerHTML = state.scale;
                             scaleControl.value = state.scale;
+                            setEditorBoxClass("is-scaling");
                             break;
                         case "zoom" :
                             zoomValue.innerHTML = state.zoom;
                             zoomControl.value = state.zoom;
+                            setEditorBoxClass("is-zooming");
                             break;
                         case "rotation" :
                             rotationValue.innerHTML = state.rotation;
+                            setEditorBoxClass("is-rotating");
                             break;
                         case "isCropMode" :
                             console.log('crop case');
                             console.log(state.isCropMode);
                             if (state.isCropMode) {
+                                setEditorBoxClass("is-cropping");
                                 cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
                                 if (myEditor) {
                                     myEditor.canvas.setAttribute('class', (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
@@ -121,6 +131,7 @@ require('core-js');
                         case "isDragging" :
                             console.log('drag case');
                             console.log(state.isDragging);
+                            setEditorBoxClass("is-dragging");
                             if (state.isDragging) {
                                 workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
                                 break;
