@@ -33,13 +33,20 @@
     <div id="tools" class="photo-widget_tools">
         <div class="photo-widget_toolbar">
             <div class="photo-widget_control-group">
-                <label><span class="photo-widget_blocky-label">Scale Image&nbsp;<span id="scaleValue"
-                                                                                      class="photo-widget_control-value">100</span><span
-                        class="photo-widget_control-value">%</span></span>
-               <span class="photo-widget_blocky-label">
-                <em>1%</em>
-                    <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
-                <em>100%</em>
+                <label>
+                    <span class="photo-widget_blocky-label">
+                        Scale Image&nbsp;
+                        <span id="scaleValue" class="photo-widget_control-value">100</span>
+                        <span class="photo-widget_control-value">%</span>
+                    </span>
+                    <label>
+                        <span>Reset</span>
+                        <button id="resetScale" title="Reset Scale" disabled="disabled"><i class="icon-history"></i></button>
+                    </label>
+                    <span class="photo-widget_blocky-label">
+                        <em>1%</em>
+                        <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
+                        <em>100%</em>
                    </span>
                 </label>
             </div>
@@ -62,7 +69,6 @@
                                                                                     class="photo-widget_control-value">0</span>
                         <sup class="photo-widget_control-value">&deg;</sup>
                         </span>
-
                 </label>
                 <label>
                     <span>Rotate Left</span>
@@ -91,6 +97,13 @@
                 <input id="zoomControl" type="range" min="1" max="500" value="100"/>
                 <em>500%</em>
                    </span>
+                </label>
+                <label>
+                    <span>Reset</span>
+                    <button id="zoom50Button"  value="50" title="Zoom 50%" disabled="disabled"><i class="icon-history"></i></button>
+                    <button id="zoom100Button" value="100" title="Zoom 100%" disabled="disabled"><i class="icon-history"></i></button>
+                    <button id="zoom200Button" value="200" title="Zoom 200%" disabled="disabled"><i class="icon-history"></i></button>
+                    <button id="zoom500Button" value="500" title="Zoom 500%" disabled="disabled"><i class="icon-history"></i></button>
                 </label>
             </div>
         </div>

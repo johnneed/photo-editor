@@ -22,17 +22,23 @@ require('core-js');
     var rotateLeft = document.getElementById("rotateLeft");
     var undoControl = document.getElementById("undoControl");
     var redoControl = document.getElementById("redoControl");
-    var uploadInstructions = document.getElementById('uploadInstructions');
-    var workspace = document.getElementById('workspace');
-    var clearImageControl = document.getElementById('clearImageControl');
-    var zoomControl = document.getElementById('zoomControl');
-    var spinner = document.getElementById('spinner');
+    var resetScaleButton = document.getElementById("resetScale");
+    var zoom100Button = document.getElementById("zoom100Button");
+    var zoom50Button=document.getElementById("zoom50Button");
+    var zoom200Button=document.getElementById("zoom200Button");
+    var zoom500Button=document.getElementById("zoom500Button");
+    //Other stuff
+    var uploadInstructions = document.getElementById("uploadInstructions");
+    var workspace = document.getElementById("workspace");
+    var clearImageControl = document.getElementById("clearImageControl");
+    var zoomControl = document.getElementById("zoomControl");
+    var spinner = document.getElementById("spinner");
     //find our labels
-    var zoomValue = document.getElementById('zoomValue');
-    var scaleValue = document.getElementById('scaleValue');
+    var zoomValue = document.getElementById("zoomValue");
+    var scaleValue = document.getElementById("scaleValue");
     //var heightValue = document.getElementById('heightValue');
     //var widthValue = document.getElementById('widthValue');
-    var rotationValue = document.getElementById('rotationValue');
+    var rotationValue = document.getElementById("rotationValue");
 
     var myEditor;
 
@@ -55,6 +61,12 @@ require('core-js');
                         case "scale" :
                             scaleValue.innerHTML = state.scale;
                             scaleControl.value = state.scale;
+                            if(!isNaN(state.scale) && state.scale!== 100){
+                                resetScaleButton.removeAttribute("disabled");
+
+                            }else{
+                                resetScaleButton.setAttribute("disabled","disabled");
+                            }
                             setEditorBoxClass("is-scaling");
                             break;
                         case "zoom" :
@@ -115,6 +127,11 @@ require('core-js');
                                 rotateRight.removeAttribute('disabled');
                                 rotateLeft.removeAttribute('disabled');
                                 saveButton.removeAttribute('disabled');
+                                resetScaleButton.removeAttribute('disabled');
+                                zoom100Button.removeAttribute('disabled');
+                                zoom50Button.removeAttribute("disabled");
+                                zoom200Button.removeAttribute("disabled");
+                                zoom500Button.removeAttribute("disabled");
                                 break;
                             }
                             workspace.className = workspace.className.replace(/has-photo/g, "").trim();
@@ -127,6 +144,10 @@ require('core-js');
                             rotateRight.setAttribute('disabled', 'disabled');
                             rotateLeft.setAttribute('disabled', 'disabled');
                             saveButton.setAttribute('disabled', 'disabled');
+                            zoom100Button.setAttribute('disabled', 'disabled');
+                            zoom50Button.setAttribute('disabled', 'disabled');
+                            zoom200Button.setAttribute('disabled', 'disabled');
+                            zoom500Button.setAttribute('disabled', 'disabled');
                             fileInput.value = null;
                             break;
                         case "isDragging" :
@@ -336,6 +357,11 @@ require('core-js');
         myEditor.saveState();
     }
 
+    function scaleReset(event){
+        event.stopPropagation();
+        myEditor.scale(100);
+    }
+
     function scalePic(event) {
         event.stopPropagation();
         myEditor.scale(event.target.value);
@@ -367,7 +393,7 @@ require('core-js');
     }
 
     function zoomPic(event) {
-        myEditor.zoom(parseInt(event.target.value, 10));
+        myEditor.zoom(parseInt(event.currentTarget.value, 10));
     }
 
 
@@ -377,13 +403,18 @@ require('core-js');
     scaleControl.addEventListener('blur', saveState);
     undoControl.addEventListener('click', undo);
     redoControl.addEventListener('click', redo);
-
+    resetScaleButton.addEventListener('click', scaleReset);
     cropControl.addEventListener('click', cropButtonClick);
     saveButton.addEventListener('click', save);
     rotateLeft.addEventListener('click', rotate);
     rotateRight.addEventListener('click', rotate);
     clearImageControl.addEventListener('click', startOver);
     zoomControl.addEventListener('input', zoomPic);
+    zoom50Button.addEventListener('click', zoomPic);
+    zoom100Button.addEventListener('click', zoomPic);
+    zoom200Button.addEventListener('click', zoomPic);
+    zoom500Button.addEventListener('click', zoomPic);
+
 
     if (isAdvancedUpload) {
         workspace.addEventListener("drop", addPic);
