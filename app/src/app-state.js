@@ -30,6 +30,9 @@ export class AppState {
     hasPhoto;
     isDragging;
     spinnerIsVisible;
+    isLoading;
+    isBusy;
+    isSaving;
 
     constructor(state) {
         state = state || {};
@@ -50,6 +53,9 @@ export class AppState {
         this.hasPhoto = (!!state.hasPhoto === state.hasPhoto) ? state.hasPhoto : false;
         this.isDragging = (!!state.isDragging === state.isDragging) ? state.isDragging : false;
         this.spinnerIsVisible = (!!state.spinnerIsVisible === state.spinnerIsVisible) ? state.spinnerIsVisible : false;
+        this.isBusy = (!!state.isBusy === state.isBusy) ? state.isBusy : false;
+        this.isLoading = (!!state.isLoading === state.isLoading) ? state.isLoading : false;
+        this.isSaving = (!!state.isSaving === state.isSaving) ? state.isSaving : false;
     }
 
     prune() {

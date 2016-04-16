@@ -43,7 +43,7 @@ require('core-js');
     }
 
     function setEditorBoxClass(state) {
-        state = state || "";
+        state = (state && state.replace("_","-").toLowerCase()) || "";
         var stateRegex = /(is\-cropping)|(is\-scaling)|(is\-dragging)|(is\-rotating)|(is\-zooming)|(is\-loading)|(is\-saving)|(is\-busy)/g;
         editorBox.className = (editorBox.className.replace(stateRegex, "").trim() + (!!state ? " " : "") + state);
     }
@@ -60,17 +60,18 @@ require('core-js');
                         case "zoom" :
                             zoomValue.innerHTML = state.zoom;
                             zoomControl.value = state.zoom;
-                            setEditorBoxClass("is-zooming");
+                            setEditorBoxClass(constants.IS_ZOOMING);
                             break;
                         case "rotation" :
-                            rotationValue.innerHTML = state.rotation;
-                            setEditorBoxClass("is-rotating");
+                            let deg = ((isNaN(state.rotation) ? 0 : state.rotation) / Math.PI * 180);
+                            rotationValue.innerHTML = deg;
+                            setEditorBoxClass(constants.IS_ROTATING);
                             break;
                         case "isCropMode" :
                             console.log('crop case');
                             console.log(state.isCropMode);
                             if (state.isCropMode) {
-                                setEditorBoxClass("is-cropping");
+                                setEditorBoxClass(constants.IS_CROPPING);
                                 cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
                                 if (myEditor) {
                                     myEditor.canvas.setAttribute('class', (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
@@ -131,7 +132,7 @@ require('core-js');
                         case "isDragging" :
                             console.log('drag case');
                             console.log(state.isDragging);
-                            setEditorBoxClass("is-dragging");
+                            setEditorBoxClass(constants.IS_DRAGGING);
                             if (state.isDragging) {
                                 workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
                                 break;
@@ -151,7 +152,6 @@ require('core-js');
                     }
                 }
             );
-
         }
 
         appState = AppState.merge(appState, state);
@@ -317,8 +317,11 @@ require('core-js');
     }
 
     function rotate(event) {
+        var num = parseFloat(event.currentTarget.value);
+        var deg = (num / Math.abs(num)) * 90;//just doing a 90 deg rotate for now;
+        var rad = isNaN(deg) ? 0 : (deg * Math.PI / 180) + appState.rotation;
         event.stopPropagation();
-        myEditor.rotate(parseFloat(event.currentTarget.value));
+        myEditor.rotate(rad);
         myEditor.saveState();
     }
 

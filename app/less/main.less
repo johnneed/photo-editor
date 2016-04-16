@@ -6,7 +6,6 @@
 
 html, body {
   font-size: 67.2%;
-  cursor:  url(../assets/pencil.png), default;
 }
 
 body {
@@ -20,6 +19,7 @@ body {
 }
 
 .photo-widget {
+
   height: 100vh;
   width: 100vw;
   box-sizing: border-box;
@@ -61,6 +61,7 @@ body {
     position: relative;
     &.has-photo {
       .photo-widget_editor {
+
         z-index: 3;
       }
       .photo-widget_upload-instructions {
@@ -74,7 +75,6 @@ body {
 }
 
 .photo-widget_editor {
-
   background: white;
   height: 100%;
   width: 100%;
@@ -86,6 +86,26 @@ body {
   background: white;
   line-height: 100vh;
   text-align: center;
+  &.is-cropping {
+    cursor: url(../assets/crop.png), default;
+  }
+  &.is-rotating {
+  }
+  &.is-scaling {
+  }
+  &.is-zooming {
+  }
+  &.is-dragging {
+  }
+  &.is-loading {
+    cursor: url(../assets/spinner10.png), default;
+  }
+  &.is-saving {
+    cursor: url(../assets/spinner10.png), default;
+  }
+  &.is-busy {
+    cursor: url(../assets/spinner10.png), default;
+  }
 }
 
 .photo-widget_upload-instructions {
@@ -132,7 +152,6 @@ body {
       display: none;
     }
   }
-
 
 }
 
@@ -212,69 +231,75 @@ button {
   margin: 0 auto;
 }
 
-.spinner{
+.spinner {
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  background-color : rgba(255,255,100, 0.5);
+  background-color: rgba(255, 255, 100, 0.5);
   margin: 5rem auto;
   position: relative;
-  span:first-child{
-    display:block;
+  span:first-child {
+    display: block;
     position: absolute;
     top: -15px;
     left: -15px;
     height: 0px;
-    width:  0px;
+    width: 0px;
     border-left: solid 65px transparent;
     border-right: solid 65px transparent;
     border-top: solid 65px rgba(255, 100, 100, 0.5);
     border-bottom: solid 65px transparent;
-    border-radius : 50% 50% 0 0 ;
-    animation : spin 9s linear infinite;
+    border-radius: 50% 50% 0 0;
+    animation: spin 9s linear infinite;
   }
-  span:nth-child(2){
+  span:nth-child(2) {
     position: absolute;
     top: 10px;
     left: 10px;
-    display:block;
+    display: block;
     height: 0px;
-    width:  0px;
+    width: 0px;
     border-left: solid 40px transparent;
     border-right: solid 40px transparent;
     border-top: solid 40px rgba(100, 100, 255, 0.5);
     border-bottom: solid 40px transparent;
-    border-radius : 50% 50% 0 0 ;
-    animation : spinBackwards 2s linear infinite;
+    border-radius: 50% 50% 0 0;
+    animation: spinBackwards 2s linear infinite;
   }
-  span:last-child{
+  span:last-child {
     position: absolute;
     top: -10px;
     left: -10px;
-    display:block;
+    display: block;
     height: 0px;
-    width:  0px;
+    width: 0px;
     border-left: solid 60px transparent;
     border-right: solid 60px transparent;
     border-top: solid 60px rgba(100, 255, 100, 0.5);
     border-bottom: solid 60px transparent;
-    border-radius : 50% 50% 0 0 ;
-    animation : spinBackwards 15s linear infinite;
+    border-radius: 50% 50% 0 0;
+    animation: spinBackwards 15s linear infinite;
   }
 }
 
 @keyframes spin {
-  0%  {transform : rotate(0deg)}
+  0% {
+    transform: rotate(0deg)
+  }
 
-  100% {transform : rotate(360deg)}
+  100% {
+    transform: rotate(360deg)
+  }
 }
-
 
 @keyframes spinBackwards {
-  0%  {transform : rotate(0deg);}
-  100% {transform : rotate(-360deg);}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
 }
-
 
 .is-clippped-circle {
   clip-path: circle(60px at center);

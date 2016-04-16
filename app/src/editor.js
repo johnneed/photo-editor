@@ -5,7 +5,6 @@ import {constants} from "./constants";
 
 var _states = new WeakMap();
 
-
 /**
  * Calculates the height and width of an image after rotation
  * @param image
@@ -27,8 +26,6 @@ function _getRotatedDims(image, rotation) {
 function mergeStates(state) {
     _states.set(this,Object.assign(_states.get(this), state));
 }
-
-
 
 
 export class Editor extends events.EventEmitter {
@@ -198,19 +195,11 @@ export class Editor extends events.EventEmitter {
 
     /**
      * Rotates and redraws the image
-     * @param deg
+     * @param rad - rotation in radians
      */
-    rotate(deg) {
-        var rotation;
-        var num;
-        var rad;
+    rotate(rad) {
         var _state = _states.get(this);
-        deg = (deg / Math.abs(deg)) * 90;//just doing a 90 deg rotate for now
-        num = parseFloat(deg);
-        rad = ((isNaN(deg) ? 0 : num) * Math.PI / 180);
-        rotation = (rad + _state.rotation) % (2 * Math.PI);
-        _state.rotation = rotation;
-
+        _state.rotation = (rad % (2*Math.PI));
         this.draw(_state);
         _states.set(_state);
     }
