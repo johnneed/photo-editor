@@ -115,19 +115,21 @@ export class Editor extends events.EventEmitter {
         var me = this;
         var croppedImage = document.createElement('img');
         var flattenedImage = document.createElement('img');
+        var zoom = _states.get(this).zoom || 1;
         args = args || {};
         flattenedImage.onload = function () {
-            me.canvas.height = args.height;
-            me.canvas.width = args.width;
-            me.canvasContext.clearRect(0, 0, args.width, args.height);
-            me.canvasContext.drawImage(flattenedImage, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
+            me.canvas.height = args.height / zoom;
+            me.canvas.width = args.width / zoom;
+            me.canvasContext.clearRect(0, 0, args.width /zoom, args.height /zoom);
+            me.canvasContext.drawImage(flattenedImage, args.x/zoom, args.y/zoom, args.width/zoom, args.height/zoom, 0, 0, args.width/zoom, args.height/zoom);
             croppedImage.onload = function () {
                 me.history.append({image: croppedImage, scale: 1, rotation: 0});
                 me.emit(constants.HISTORY_CHANGE);
-                me.draw({image: croppedImage, scale: 1, rotation: 0});
+                me.draw({image: croppedImage, scale: 1, rotation: 0, zoom : zoom});
             };
             croppedImage.src = me.canvas.toDataURL(me.mimeType);
         };
+        me.draw({zoom : 1});
         flattenedImage.src = this.canvas.toDataURL(this.mimeType);
 
 
