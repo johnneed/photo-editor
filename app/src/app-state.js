@@ -33,6 +33,7 @@ export class AppState {
     isLoading;
     isBusy;
     isSaving;
+    activeControl;
 
     constructor(state) {
         state = state || {};
