@@ -2,7 +2,8 @@
 @width: 70vw;
 @border-color: #AAA;
 
-@import "icons.less";
+@import "icons";
+@import "./modules/module_control_group";
 
 html, body {
   font-size: 67.2%;
@@ -19,7 +20,6 @@ body {
 }
 
 .photo-widget {
-
   height: 100vh;
   width: 100vw;
   box-sizing: border-box;
@@ -217,7 +217,9 @@ button {
   border: solid 1px #888;
   box-shadow: 1px 1px rgba(255, 255, 255, 1);
   margin: .5rem 0;
-  padding: .5rem;
+
+  &.is-closed{
+  }
 }
 
 .spinner-box {

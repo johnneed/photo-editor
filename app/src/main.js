@@ -24,9 +24,9 @@ require('core-js');
     var redoControl = document.getElementById("redoControl");
     var resetScaleButton = document.getElementById("resetScale");
     var zoom100Button = document.getElementById("zoom100Button");
-    var zoom50Button=document.getElementById("zoom50Button");
-    var zoom200Button=document.getElementById("zoom200Button");
-    var zoom500Button=document.getElementById("zoom500Button");
+    var zoom50Button = document.getElementById("zoom50Button");
+    var zoom200Button = document.getElementById("zoom200Button");
+    var zoom500Button = document.getElementById("zoom500Button");
     //Other stuff
     var uploadInstructions = document.getElementById("uploadInstructions");
     var workspace = document.getElementById("workspace");
@@ -39,6 +39,8 @@ require('core-js');
     //var heightValue = document.getElementById('heightValue');
     //var widthValue = document.getElementById('widthValue');
     var rotationValue = document.getElementById("rotationValue");
+    var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module_control_group-tool_switch"));
+    var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module_control_group"));
 
     var myEditor;
 
@@ -49,7 +51,7 @@ require('core-js');
     }
 
     function setEditorBoxClass(state) {
-        state = (state && state.replace("_","-").toLowerCase()) || "";
+        state = (state && state.replace("_", "-").toLowerCase()) || "";
         var stateRegex = /(is\-cropping)|(is\-scaling)|(is\-dragging)|(is\-rotating)|(is\-zooming)|(is\-loading)|(is\-saving)|(is\-busy)/g;
         editorBox.className = (editorBox.className.replace(stateRegex, "").trim() + (!!state ? " " : "") + state);
     }
@@ -61,11 +63,11 @@ require('core-js');
                         case "scale" :
                             scaleValue.innerHTML = state.scale;
                             scaleControl.value = state.scale;
-                            if(!isNaN(state.scale) && state.scale!== 100){
+                            if (!isNaN(state.scale) && state.scale !== 100) {
                                 resetScaleButton.removeAttribute("disabled");
 
-                            }else{
-                                resetScaleButton.setAttribute("disabled","disabled");
+                            } else {
+                                resetScaleButton.setAttribute("disabled", "disabled");
                             }
                             setEditorBoxClass("is-scaling");
                             break;
@@ -169,6 +171,15 @@ require('core-js');
                             }
                             spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
                             break;
+                        case "activeControlSet" :
+                            controlSets.forEach(c => {
+                                    c.className = c.className + " is-closed";
+                                    if (c.id === state.activeControlSet) {
+                                        c.className = c.className.replace(/is-closed/g, "").trim();
+                                    }
+                                }
+                            );
+                            break
 
                     }
                 }
@@ -312,7 +323,7 @@ require('core-js');
 
     function endCrop(e) {
         console.log("end crop " + e.clientX + " : " + e.clientY);
-       // var zoomRatio = appState.zoom / 100;
+        // var zoomRatio = appState.zoom / 100;
         if (e.clientX && e.clientY) {
             setAppState({
                 mouseEndX: parseInt(e.clientX, 10) - appState.mouseStartX,
@@ -321,8 +332,8 @@ require('core-js');
 
             if (appState.isCropping) {
                 myEditor.crop({
-                    x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left)  : (parseInt(e.clientX, 10) - appState.offset.left) ,
-                    y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) : (parseInt(e.clientY, 10) - appState.offset.top) ,
+                    x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left) : (parseInt(e.clientX, 10) - appState.offset.left),
+                    y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) : (parseInt(e.clientY, 10) - appState.offset.top),
                     width: Math.abs(appState.mouseEndX),
                     height: Math.abs(appState.mouseEndY)
                 })
@@ -357,7 +368,7 @@ require('core-js');
         myEditor.saveState();
     }
 
-    function scaleReset(event){
+    function scaleReset(event) {
         event.stopPropagation();
         myEditor.scale(100);
     }
@@ -397,6 +408,11 @@ require('core-js');
     }
 
 
+    function setActiveControlSet(event) {
+        var id = event.currentTarget.value;
+        setAppState({activeControlSet: id});
+    }
+
     resetAppState();
     fileInput.addEventListener('change', addPic);
     scaleControl.addEventListener('input', scalePic);
@@ -414,7 +430,9 @@ require('core-js');
     zoom100Button.addEventListener('click', zoomPic);
     zoom200Button.addEventListener('click', zoomPic);
     zoom500Button.addEventListener('click', zoomPic);
-
+    switchButtons.forEach(b => {
+        b.addEventListener('click', setActiveControlSet);
+    });
 
     if (isAdvancedUpload) {
         workspace.addEventListener("drop", addPic);

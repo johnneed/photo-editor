@@ -33,7 +33,7 @@ export class AppState {
     isLoading;
     isBusy;
     isSaving;
-    activeControl;
+    activeControlSet;
 
     constructor(state) {
         state = state || {};
@@ -57,6 +57,7 @@ export class AppState {
         this.isBusy = (!!state.isBusy === state.isBusy) ? state.isBusy : false;
         this.isLoading = (!!state.isLoading === state.isLoading) ? state.isLoading : false;
         this.isSaving = (!!state.isSaving === state.isSaving) ? state.isSaving : false;
+        this.activeControlSet = state.activeControlSet || null;
     }
 
     prune() {
