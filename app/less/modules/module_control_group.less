@@ -1,10 +1,14 @@
 .module_control_group {
   display:inline-block;
   height: 44px;
-  width: 100%;
-  border: solid 1px blue;
-  transition: width 1s;
+  width: 0px;
+  border: none;
+  transition: width 1s, flex 1s;
   overflow: hidden;
+  flex: 0 1 0px;
+  order: 0;
+
+  align-self: stretch;
   .module_control_group-container {
     height: 44px;
     width: 400px;
@@ -36,8 +40,9 @@
     margin: 10px;
   }
 
-  &.is-closed {
-    width: 0px;
+  &.is-open {
+    width: 100%;
+    flex: 1 1 auto;
 
   }
 

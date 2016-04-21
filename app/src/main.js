@@ -173,9 +173,10 @@ require('core-js');
                             break;
                         case "activeControlSet" :
                             controlSets.forEach(c => {
-                                    c.className = c.className + " is-closed";
+                                c.className = c.className.replace(/is-open/g, "").trim();
+
                                     if (c.id === state.activeControlSet) {
-                                        c.className = c.className.replace(/is-closed/g, "").trim();
+                                        c.className = c.className + " is-open";
                                     }
                                 }
                             );
