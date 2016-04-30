@@ -174,9 +174,15 @@ require('core-js');
                         case "activeControlSet" :
                             controlSets.forEach(c => {
                                 c.className = c.className.replace(/is-open/g, "").trim();
-
-                                    if (c.id === state.activeControlSet) {
+                                    if (c.id === "controlSet" + state.activeControlSet) {
                                         c.className = c.className + " is-open";
+                                    }
+                                }
+                            );
+                            switchButtons.forEach(b => {
+                                    b.className = b.className.replace(/is-active/g, "").trim();
+                                    if (b.id === "toolSwitch" + state.activeControlSet) {
+                                        b.className = b.className + " is-active";
                                     }
                                 }
                             );

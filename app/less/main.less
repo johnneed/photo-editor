@@ -5,23 +5,11 @@
 @import "icons";
 @import "./modules/module_control_group";
 
-html, body {
-  font-size: 67.2%;
-}
-
-body {
-  height: 100vh;
-  width: 100vw;
-  background: #fafafa;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
 
 .photo-widget {
-  height: 100vh;
-  width: 100vw;
+  font-size: 67.2%;
+  height: 100%;
+  width: 100%;
   box-sizing: border-box;
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -31,6 +19,9 @@ body {
   justify-content: flex-start;
   align-content: stretch;
   align-items: flex-start;
+  background: #fafafa;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
 
   &.is-column-layout {
     flex-direction: column;
@@ -46,7 +37,7 @@ body {
 
   .photo-widget_tools {
     order: 0;
-    flex: 0 0 22rem;
+    flex: 0 0 22em;
     align-self: stretch;
     background-color: #EEE;
     height: 100vh;
@@ -123,7 +114,7 @@ body {
   left: 0;
   p {
     text-align: center;
-    font-size: 2rem;
+    font-size: 2em;
     line-height: 100%;
     label {
       color: lightblue;
@@ -172,18 +163,18 @@ body {
 }
 
 .photo-widget_toolbar {
-  min-height: 3rem;
-  padding: 0.5rem 1rem;
+  min-height: 3em;
+  padding: 0;
   border: none;
 
   vertical-align: middle;
   > label {
-    font-size: 1rem;
+    font-size: 1em;
     display: block;
-    margin: 0.1rem;
-    min-height: 2rem;
+    margin: 0.1em;
+    min-height: 2em;
     background-color: #EEE;
-    padding: 0.1rem;
+    padding: 0.1em;
     display: block;
   }
   .photo-widget_blocky-label {
@@ -239,30 +230,23 @@ button {
 
   border: solid 1px @border-color;
   background: #DDD;
-  padding: .25rem .5rem;
+  padding: .25em .5em;
   border-radius: 4px;
   text-align: center;
   transition: background-color 0.25s;
   cursor: pointer;
+  outline: none;
 
   &.is-active {
-    background-color: rgb(105, 211, 91);
-    line-height: 1.6rem;
-    &:before {
-      content: "\0203A  ";
-      display: inline-block;
-      vertical-align: middle;
-      font-size: 1.6rem;
-    }
+    background-color: rgba(150,150,150, 1);
   }
 }
 
 .photo-widget_control-group {
-   box-shadow: 1px 1px rgba(255, 255, 255, 1);
-  margin: .5rem 0;
-
-  &.is-closed{
-  }
+  margin: 0;
+  text-align: center;
+  &.is-open{
+   }
 }
 
 .spinner-box {
@@ -281,7 +265,7 @@ button {
   width: 100px;
   border-radius: 50%;
   background-color: rgba(255, 255, 100, 0.5);
-  margin: 5rem auto;
+  margin: 5em auto;
   position: relative;
   span:first-child {
     display: block;
