@@ -48,7 +48,7 @@
     flex: 1 1 auto;
     align-self: stretch;
     overflow: hidden;
-    height: 100vh;
+    height: 100%;
     background: white;
     position: relative;
     &.has-photo {
@@ -76,28 +76,8 @@
   top: 0;
   left: 0;
   background: white;
-  line-height: 100vh;
   text-align: center;
-  &.is-cropping {
-    cursor: url(../assets/crop.png), default;
-  }
-  &.is-rotating {
-  }
-  &.is-scaling {
-  }
-  &.is-zooming {
-  }
-  &.is-dragging {
-  }
-  &.is-loading {
-    cursor: url(../assets/spinner10.png), default;
-  }
-  &.is-saving {
-    cursor: url(../assets/spinner10.png), default;
-  }
-  &.is-busy {
-    cursor: url(../assets/spinner10.png), default;
-  }
+
 }
 
 .photo-widget_upload-instructions {
@@ -225,7 +205,6 @@
   }
 }
 
-
 button {
 
   border: solid 1px @border-color;
@@ -330,23 +309,46 @@ button {
   }
 }
 
-.is-clippped-circle {
-  clip-path: circle(60px at center);
-  /* OLD VALUE example: circle(245px, 140px, 50px); */
-  /* Yep, even the new clip-path has deprecated stuff. */
-}
-
-.is-clippped-ellipse {
-  clip-path: ellipse(60px 40px at 75px 30px);
-  /* OLD VALUE example: ellipse(245px, 80px, 75px, 30px); */
-}
-
-.is-clippped-polygon {
-  clip-path: polygon(5% 5%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
-  /* Note that percentages work as well as px */
-}
-
+//STATES
 .is-hidden {
   display: none;
 }
 
+.is-column-layout{}
+
+.is-row-layout{}
+
+.is-column-reverse-layout{}
+
+.is-row-reverse-layout{}
+
+
+&.is-cropping {
+  &.photo-widget_editor {
+    cursor: url(../assets/crop.png), default;
+  }
+}
+
+&.is-rotating {
+}
+&.is-scaling {
+}
+&.is-zooming {
+}
+&.is-dragging {
+}
+&.is-loading {
+  &.photo-widget_editor {
+    cursor: url(../assets/spinner10.png), default;
+  }
+}
+&.is-saving {
+  &.photo-widget_editor {
+    cursor: url(../assets/spinner10.png), default;
+  }
+}
+&.is-busy {
+  &.photo-widget_editor {
+    cursor: url(../assets/spinner10.png), default;
+  }
+}
