@@ -128,11 +128,13 @@
 }
 
 .photo-widget_editor canvas {
-  display: inline-block;
-
+  display: block;
   border: solid 1px @border-color;
-  margin: 0;
-  vertical-align: middle;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+  z-index: 4;
+  transform: translateY(-50%);
 
   &.is-moving {
     cursor: move;
