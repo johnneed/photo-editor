@@ -34,6 +34,7 @@ export class AppState {
     isBusy;
     isSaving;
     activeControlSet;
+    isPhotoBig;
 
     constructor(state) {
         state = state || {};
@@ -58,6 +59,7 @@ export class AppState {
         this.isLoading = (!!state.isLoading === state.isLoading) ? state.isLoading : false;
         this.isSaving = (!!state.isSaving === state.isSaving) ? state.isSaving : false;
         this.activeControlSet = state.activeControlSet || null;
+        this.isPhotoBig = !!state.isPhotoBig;
     }
 
     prune() {

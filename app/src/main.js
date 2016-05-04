@@ -186,7 +186,16 @@ require('core-js');
                                     }
                                 }
                             );
-                            break
+                            break;
+                        case "isPhotoBig" :
+                            var isBig = /is-photo-big/.test(workspace.className);
+
+                            if (!state.isPhotoBig) {
+                                workspace.className = isBig ? workspace.className.replace(/is-photo-big/g, "").trim() : workspace.className.trim();
+                                break;
+                            }
+                            workspace.className = isBig ? workspace.className.trim() : workspace.className + " is-photo-big";
+                            break;
 
                     }
                 }
@@ -205,7 +214,8 @@ require('core-js');
             scale: Math.round(editorState.scale * 100),
             isLastHistory: editorState.isLastHistory,
             isFirstHistory: editorState.isFirstHistory,
-            rotation: editorState.rotation
+            rotation: editorState.rotation,
+            isPhotoBig: (myEditor.canvas.clientHeight > workspace.clientHeight)
         });
     }
 
