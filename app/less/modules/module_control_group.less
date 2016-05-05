@@ -9,20 +9,22 @@
   order: 0;
   align-self: stretch;
   .module_control_group-container {
-    height: 45px;
+    height: @tab-panel-height;
     width: 100%;
     box-sizing: border-box;
     text-align: center;
-    background-color: #DDD;
+    background-color: #EFEFEF;
   }
 
   .module_control_group-tool_group_container {
+    border:none;
     display: inline-block;
-    height: 45px;
+    height: @tab-panel-height;
     vertical-align: middle;
-    margin: 3px 10px;
+    margin: 0  10px;
     border-width: 0px 1px;
     border-style: solid;
+    &:last-child{border-right-width: 1px;}
     border-color: #AAA;
     background-color: #EDEDED;
     padding: 2px 1.5em;
@@ -38,14 +40,16 @@
 .module_control_group-tool_switch {
   display: inline-block;
   vertical-align: middle;
-  border: solid 1px #AAA;
-  border-right: none;
+  border-width: 0 1px;
+  border-left-color: #BBB;
+  border-right-color: #EEE;
+  border-style: solid;
   background: #DDD;
   border-radius: 0px;
   padding: .25rem .5rem;
   text-align: center;
   transition: background-color 0.25s;
   cursor: pointer;
-  min-height: 43px;
+  min-height: 45px;
   width: 100%;
 }
