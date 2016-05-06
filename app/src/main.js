@@ -256,7 +256,8 @@ require('core-js');
             spinnerIsVisible: false
         }));
 
-        saveButton.setAttribute('href', myEditor.save());
+
+      //  saveButton.addEventListener('click', myEditor.save);
         editorBox.appendChild(myEditor.canvas);
         //TODO : remove this hack
         window.editor = myEditor;
@@ -376,7 +377,7 @@ require('core-js');
 
     function save(event) {
         event.stopPropagation();
-        saveButton.href = myEditor.canvas.toDataURL(myEditor.mimeType);
+        saveButton.href = myEditor.save();
         saveButton.download = myEditor.fileName;
     }
 

@@ -24,7 +24,7 @@ function _getRotatedDims(image, rotation) {
  * @private
  */
 function mergeStates(state) {
-    _states.set(this,Object.assign(_states.get(this), state));
+    _states.set(this, Object.assign(_states.get(this), state));
 }
 
 
@@ -41,7 +41,7 @@ export class Editor extends events.EventEmitter {
         super();
         var reader = new FileReader();
         var me = this;
-        _states.set(this,{
+        _states.set(this, {
             zoom: 1,
             scale: 1,
             rotation: 0
@@ -85,7 +85,7 @@ export class Editor extends events.EventEmitter {
         return Object.assign({
             isFirstHistory: this.history.isFirst(),
             isLastHistory: this.history.isLast()
-        },_states.get(this));
+        }, _states.get(this));
     }
 
     /**
@@ -120,16 +120,16 @@ export class Editor extends events.EventEmitter {
         flattenedImage.onload = function () {
             me.canvas.height = args.height / zoom;
             me.canvas.width = args.width / zoom;
-            me.canvasContext.clearRect(0, 0, args.width /zoom, args.height /zoom);
-            me.canvasContext.drawImage(flattenedImage, args.x/zoom, args.y/zoom, args.width/zoom, args.height/zoom, 0, 0, args.width/zoom, args.height/zoom);
+            me.canvasContext.clearRect(0, 0, args.width / zoom, args.height / zoom);
+            me.canvasContext.drawImage(flattenedImage, args.x / zoom, args.y / zoom, args.width / zoom, args.height / zoom, 0, 0, args.width / zoom, args.height / zoom);
             croppedImage.onload = function () {
                 me.history.append({image: croppedImage, scale: 1, rotation: 0});
                 me.emit(constants.HISTORY_CHANGE);
-                me.draw({image: croppedImage, scale: 1, rotation: 0, zoom : zoom});
+                me.draw({image: croppedImage, scale: 1, rotation: 0, zoom: zoom});
             };
             croppedImage.src = me.canvas.toDataURL(me.mimeType);
         };
-        me.draw({zoom : 1});
+        me.draw({zoom: 1});
         flattenedImage.src = this.canvas.toDataURL(this.mimeType);
 
 
@@ -157,7 +157,7 @@ export class Editor extends events.EventEmitter {
         var dims;
         console.log('imageWidth ' + (state.image && state.image.width) + ' imageHeight ' + (state.image && state.image.height));
         console.log('imageWidth ' + (_state.image && _state.image.width) + ' imageHeight ' + (_state.image && _state.image.height));
-        mergeStates.call(this,state);
+        mergeStates.call(this, state);
         console.log('imageWidth ' + _state.image.width + ' imageHeight ' + _state.image.height);
         console.log("zoom " + _state.zoom);
         console.log("scale " + _state.scale);
@@ -201,7 +201,7 @@ export class Editor extends events.EventEmitter {
      */
     rotate(rad) {
         var _state = _states.get(this);
-        _state.rotation = (rad % (2*Math.PI));
+        _state.rotation = (rad % (2 * Math.PI));
         this.draw(_state);
         _states.set(_state);
     }
@@ -211,8 +211,15 @@ export class Editor extends events.EventEmitter {
      * @returns {string}
      */
     save() {
+        var data;
+        var myState = _states.get(this);
+        var currentZoom = myState.zoom;
+        console.log('save');
+        this.draw({zoom: 1});
         // modify the dataUrl so the browser starts downloading it instead of just showing it
-        return this.canvas.toDataURL(this.mimeType).replace(/^data:image\/png/, 'data:application/octet-stream');
+        data = this.canvas.toDataURL(this.mimeType).replace(/^data:image\/png/, 'data:application/octet-stream');
+        this.draw({zoom: currentZoom});
+        return data;
     }
 
     /**
@@ -263,7 +270,7 @@ export class Editor extends events.EventEmitter {
      */
     clearHistory() {
         this.history.resetHistory();
-        _states.set(this,{
+        _states.set(this, {
             zoom: 1,
             scale: 1,
             rotation: 0
