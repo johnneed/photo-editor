@@ -240,6 +240,7 @@ export class Editor extends events.EventEmitter {
         this.draw({scale: percentage / 100});
         return _states.get(this).scale * 100;
     }
+    
 
     /**
      * Moves the history back one index and redraws the image
