@@ -105,6 +105,7 @@ require('core-js');
                                 myEditor.canvas.removeEventListener('mouseout', endCrop);
                             }
                             break;
+                        
                         case "isLastHistory" :
                             if (state.isLastHistory) {
                                 redoControl.setAttribute('disabled', 'disabled');
