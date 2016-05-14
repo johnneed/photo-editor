@@ -39,8 +39,8 @@ require('core-js');
     //var heightValue = document.getElementById('heightValue');
     //var widthValue = document.getElementById('widthValue');
     var rotationValue = document.getElementById("rotationValue");
-    var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module_control_group-tool_switch"));
-    var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module_control_group"));
+    var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module-control-group_tool-switch"));
+    var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module-control-group"));
 
     var myEditor;
 

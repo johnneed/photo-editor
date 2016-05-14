@@ -54,70 +54,69 @@
         </div>
         <div id="tools" class="photo-widget_tools">
             <div class="photo-widget_toolbar">
-                <div class="photo-widget_tabs">
+                <div id="photoWidgetTabs" class="photo-widget_tabs">
                     <div class="photo-widget_tab">
                         <button id="toolSwitchScale" value="Scale" title="Scale Image"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-shrink"></i>
-                            <span class="module_control_group-tool_switch-label">Scale</span>
+                            <span class="-label">Scale</span>
                         </button>
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchCrop" value="Crop" title="Crop Image"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-crop"></i>
-                            <span class="module_control_group-tool_switch-label">Crop</span>
+                            <span class="module-control-group_tool-switch-label">Crop</span>
 
                         </button>
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchHistory" value="History" title="Image History"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-history"></i>
-                            <span class="module_control_group-tool_switch-label">History</span>
+                            <span class="module-control-group_tool-switch-label">History</span>
 
                         </button>
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchRotate" value="Rotate" title="Rotate Image"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-spinner11"></i>
-                            <span class="module_control_group-tool_switch-label">Rotate</span>
+                            <span class="module-control-group_tool-switch-label">Rotate</span>
                         </button>
 
 
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchSave" value="Save" title="Save Image"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-floppy-disk"></i>
-                            <span class="module_control_group-tool_switch-label">Save</span>
+                            <span class="module-control-group_tool-switch-label">Save</span>
 
                         </button>
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchClear" value="Clear" title="Start Over"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-cancel-circle"></i>
-                            <span class="module_control_group-tool_switch-label">Clear</span>
+                            <span class="module-control-group_tool-switch-label">Clear</span>
 
                         </button>
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchZoom" value="Zoom" title="Zoom Image"
-                                class="module_control_group-tool_switch">
+                                class="module-control-group_tool-switch">
                             <i class="icon-zoom-in"></i>
-                            <span class="module_control_group-tool_switch-label">Zoom</span>
-
+                            <span class="module-control-group_tool-switch-label">Zoom</span>
                         </button>
                     </div>
                 </div>
                 <div class="photo-widget_tab-panels">
-                    <div id="controlSetScale" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
-                            <span class="module_control_group-group_name">
+                    <div id="controlSetScale" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
+                            <span class="module-control-group_group-name">
                                 Scale
                             </span>
                                     <span id="scaleValue" class="photo-widget_control-value">100</span>
@@ -128,7 +127,6 @@
                             <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
                             <em>100%</em>
                         </span>
-
                                     <label>
                                         <span>Reset</span>
                                         <button id="resetScale" title="Reset Scale" disabled="disabled">
@@ -140,10 +138,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="controlSetCrop" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
+                    <div id="controlSetCrop" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
                                     <button class="photo-widget_boolean-button" id="cropImageControl">
                                         <span>Crop</span>
                                     </button>
@@ -151,11 +149,11 @@
                             </div>
                         </div>
                     </div>
-                    <div id="controlSetHistory" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
+                    <div id="controlSetHistory" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
 
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
                                     <label>
                                         <span>Undo</span>
                                         <button id="undoControl" title="Undo" disabled="disabled">
@@ -171,16 +169,16 @@
                             </div>
                         </div>
                     </div>
-                    <div id="controlSetRotate" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
+                    <div id="controlSetRotate" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
 
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
                                     <label>
-                    <span class="module_control_group_label">Rotate Image&nbsp;
-                        <span id="rotationValue" class="photo-widget_control-value">0</span>
-                        <sup class="photo-widget_control-value">&deg;</sup>
-                        </span>
+                                         <span class="module-control-group_label">Rotate Image&nbsp;
+                                         <span id="rotationValue" class="photo-widget_control-value">0</span>
+                                         <sup class="photo-widget_control-value">&deg;</sup>
+                                        </span>
                                     </label>
                                     <label>
                                         <span>Rotate Left</span>
@@ -197,11 +195,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="controlSetSave" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
-
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
+                    <div id="controlSetSave" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
                                     <label>
                                         <a class="button" id="save" href="#" download>save</a>
                                     </label>
@@ -209,11 +206,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="controlSetClear" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
-
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
+                    <div id="controlSetClear" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
                                     <label>
                                         <button id="clearImageControl">Cancel</button>
                                     </label>
@@ -221,33 +217,27 @@
                             </div>
                         </div>
                     </div>
-                    <div id="controlSetZoom" class="photo-widget_control-group module_control_group">
-                        <div class="module_control_group-container">
-
-                            <div class="module_control_group-tool_group_container">
-                                <div class="module_control_group-tool_group">
-
-                                    <span class="module_control_group_label">Zoom&nbsp; </span>
+                    <div id="controlSetZoom" class="photo-widget_control-group module-control-group">
+                        <div class="module-control-group_container">
+                            <div class="module-control-group_tool-group-container">
+                                <div class="module-control-group_tool-group">
+                                    <span class="module-control-group_label">Zoom&nbsp; </span>
                                     <span id="zoomValue" class="photo-widget_control-value">100</span>
                                     <span>%</span>
                                     <label>
-
                                         <em>1%</em>
                                         <input id="zoomControl" type="range" min="1" max="500" value="100"/>
                                         <em>500%</em>
-
                                     </label>
-
                                     <span>Reset</span>
                                     <button id="zoom50Button" value="50" title="Zoom 50%" disabled="disabled"><i
                                             class="icon-history"></i></button>
-                                    <button id="zoom100Button" value="100" title="Zoom 100%" disabled="disabled"><i
-                                            class="icon-history"></i></button>
-                                    <button id="zoom200Button" value="200" title="Zoom 200%" disabled="disabled"><i
-                                            class="icon-history"></i></button>
-                                    <button id="zoom500Button" value="500" title="Zoom 500%" disabled="disabled"><i
-                                            class="icon-history"></i></button>
-
+                                    <button id="zoom100Button" value="100" title="Zoom 100%" disabled="disabled">
+                                        <i class="icon-history"></i></button>
+                                    <button id="zoom200Button" value="200" title="Zoom 200%" disabled="disabled">
+                                        <i class="icon-history"></i></button>
+                                    <button id="zoom500Button" value="500" title="Zoom 500%" disabled="disabled">
+                                        <i class="icon-history"></i></button>
                                 </div>
                             </div>
                         </div>
