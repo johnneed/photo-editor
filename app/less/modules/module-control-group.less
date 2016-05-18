@@ -1,0 +1,131 @@
+@group-name-color: #CBCBCB;
+
+.tool-group() {
+  position: relative;
+  height: 60px;
+  > * {
+    z-index: 2;
+    position: relative;
+  }
+  .module-control-group_group-name {
+    position: absolute;
+    line-height: 60px;
+    font-size: 3em;
+    color: @group-name-color;
+    z-index: 1;
+    font-weight: bolder;
+    width: 100%;
+    text-align: center;
+    left: 0;
+    top: 0;
+  }
+  .module-control-group_control-value {
+    display: block;
+    float: left;
+    z-index: 2;
+    font-weight: bolder;
+    vertical-align: bottom;
+    font-size: 2em;
+    height: 32px;
+    line-height: 32px;
+  }
+  .module-control-group_resets {
+    display: block;
+    float: right;
+    z-index: 2;
+    vertical-align: bottom;
+    height: 32px;
+    line-height: 32px;
+    button {
+      border: none;
+      border-radius: 0px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      margin: 0;
+      > * {
+        vertical-align: middle
+      }
+
+    }
+  }
+  .module-slider-control {
+    display: block;
+    width: 100%;
+    vertical-align: center;
+    input {
+      outline: 0;
+      &:focus, &:active {
+        outline: 0;
+      }
+    }
+    > * {
+      vertical-align: top;
+      line-height: 27px;
+      outline: none;
+    }
+  }
+}
+
+.module-control-group {
+  height: 45px;
+  width: 0px;
+  border: none;
+  transition: width 1s, flex 1s;
+  overflow: hidden;
+  flex: 0 1 0px;
+  order: 0;
+  align-self: stretch;
+  text-align: center;
+  .module-control-group_container {
+    height: @tab-panel-height;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+
+    background-color: #EFEFEF;
+  }
+
+  .module-control-group_tool-group-container {
+
+    display: inline-block;
+    height: @tab-panel-height;
+    vertical-align: middle;
+    margin: 0 10px;
+    border-width: 0px 1px;
+    border-style: solid;
+    &:last-child {
+      border-right-width: 1px;
+    }
+    border-color: #AAA;
+    background-color: #EDEDED;
+    padding: 2px 1.5em;
+    box-shadow: 0 1px 1px #FFF, 0 -1px 1px #FFF;
+  }
+
+  &.is-open {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}
+
+.module-control-group_tool-switch {
+  display: inline-block;
+  vertical-align: middle;
+  border-width: 0 1px;
+  border-left-color: #BBB;
+  border-right-color: #EEE;
+  border-style: solid;
+  background: #DDD;
+  border-radius: 0px;
+  padding: .25rem .5rem;
+  text-align: center;
+  transition: background-color 0.25s;
+  cursor: pointer;
+  min-height: 45px;
+  width: 100%;
+}
+
+.module-control-group_tool-group-scale {
+  .tool-group();
+}

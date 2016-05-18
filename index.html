@@ -116,25 +116,22 @@
                     <div id="controlSetScale" class="photo-widget_control-group module-control-group">
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
-                                <div class="module-control-group_tool-group">
-                            <span class="module-control-group_group-name">
-                                Scale
-                            </span>
-                                    <span id="scaleValue" class="photo-widget_control-value">100</span>
-                                    <span class="photo-widget_control-value">%</span>
-
-                        <span class="module_slider_control">
-                            <em>1%</em>
-                            <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
-                            <em>100%</em>
-                        </span>
-                                    <label>
-                                        <span>Reset</span>
+                                <div class="module-control-group_tool-group-scale">
+                                    <span class="module-control-group_group-name">Scale</span>
+                                     <span class="module_slider_control">
+                                        <em>1%</em>
+                                        <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
+                                        <em>100%</em>
+                                    </span>
+                                    <span class="module-control-group_control-value">
+                                        <span id="scaleValue">100</span>
+                                        <span>%</span>
+                                    </span>
+                                    <span class="module-control-group_resets">
                                         <button id="resetScale" title="Reset Scale" disabled="disabled">
-                                            <i class="icon-history"></i>
+                                            <i class="icon-cancel-circle"></i>
                                         </button>
-                                    </label>
-
+                                    </span>
                                 </div>
                             </div>
                         </div>
