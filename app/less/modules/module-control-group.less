@@ -8,16 +8,10 @@
     position: relative;
   }
   .module-control-group_group-name {
-    position: absolute;
-    line-height: 60px;
     font-size: 3em;
     color: @group-name-color;
-    z-index: 1;
     font-weight: bolder;
-    width: 100%;
-    text-align: center;
-    left: 0;
-    top: 0;
+
   }
   .module-control-group_control-value {
     display: block;
@@ -28,6 +22,9 @@
     font-size: 2em;
     height: 32px;
     line-height: 32px;
+    span {
+      color: #888;
+    }
   }
   .module-control-group_resets {
     display: block;
@@ -37,33 +34,44 @@
     height: 32px;
     line-height: 32px;
     button {
+
+      background-color: transparent;
+      font-size: 1.5rem;
+      transition: color 0.5s;
+      color: #888;
       border: none;
-      border-radius: 0px;
+
       width: 32px;
       height: 32px;
       padding: 0;
       margin: 0;
-      > * {
-        vertical-align: middle
-      }
 
+      i {
+        vertical-align: top;
+      }
+    }
+    button:hover {
+
+      color: black;
+    }
+
+  }
+}
+
+.module-slider-control {
+  display: block;
+  width: 100%;
+  vertical-align: center;
+  input {
+    outline: 0;
+    &:focus, &:active {
+      outline: 0;
     }
   }
-  .module-slider-control {
-    display: block;
-    width: 100%;
-    vertical-align: center;
-    input {
-      outline: 0;
-      &:focus, &:active {
-        outline: 0;
-      }
-    }
-    > * {
-      vertical-align: top;
-      line-height: 27px;
-      outline: none;
-    }
+  > * {
+    vertical-align: top;
+    line-height: 27px;
+    outline: none;
   }
 }
 
@@ -128,4 +136,39 @@
 
 .module-control-group_tool-group-scale {
   .tool-group();
+  min-width: 318px;
+  input[type="range"] {
+    cursor: pointer;
+    outline: 0;
+    &:active {
+      outline: 0;
+    }
+    &:focus {
+      outline: 0;
+    }
+  }
+  .module-control-group_lower-control-container {
+
+    width: 100%;
+
+    .module-control-group_control-value {
+      display: block;
+      text-align: left;
+      width: 61px;
+      float: left;
+    }
+    .module-control-group_group-name {
+      width: 100%;
+      text-align: center;
+      line-height: 24px;
+      font-size: 2.8em;
+    }
+    .module-control-group_resets {
+      display: block;
+      text-align: right;
+      width: 32px;
+      float: right;
+    }
+  }
+
 }
