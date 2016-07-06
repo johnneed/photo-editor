@@ -227,6 +227,24 @@ button {
   }
 }
 
+.photo-widget_boolean-button{
+  span.photo-widget_boolean-button-active{
+    display: none;
+  }
+  span.photo-widget_boolean-button-inactive{
+    display: inline;
+  }
+
+  &.is-active{
+    span.photo-widget_boolean-button-active{
+    display: inline;
+  }
+    span.photo-widget_boolean-button-inactive{
+      display: none;
+    }}
+}
+
+
 .photo-widget_control-group {
   margin: 0;
   text-align: center;

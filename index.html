@@ -117,7 +117,6 @@
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
                                 <div class="module-control-group_tool-group-scale">
-
                                     <div class="module-slider-control">
                                         <em>1%</em>
                                         <input id="scaleImageControl" type="range" min="1" max="100" value="100"/>
@@ -143,30 +142,43 @@
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
                                 <div class="module-control-group_tool-group-crop">
-                                    <span class="module-control-group_group-name">Crop</span>
-                                   <button class="photo-widget_boolean-button" id="cropImageControl">
-                                        < <span>Crop</span>
-                                     </button>
+                                    <div class="module-crop-control">
+                                        <button class="photo-widget_boolean-button" id="cropImageControl">
+                                            <span class="photo-widget_boolean-button-inactive">Start</span>
+                                            <span class="photo-widget_boolean-button-active">Stop</span>
+                                        </button>
+                                    </div>
+                                    <div class="module-control-group_lower-control-container">
+                                        <span class="module-control-group_group-name">Crop</span>
+                                    </div>
+
+
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="controlSetHistory" class="photo-widget_control-group module-control-group">
                         <div class="module-control-group_container">
-
                             <div class="module-control-group_tool-group-container">
-                                <div class="module-control-group_tool-group">
-                                    <label>
-                                        <span>Undo</span>
+                                <div class="module-control-group_tool-group-undu-redo">
+                                    <div class="module-undo-redo-control">
                                         <button id="undoControl" title="Undo" disabled="disabled">
                                             <i class="icon-undo2"></i>
                                         </button>
-                                    </label>
-                                    <label><span>Redo</span>
                                         <button id="redoControl" title="Redo" disabled="disabled">
                                             <i class="icon-redo2"></i>
                                         </button>
-                                    </label>
+                                    </div>
+                                    <div class="module-control-group_lower-control-container">
+                                        <span class="module-control-group_group-name">
+                                        <label for="undoControl">
+                                            <span>Undo</span>
+                                        </label>
+                                        <label for="redoControl">
+                                            <span>Redo</span>
+                                        </label>
+                                            </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +187,7 @@
                         <div class="module-control-group_container">
 
                             <div class="module-control-group_tool-group-container">
-                                <div class="module-control-group_tool-group">
+                                <div class="module-control-group_tool-group-rotate">
                                     <label>
                                          <span class="module-control-group_label">Rotate Image&nbsp;
                                          <span id="rotationValue" class="photo-widget_control-value">0</span>
@@ -200,7 +212,7 @@
                     <div id="controlSetSave" class="photo-widget_control-group module-control-group">
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
-                                <div class="module-control-group_tool-group">
+                                <div class="module-control-group_tool-group-save">
                                     <label>
                                         <a class="button" id="save" href="#" download>save</a>
                                     </label>
@@ -222,7 +234,7 @@
                     <div id="controlSetZoom" class="photo-widget_control-group module-control-group">
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
-                                <div class="module-control-group_tool-group">
+                                <div class="module-control-group_tool-group-zoom">
                                     <span class="module-control-group_label">Zoom&nbsp; </span>
                                     <span id="zoomValue" class="photo-widget_control-value">100</span>
                                     <span>%</span>
