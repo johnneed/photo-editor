@@ -160,7 +160,7 @@
                     <div id="controlSetHistory" class="photo-widget_control-group module-control-group">
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
-                                <div class="module-control-group_tool-group-undu-redo">
+                                <div class="module-control-group_tool-group-undo-redo">
                                     <div class="module-undo-redo-control">
                                         <button id="undoControl" title="Undo" disabled="disabled">
                                             <i class="icon-undo2"></i>
@@ -188,23 +188,26 @@
 
                             <div class="module-control-group_tool-group-container">
                                 <div class="module-control-group_tool-group-rotate">
-                                    <label>
-                                         <span class="module-control-group_label">Rotate Image&nbsp;
-                                         <span id="rotationValue" class="photo-widget_control-value">0</span>
-                                         <sup class="photo-widget_control-value">&deg;</sup>
-                                        </span>
-                                    </label>
-                                    <label>
-                                        <span>Rotate Left</span>
+
+                                    <div class="module-rotate-control">
                                         <button id="rotateLeft" title="Rotate Left" value="-90">
                                             <i class="icon-undo"></i>
                                         </button>
-                                    </label>
-                                    <label><span>Rotate Right</span>
+                                         <span class="module-photo-widget_rotation-value">
+                                           <span id="rotationValue" class="photo-widget_control-value">0</span>
+                                         <sup class="photo-widget_control-value">&deg;</sup>
+                                    </span>
                                         <button id="rotateRight" title="Rotate Right" value="90">
                                             <i class="icon-redo"></i>
                                         </button>
-                                    </label>
+                                    </div>
+                                    <div class="module-control-group_lower-control-container">
+
+                                        <span class="module-control-group_group-name">Rotate</span>
+
+                                    </div>
+
+
                                 </div>
                             </div>
                         </div>
