@@ -28,7 +28,6 @@
             overflow: hidden;
             box-sizing: border-box;
         }
-
     </style>
 </head>
 <body>
@@ -38,9 +37,11 @@
             <div id="uploadInstructions" class="photo-widget_upload-instructions">
                 <p><span class="hasDrag">Drag a file here</span>
                     <span class="hasDrag">or</span>
-                    <label><span class="hasDrag">select a file</span>
+                    <label>
+                        <span class="hasDrag">select a file</span>
                         <span class="doesNotHaveDrag">Select a file to edit</span>
-                        <input id="fileInput" type="file" accept="image/*"/></label>
+                        <input id="fileInput" type="file" accept="image/*"/>
+                    </label>
                 </p>
             </div>
             <div id="editor" class="photo-widget_editor"></div>
@@ -49,7 +50,6 @@
                     <span></span>
                     <span></span>
                     <span></span>
-
                 </div>
             </div>
         </div>
@@ -68,7 +68,6 @@
                                 class="module-control-group_tool-switch">
                             <i class="icon-crop"></i>
                             <span class="module-control-group_tool-switch-label">Crop</span>
-
                         </button>
                     </div>
                     <div class="photo-widget_tab">
@@ -76,7 +75,6 @@
                                 class="module-control-group_tool-switch">
                             <i class="icon-history"></i>
                             <span class="module-control-group_tool-switch-label">History</span>
-
                         </button>
                     </div>
                     <div class="photo-widget_tab">
@@ -85,15 +83,12 @@
                             <i class="icon-spinner11"></i>
                             <span class="module-control-group_tool-switch-label">Rotate</span>
                         </button>
-
-
                     </div>
                     <div class="photo-widget_tab">
                         <button id="toolSwitchSave" value="Save" title="Save Image"
                                 class="module-control-group_tool-switch">
                             <i class="icon-floppy-disk"></i>
                             <span class="module-control-group_tool-switch-label">Save</span>
-
                         </button>
                     </div>
                     <div class="photo-widget_tab">
@@ -101,7 +96,6 @@
                                 class="module-control-group_tool-switch">
                             <i class="icon-cancel-circle"></i>
                             <span class="module-control-group_tool-switch-label">Reset</span>
-
                         </button>
                     </div>
                     <div class="photo-widget_tab">
@@ -151,8 +145,6 @@
                                     <div class="module-control-group_lower-control-container">
                                         <span class="module-control-group_group-name">Crop</span>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -171,13 +163,13 @@
                                     </div>
                                     <div class="module-control-group_lower-control-container">
                                         <span class="module-control-group_group-name">
-                                        <label for="undoControl">
-                                            <span>Undo</span>
-                                        </label>
-                                        <label for="redoControl">
-                                            <span>Redo</span>
-                                        </label>
-                                            </span>
+                                            <label for="undoControl">
+                                                <span>Undo</span>
+                                            </label>
+                                            <label for="redoControl">
+                                                <span>Redo</span>
+                                            </label>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -202,12 +194,8 @@
                                         </button>
                                     </div>
                                     <div class="module-control-group_lower-control-container">
-
                                         <span class="module-control-group_group-name">Rotate</span>
-
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -217,7 +205,9 @@
                             <div class="module-control-group_tool-group-container">
                                 <div class="module-control-group_tool-group-save">
                                     <div class="module-save-control">
-                                        <a class="button" id="save" href="#" download><i class="icon-floppy-disk"></i></a>
+                                        <a class="button" id="save" href="#" download>
+                                            <i class="icon-floppy-disk"></i>
+                                        </a>
                                     </div>
                                     <div class="module-control-group_lower-control-container">
                                         <span class="module-control-group_group-name">Save</span>
@@ -237,8 +227,6 @@
                                     <div class="module-control-group_lower-control-container">
                                         <span class="module-control-group_group-name">Reset</span>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -247,19 +235,18 @@
                         <div class="module-control-group_container">
                             <div class="module-control-group_tool-group-container">
                                 <div class="module-control-group_tool-group-zoom">
-
-
-
                                     <div class="module-zoom-control">
                                         <em>1%</em>
                                         <input id="zoomControl" type="range" min="1" max="500" value="100"/>
                                         <em>500%</em>
-                                        <button id="zoom50Button" value="50" title="Zoom 50%" disabled="disabled">50%</button>
+                                        <button id="zoom50Button" value="50" title="Zoom 50%" disabled="disabled">50%
+                                        </button>
                                         <button id="zoom200Button" value="200" title="Zoom 200%" disabled="disabled">
-                                            200%</button>
+                                            200%
+                                        </button>
                                         <button id="zoom500Button" value="500" title="Zoom 500%" disabled="disabled">
-                                            500%</button>
-
+                                            500%
+                                        </button>
                                     </div>
                                     <div class="module-control-group_lower-control-container">
                                     <span class="module-control-group_control-value">
@@ -274,18 +261,9 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
-
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

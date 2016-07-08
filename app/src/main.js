@@ -2,17 +2,17 @@ import {Editor} from "./editor";
 import {getOffset} from "./utilities";
 import {constants} from "./constants";
 import {AppState} from "./app-state";
-require('core-js');
+require("core-js");
 
-(function () {
+(function() {
     "use strict";
-    //Do we have drag and drop?
-    var isAdvancedUpload = function () {
-        var div = document.createElement('div');
-        return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
-    }();
+    // Do we have drag and drop?
+    var isAdvancedUpload = (function() {
+        var div = document.createElement("div");
+        return "draggable" in div || ("ondragstart" in div && "ondrop" in div) && "FormData" in window && "FileReader" in window;
+    }());
 
-    //find our controls
+    // find our controls
     var fileInput = document.getElementById("fileInput");
     var scaleControl = document.getElementById("scaleImageControl");
     var cropControl = document.getElementById("cropImageControl");
@@ -27,17 +27,17 @@ require('core-js');
     var zoom50Button = document.getElementById("zoom50Button");
     var zoom200Button = document.getElementById("zoom200Button");
     var zoom500Button = document.getElementById("zoom500Button");
-    //Other stuff
+    // Other stuff
     var uploadInstructions = document.getElementById("uploadInstructions");
     var workspace = document.getElementById("workspace");
     var clearImageControl = document.getElementById("clearImageControl");
     var zoomControl = document.getElementById("zoomControl");
     var spinner = document.getElementById("spinner");
-    //find our labels
+    // find our labels
     var zoomValue = document.getElementById("zoomValue");
     var scaleValue = document.getElementById("scaleValue");
-    //var heightValue = document.getElementById('heightValue');
-    //var widthValue = document.getElementById('widthValue');
+    // var heightValue = document.getElementById("heightValue");
+    // var widthValue = document.getElementById("widthValue");
     var rotationValue = document.getElementById("rotationValue");
     var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module-control-group_tool-switch"));
     var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module-control-group"));
@@ -45,16 +45,6 @@ require('core-js');
     var myEditor;
 
     var appState = new AppState();
-
-    function resetAppState() {
-        setAppState(new AppState());
-    }
-
-    function setEditorBoxClass(state) {
-        state = (state && state.replace("_", "-").toLowerCase()) || "";
-        var stateRegex = /(is\-cropping)|(is\-scaling)|(is\-dragging)|(is\-rotating)|(is\-zooming)|(is\-loading)|(is\-saving)|(is\-busy)/g;
-        editorBox.className = (editorBox.className.replace(stateRegex, "").trim() + (!!state ? " " : "") + state);
-    }
 
     function setAppState(state) {
         function setControls(state) {
@@ -82,79 +72,79 @@ require('core-js');
                             setEditorBoxClass(constants.IS_ROTATING);
                             break;
                         case "isCropMode" :
-                            console.log('crop case');
+                            console.log("crop case");
                             console.log(state.isCropMode);
                             if (state.isCropMode) {
                                 setEditorBoxClass(constants.IS_CROPPING);
                                 cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
                                 if (myEditor) {
-                                    myEditor.canvas.setAttribute('class', (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
-                                    myEditor.canvas.addEventListener('mousedown', startCrop);
-                                    myEditor.canvas.addEventListener('mousemove', cropping);
-                                    myEditor.canvas.addEventListener('mouseup', endCrop);
-                                    myEditor.canvas.addEventListener('mouseout', endCrop);
+                                    myEditor.canvas.setAttribute("class", (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
+                                    myEditor.canvas.addEventListener("mousedown", startCrop);
+                                    myEditor.canvas.addEventListener("mousemove", cropping);
+                                    myEditor.canvas.addEventListener("mouseup", endCrop);
+                                    myEditor.canvas.addEventListener("mouseout", endCrop);
                                 }
                                 break;
                             }
                             cropControl.className = cropControl.className.replace(/is-active/g, "").trim();
                             if (myEditor) {
-                                myEditor.canvas.setAttribute('class', myEditor.canvas.className.replace("is-cropping", "").trim());
-                                myEditor.canvas.removeEventListener('mousedown', startCrop);
-                                myEditor.canvas.removeEventListener('mousemove', cropping);
-                                myEditor.canvas.removeEventListener('mouseup', endCrop);
-                                myEditor.canvas.removeEventListener('mouseout', endCrop);
+                                myEditor.canvas.setAttribute("class", myEditor.canvas.className.replace("is-cropping", "").trim());
+                                myEditor.canvas.removeEventListener("mousedown", startCrop);
+                                myEditor.canvas.removeEventListener("mousemove", cropping);
+                                myEditor.canvas.removeEventListener("mouseup", endCrop);
+                                myEditor.canvas.removeEventListener("mouseout", endCrop);
                             }
                             break;
-                        
+
                         case "isLastHistory" :
                             if (state.isLastHistory) {
-                                redoControl.setAttribute('disabled', 'disabled');
+                                redoControl.setAttribute("disabled", "disabled");
                                 break;
                             }
-                            redoControl.removeAttribute('disabled');
+                            redoControl.removeAttribute("disabled");
                             break;
                         case "isFirstHistory" :
                             if (state.isFirstHistory) {
-                                undoControl.setAttribute('disabled', 'disabled');
+                                undoControl.setAttribute("disabled", "disabled");
                                 break;
                             }
-                            undoControl.removeAttribute('disabled');
+                            undoControl.removeAttribute("disabled");
                             break;
                         case "hasPhoto" :
                             if (state.hasPhoto) {
                                 workspace.className = workspace.className + " has-photo";
-                                scaleControl.removeAttribute('disabled');
-                                cropControl.removeAttribute('disabled');
-                                clearImageControl.removeAttribute('disabled');
-                                zoomControl.removeAttribute('disabled');
-                                rotateRight.removeAttribute('disabled');
-                                rotateLeft.removeAttribute('disabled');
-                                saveButton.removeAttribute('disabled');
-                                resetScaleButton.removeAttribute('disabled');
-                                zoom100Button.removeAttribute('disabled');
+                                scaleControl.removeAttribute("disabled");
+                                cropControl.removeAttribute("disabled");
+                                clearImageControl.removeAttribute("disabled");
+                                zoomControl.removeAttribute("disabled");
+                                rotateRight.removeAttribute("disabled");
+                                rotateLeft.removeAttribute("disabled");
+                                saveButton.removeAttribute("disabled");
+                                resetScaleButton.removeAttribute("disabled");
+                                zoom100Button.removeAttribute("disabled");
                                 zoom50Button.removeAttribute("disabled");
                                 zoom200Button.removeAttribute("disabled");
                                 zoom500Button.removeAttribute("disabled");
                                 break;
                             }
                             workspace.className = workspace.className.replace(/has-photo/g, "").trim();
-                            scaleControl.setAttribute('disabled', 'disabled');
-                            cropControl.setAttribute('disabled', 'disabled');
-                            clearImageControl.setAttribute('disabled', 'disabled');
-                            zoomControl.setAttribute('disabled', 'disabled');
-                            undoControl.setAttribute('disabled', 'disabled');
-                            redoControl.setAttribute('disabled', 'disabled');
-                            rotateRight.setAttribute('disabled', 'disabled');
-                            rotateLeft.setAttribute('disabled', 'disabled');
-                            saveButton.setAttribute('disabled', 'disabled');
-                            zoom100Button.setAttribute('disabled', 'disabled');
-                            zoom50Button.setAttribute('disabled', 'disabled');
-                            zoom200Button.setAttribute('disabled', 'disabled');
-                            zoom500Button.setAttribute('disabled', 'disabled');
+                            scaleControl.setAttribute("disabled", "disabled");
+                            cropControl.setAttribute("disabled", "disabled");
+                            clearImageControl.setAttribute("disabled", "disabled");
+                            zoomControl.setAttribute("disabled", "disabled");
+                            undoControl.setAttribute("disabled", "disabled");
+                            redoControl.setAttribute("disabled", "disabled");
+                            rotateRight.setAttribute("disabled", "disabled");
+                            rotateLeft.setAttribute("disabled", "disabled");
+                            saveButton.setAttribute("disabled", "disabled");
+                            zoom100Button.setAttribute("disabled", "disabled");
+                            zoom50Button.setAttribute("disabled", "disabled");
+                            zoom200Button.setAttribute("disabled", "disabled");
+                            zoom500Button.setAttribute("disabled", "disabled");
                             fileInput.value = null;
                             break;
                         case "isDragging" :
-                            console.log('drag case');
+                            console.log("drag case");
                             console.log(state.isDragging);
                             setEditorBoxClass(constants.IS_DRAGGING);
                             if (state.isDragging) {
@@ -174,7 +164,7 @@ require('core-js');
                             break;
                         case "activeControlSet" :
                             controlSets.forEach(c => {
-                                c.className = c.className.replace(/is-open/g, "").trim();
+                                    c.className = c.className.replace(/is-open/g, "").trim();
                                     if (c.id === "controlSet" + state.activeControlSet) {
                                         c.className = c.className + " is-open";
                                     }
@@ -208,6 +198,18 @@ require('core-js');
         setControls(state);
     }
 
+    function resetAppState() {
+        setAppState(new AppState());
+    }
+
+    function setEditorBoxClass(state) {
+        state = (state && state.replace("_", "-").toLowerCase()) || "";
+        var stateRegex = /(is\-cropping)|(is\-scaling)|(is\-dragging)|(is\-rotating)|(is\-zooming)|(is\-loading)|(is\-saving)|(is\-busy)/g;
+        editorBox.className = (editorBox.className.replace(stateRegex, "").trim() + (!!state ? " " : "") + state);
+    }
+
+
+
     function handleRedraw() {
         var editorState = myEditor.getState();
         setAppState({
@@ -233,7 +235,7 @@ require('core-js');
     }
 
     function addPic(event) {
-        console.log('addpic');
+        console.log("addpic");
         event.stopPropagation();
         event.preventDefault();
         setAppState({spinnerIsVisible: true});
@@ -243,13 +245,13 @@ require('core-js');
             myEditor.removeListener(constants.IMAGE_LOADED, resetAppState);
         }
 
-        //get rid of old canvas
+        // get rid of old canvas
         while (editorBox.hasChildNodes()) {
             editorBox.removeChild(editorBox.lastChild);
         }
         myEditor = new Editor((event.target.files || event.dataTransfer.files)[0]);
 
-        //Attach listeners;
+        // Attach listeners;
         myEditor.addEventListener(constants.DRAW_EVENT, handleRedraw);
         myEditor.addEventListener(constants.HISTORY_CHANGE, handleHistoryChange);
         myEditor.addEventListener(constants.IMAGE_LOADED, setAppState.bind(this, {
@@ -258,9 +260,9 @@ require('core-js');
         }));
 
 
-      //  saveButton.addEventListener('click', myEditor.save);
+      // saveButton.addEventListener("click", myEditor.save);
         editorBox.appendChild(myEditor.canvas);
-        //TODO : remove this hack
+        // TODO : remove this hack
         window.editor = myEditor;
     }
 
@@ -280,7 +282,10 @@ require('core-js');
     function cropButtonClick(event) {
         event.stopPropagation();
         if (appState.isCropMode) {
-            setAppState({isCropMode: false, isCropping: false});
+            setAppState({
+                isCropMode: false, 
+                isCropping: false
+            });
             return;
         }
         setAppState({
@@ -307,7 +312,7 @@ require('core-js');
     function drawBox(args) {
         args = args || {};
         myEditor.redrawImage();
-        myEditor.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
+        myEditor.canvasContext.fillStyle = "rgba(255,255,255,0.4)";
         myEditor.canvasContext.fillRect((args.x || 0), (args.y || 0), (args.width || 0), (args.height || 0));
     }
 
@@ -329,7 +334,7 @@ require('core-js');
 
         myEditor.redrawImage();
         myEditor.canvasContext.beginPath();
-        myEditor.canvasContext.fillStyle = 'rgba(255,255,255,0.4)';
+        myEditor.canvasContext.fillStyle = "rgba(255,255,255,0.4)";
         myEditor.canvasContext.fillRect(0, 0, args.x, canvasHeight);
         myEditor.canvasContext.beginPath();
         myEditor.canvasContext.fillRect(args.x + args.width, 0, canvasWidth - args.x - args.width, canvasHeight);
@@ -369,7 +374,7 @@ require('core-js');
 
     function rotate(event) {
         var num = parseFloat(event.currentTarget.value);
-        var deg = (num / Math.abs(num)) * 90;//just doing a 90 deg rotate for now;
+        var deg = (num / Math.abs(num)) * 90;// just doing a 90 deg rotate for now;
         var rad = isNaN(deg) ? 0 : (deg * Math.PI / 180) + appState.rotation;
         event.stopPropagation();
         myEditor.rotate(rad);
@@ -433,24 +438,24 @@ require('core-js');
     }
 
     resetAppState();
-    fileInput.addEventListener('change', addPic);
-    scaleControl.addEventListener('input', scalePic);
-    scaleControl.addEventListener('blur', saveState);
-    undoControl.addEventListener('click', undo);
-    redoControl.addEventListener('click', redo);
-    resetScaleButton.addEventListener('click', scaleReset);
-    cropControl.addEventListener('click', cropButtonClick);
-    saveButton.addEventListener('click', save);
-    rotateLeft.addEventListener('click', rotate);
-    rotateRight.addEventListener('click', rotate);
-    clearImageControl.addEventListener('click', startOver);
-    zoomControl.addEventListener('input', zoomPic);
-    zoom50Button.addEventListener('click', zoomPic);
-    zoom100Button.addEventListener('click', zoomPic);
-    zoom200Button.addEventListener('click', zoomPic);
-    zoom500Button.addEventListener('click', zoomPic);
+    fileInput.addEventListener("change", addPic);
+    scaleControl.addEventListener("input", scalePic);
+    scaleControl.addEventListener("blur", saveState);
+    undoControl.addEventListener("click", undo);
+    redoControl.addEventListener("click", redo);
+    resetScaleButton.addEventListener("click", scaleReset);
+    cropControl.addEventListener("click", cropButtonClick);
+    saveButton.addEventListener("click", save);
+    rotateLeft.addEventListener("click", rotate);
+    rotateRight.addEventListener("click", rotate);
+    clearImageControl.addEventListener("click", startOver);
+    zoomControl.addEventListener("input", zoomPic);
+    zoom50Button.addEventListener("click", zoomPic);
+    zoom100Button.addEventListener("click", zoomPic);
+    zoom200Button.addEventListener("click", zoomPic);
+    zoom500Button.addEventListener("click", zoomPic);
     switchButtons.forEach(b => {
-        b.addEventListener('click', setActiveControlSet);
+        b.addEventListener("click", setActiveControlSet);
     });
 
     if (isAdvancedUpload) {
@@ -460,6 +465,4 @@ require('core-js');
         workspace.addEventListener("dragend", dragEnd);
         workspace.addEventListener("dragleave", dragEnd);
     }
-
-
 }());

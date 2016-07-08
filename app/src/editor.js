@@ -1,15 +1,15 @@
 import {History} from "./history";
 import events from "events";
 import {constants} from "./constants";
-//Using WeakMaps for Private properties
 
+// Using WeakMaps for Private properties
 var _states = new WeakMap();
 
 /**
  * Calculates the height and width of an image after rotation
- * @param image
- * @param rotation
- * @returns {{height: number, width: number}}
+ * @param {object} image - the image to rotate
+ * @param {number} rotation - in radians
+ * @returns {{height: number, width: number}}  height and width after rotation
  * @private
  */
 function _getRotatedDims(image, rotation) {
@@ -20,7 +20,8 @@ function _getRotatedDims(image, rotation) {
 
 /**
  * Merge two states
- * @param state
+ * @param {object} state - new state object
+ * @returns {void}
  * @private
  */
 function mergeStates(state) {
@@ -38,16 +39,18 @@ export class Editor extends events.EventEmitter {
     history;
 
     constructor(file) {
+        var reader;
+        var me;
         super();
-        var reader = new FileReader();
-        var me = this;
+        reader = new FileReader();
+        me = this;
         _states.set(this, {
             zoom: 1,
             scale: 1,
             rotation: 0
         });
-        this.canvas = document.createElement('canvas');
-        this.canvas.setAttribute('id', 'editorCanvas');
+        this.canvas = document.createElement("canvas");
+        this.canvas.setAttribute("id", "editorCanvas");
         this.canvasContext = this.canvas.getContext("2d");
         this.fileName = file.name;
         this.mimeType = file.type;
@@ -56,12 +59,12 @@ export class Editor extends events.EventEmitter {
         this.scale = this.scale.bind(this);
         this.draw = this.draw.bind(this);
 
-        //SetData from image
-        reader.onload = function (e) {
-            me.originalImage = document.createElement('img');
+        // SetData from image
+        reader.onload = function(event) {
+            me.originalImage = document.createElement("img");
             me.description = me.originalImage.longDesc;
             me.name = me.originalImage.name || me.fileName;
-            me.originalImage.onload = function () {
+            me.originalImage.onload = function() {
                 me.history = new History({
                     image: me.originalImage,
                     scale: 1,
@@ -71,7 +74,7 @@ export class Editor extends events.EventEmitter {
                 me.emit(constants.IMAGE_LOADED);
 
             };
-            me.originalImage.setAttribute('src', e.target.result);
+            me.originalImage.setAttribute("src", event.target.result);
         };
 
         reader.readAsDataURL(file);
@@ -79,7 +82,7 @@ export class Editor extends events.EventEmitter {
 
     /**
      * Get the current editor state
-     * @returns {*}
+     * @returns {*} editor state
      */
     getState() {
         return Object.assign({
@@ -90,8 +93,9 @@ export class Editor extends events.EventEmitter {
 
     /**
      * Register a callback for an event listener
-     * @param {object} event
-     * @param {function} callback
+     * @param {object} event - event to register
+     * @param {function} callback - callback function
+     * @returns {void}
      */
     addEventListener(event, callback) {
         this.on(event, callback);
@@ -99,8 +103,9 @@ export class Editor extends events.EventEmitter {
 
     /**
      * Un-register a call back for an event listener
-     * @param {object} event
-     * @param {function} callback
+     * @param {object} event event to unregister
+     * @param {function} callback - function to call
+     * @returns {void}
      */
     removeEventListener(event, callback) {
         this.removeListener(event, callback);
@@ -108,37 +113,37 @@ export class Editor extends events.EventEmitter {
 
     /**
      * crop the image
-     * @param {object} args
+     * @param {object} args - crop specs
+     * @returns {void}
      */
-    crop(args) {
-        console.log('crop');
+    crop(args = {}) {
         var me = this;
-        var croppedImage = document.createElement('img');
-        var flattenedImage = document.createElement('img');
+        var croppedImage = document.createElement("img");
+        var flattenedImage = document.createElement("img");
         var zoom = _states.get(this).zoom || 1;
-        args = args || {};
-        flattenedImage.onload = function () {
+
+        console.log("crop");
+
+        flattenedImage.onload = function() {
             me.canvas.height = args.height / zoom;
             me.canvas.width = args.width / zoom;
             me.canvasContext.clearRect(0, 0, args.width / zoom, args.height / zoom);
             me.canvasContext.drawImage(flattenedImage, args.x / zoom, args.y / zoom, args.width / zoom, args.height / zoom, 0, 0, args.width / zoom, args.height / zoom);
-            croppedImage.onload = function () {
+            croppedImage.onload = function() {
                 me.history.append({image: croppedImage, scale: 1, rotation: 0});
                 me.emit(constants.HISTORY_CHANGE);
-                me.draw({image: croppedImage, scale: 1, rotation: 0, zoom: zoom});
+                me.draw({image: croppedImage, scale: 1, rotation: 0, zoom});
             };
             croppedImage.src = me.canvas.toDataURL(me.mimeType);
         };
         me.draw({zoom: 1});
         flattenedImage.src = this.canvas.toDataURL(this.mimeType);
-
-
     }
 
 
     /**
      * Get the current history object
-     * @returns {*}
+     * @returns {*} - the current history
      */
     currentHistory() {
         return Object.assign({}, this.history.currentState());
@@ -146,26 +151,34 @@ export class Editor extends events.EventEmitter {
 
     /**
      * Draw the state to the canvas
-     * @param {*} state
+     * @param {*} state - a state object
      * @returns {void}
      */
     draw(state) {
-        console.log('editor draw');
         var _state = _states.get(this);
         var newWidth;
         var newHeight;
         var dims;
-        console.log('imageWidth ' + (state.image && state.image.width) + ' imageHeight ' + (state.image && state.image.height));
-        console.log('imageWidth ' + (_state.image && _state.image.width) + ' imageHeight ' + (_state.image && _state.image.height));
+
+        console.log("editor draw");
+        console.log("imageWidth " + (state.image && state.image.width) + " imageHeight " + (state.image && state.image.height));
+        console.log("imageWidth " + (_state.image && _state.image.width) + " imageHeight " + (_state.image && _state.image.height));
+
         mergeStates.call(this, state);
-        console.log('imageWidth ' + _state.image.width + ' imageHeight ' + _state.image.height);
+
+        console.log("imageWidth " + _state.image.width + " imageHeight " + _state.image.height);
         console.log("zoom " + _state.zoom);
         console.log("scale " + _state.scale);
+
         newWidth = _state.image.width * _state.zoom * _state.scale;
         newHeight = _state.image.height * _state.zoom * _state.scale;
-        console.log('newWidth ' + newWidth + ' newHeight ' + newHeight);
+
+        console.log("newWidth " + newWidth + " newHeight " + newHeight);
+
         dims = _getRotatedDims({width: newWidth, height: newHeight}, _state.rotation);
+
         console.log("width " + dims.width + " height " + dims.height);
+
         this.canvas.width = dims.width;
         this.canvas.height = dims.height;
         this.canvasContext.save();
@@ -190,18 +203,19 @@ export class Editor extends events.EventEmitter {
      * @returns {void}
      */
     redrawImage() {
-        console.log('editor redrawImage');
+        console.log("editor redrawImage");
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.draw(this.history.currentState().image);
     }
 
     /**
      * Rotates and redraws the image
-     * @param rad - rotation in radians
+     * @param {number} rad - rotation in radians
+     * @returns {void}
      */
     rotate(rad) {
         var _state = _states.get(this);
-        _state.rotation = (rad % (2 * Math.PI));
+        _state.rotation = rad % (2 * Math.PI);
         this.draw(_state);
         _states.set(_state);
     }
@@ -214,10 +228,10 @@ export class Editor extends events.EventEmitter {
         var data;
         var myState = _states.get(this);
         var currentZoom = myState.zoom;
-        console.log('save');
+        console.log("save");
         this.draw({zoom: 1});
         // modify the dataUrl so the browser starts downloading it instead of just showing it
-        data = this.canvas.toDataURL(this.mimeType).replace(/^data:image\/png/, 'data:application/octet-stream');
+        data = this.canvas.toDataURL(this.mimeType).replace(/^data:image\/png/, "data:application/octet-stream");
         this.draw({zoom: currentZoom});
         return data;
     }
@@ -233,14 +247,14 @@ export class Editor extends events.EventEmitter {
 
     /**
      * Zooms the image and changes the dimensions
-     * @param percentage
-     * @returns {number}
+     * @param {number} percentage - %
+     * @returns {number} - zoom value
      */
     scale(percentage) {
         this.draw({scale: percentage / 100});
         return _states.get(this).scale * 100;
     }
-    
+
 
     /**
      * Moves the history back one index and redraws the image
@@ -256,10 +270,10 @@ export class Editor extends events.EventEmitter {
      * @returns {number} percentage of zoom
      */
     zoom(percentage) {
-        if (typeof percentage === 'number' && percentage > 0) {
+        if (typeof percentage === "number" && percentage > 0) {
             this.draw({zoom: percentage / 100});
-
-        } else {
+        }
+        else {
             throw new Error("zoom parameters must be of type number. You passed : " + percentage);
         }
         return _states.get(this).zoom * 100;

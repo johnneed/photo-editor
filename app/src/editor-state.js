@@ -1,49 +1,36 @@
-/*
-* Remove undefined keys and return a POJO;
-*/
-function _prune(obj){
-    obj = (typeof obj === "object")? obj : {};
-    return  Object.keys(obj).reduce((pojo,key) => {
-        if (typeof obj[key] !== 'undefined') {
-            pojo[key] = obj[key];
-        }
-        return pojo;
-    },{});
-}
-
+import {prune} from "./utilities";
 
 export class EditorState {
     image;
     rotation;
     scale;
-    
-    constructor(state) {
-        state = state || {};
+
+    constructor(state = {}) {
         this.image = state.image;
         this.rotation = state.rotation;
         this.scale = state.scale;
     }
 
-    prune(){
-     return  _prune(this);
+    prune() {
+        return prune(this);
     }
 
-    merge(state){
-        return Object.assign(this,_prune(state));
+    merge(state) {
+        return Object.assign(this, prune(state));
     }
-    
-    fill (state){
+
+    fill(state) {
         Object.keys(this).forEach((key) => {
-            this[key] = (typeof this[key] === "undefined") ? state[key] : this[key];
+            this[key] = typeof this[key] === "undefined" ? state[key] : this[key];
         });
         return this;
     }
-    
-    combine(state){
+
+    combine(state) {
         this.image = state.image || this.image;
     }
-    
-    static create(state)  {
+
+    static create(state) {
         return new EditorState(state || {});
     }
 }

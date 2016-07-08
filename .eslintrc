@@ -68,7 +68,7 @@
 
     /* Best Practices */
     "block-scoped-var": 0, // treat var statements as if they were block scoped (off by default). 0: deep destructuring is not compatible https://github.com/eslint/eslint/issues/1863
-    "complexity": [1,10], // specify the maximum cyclomatic complexity allowed in a program (off by default)
+    "complexity": [1,25], // specify the maximum cyclomatic complexity allowed in a program (off by default)
     "consistent-return": 2, // require return statements to either always or never specify values
     "curly": 2, // specify curly brace conventions for all control statements
     "default-case": 2, // require default case in switch statements (off by default)
@@ -121,7 +121,7 @@
     "strict": [2, "global"],
 
     /* Variables */
-    "init-declarations": [2, "always"], //enforce or disallow variable initializations at definition
+    "init-declarations": [0, "always"], //enforce or disallow variable initializations at definition
     "no-catch-shadow": 2, //disallow the catch clause parameter name being the same as a variable in the outer scope
     "no-delete-var": 2, //disallow deletion of variables (recommended)
     "no-label-var": 2, //disallow labels that share a name with a variable
@@ -152,10 +152,10 @@
     "comma-spacing":  [2, { "before": false, "after": true }], //enforce spacing before and after comma (fixable)
     "comma-style": [2, "last"], //enforce one true comma style
     "computed-property-spacing": 1, //require or disallow padding inside computed properties (fixable)
-    "consistent-this": 1, //enforce consistent naming when capturing the current execution context
+    "consistent-this": 0, //enforce consistent naming when capturing the current execution context
     "eol-last": 1, //enforce newline at the end of file, with no multiple empty lines (fixable)
     "func-names": 0, //require function expressions to have a name
-    "func-style": 1, //enforce use of function declarations or expressions
+    "func-style": [1, "declaration"], //enforce use of function declarations or expressions
     "id-length": 1, //this option enforces minimum and maximum identifier lengths (variable names, property names etc.)
     "id-match": 1, //require identifiers to match the provided regular expression
     "indent": [2,4,{"SwitchCase": 1, "VariableDeclarator": {"var": 0, "let": 0, "const": 0}}], //specify tab or space width for your code (fixable)
@@ -215,7 +215,7 @@
     "no-const-assign": 2, //disallow modifying variables that are declared using const
     "no-dupe-class-members": 2, //disallow duplicate name in class members
     "no-this-before-super": 2, //disallow use of this/super before calling super() in constructors.
-    "no-var": 1, //require let or const instead of var
+    "no-var": 0, //require let or const instead of var
     "object-shorthand": 1, //require method and property shorthand syntax for object literals
     "prefer-arrow-callback": 1, //suggest using arrow functions as callbacks
     "prefer-const": 1, //suggest using const declaration for variables that are never modified after declared

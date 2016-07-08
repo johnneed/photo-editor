@@ -1,6 +1,6 @@
 import {EditorState} from "./editor-state";
 
-//Using WeakMaps for Private properties
+// Using WeakMaps for Private properties
 var _history = new WeakMap();
 var _stateIndex = new WeakMap();
 
@@ -19,7 +19,7 @@ export class History {
         newState = EditorState.create(state);
         history = history.slice(0, stateIndex + 1);
         history.push(newState);
-        stateIndex = (stateIndex >= history.length - 1) ? history.length - 1 : stateIndex + 1;
+        stateIndex = stateIndex >= history.length - 1 ? history.length - 1 : stateIndex + 1;
         _stateIndex.set(this, stateIndex);
         _history.set(this, history);
         return history[stateIndex];
@@ -77,7 +77,7 @@ export class History {
     isLast() {
         var history = _history.get(this);
         var stateIndex = _stateIndex.get(this);
-        return (history.length - 1) === stateIndex;
+        return history.length - 1 === stateIndex;
     }
 
     isFirst() {
