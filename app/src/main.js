@@ -208,8 +208,6 @@ require("core-js");
         editorBox.className = (editorBox.className.replace(stateRegex, "").trim() + (!!state ? " " : "") + state);
     }
 
-
-
     function handleRedraw() {
         var editorState = myEditor.getState();
         setAppState({
@@ -296,8 +294,9 @@ require("core-js");
     }
 
     function cropping(e) {
-        var canMouseX = parseInt(e.clientX, 10) - appState.mouseStartX;
-        var canMouseY = parseInt(e.clientY, 10) - appState.mouseStartY;
+
+        var canMouseX = parseInt(e.offsetX, 10) - appState.mouseStartX;
+        var canMouseY = parseInt(e.offsetY, 10) - appState.mouseStartY;
         // if the crop flag is set, clear the canvas and draw the image
         if (appState.isCropping) {
             drawInvertedBox({
@@ -323,6 +322,7 @@ require("core-js");
         var canvasWidth = myEditor.canvas.width;
         var canvasHeight = myEditor.canvas.height;
 
+        //Invert coordinates if we're drawing bottom to top and/or left to right;
         if (args.width < 0) {
             args.x = args.x + args.width;
             args.width = Math.abs(args.width);
@@ -346,25 +346,26 @@ require("core-js");
     }
 
     function endCrop(e) {
-        console.log("end crop " + e.clientX + " : " + e.clientY);
+        console.log("end crop " + e.offsetX + " : " + e.offsetY);
         // var zoomRatio = appState.zoom / 100;
         if (e.clientX && e.clientY) {
             setAppState({
-                mouseEndX: parseInt(e.clientX, 10) - appState.mouseStartX,
-                mouseEndY: parseInt(e.clientY, 10) - appState.mouseStartY
+                mouseEndX: parseInt(e.offsetX, 10) - appState.mouseStartX,
+                mouseEndY: parseInt(e.offsetY, 10) - appState.mouseStartY
             });
 
             if (appState.isCropping) {
                 myEditor.crop({
-                    x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left) : (parseInt(e.clientX, 10) - appState.offset.left),
-                    y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) : (parseInt(e.clientY, 10) - appState.offset.top),
+                    x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left) : (parseInt(e.offsetX, 10) - appState.offset.left),
+                    y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) : (parseInt(e.offsetY, 10) - appState.offset.top),
                     width: Math.abs(appState.mouseEndX),
                     height: Math.abs(appState.mouseEndY)
                 })
             }
         }
         // clear the crop flag
-        setAppState({isCropping: false});
+        setAppState({isCropping: false, isCropMode:false});
+
     }
 
 
@@ -403,12 +404,20 @@ require("core-js");
     }
 
     function startCrop(e) {
-        console.log("start crop " + e.clientX + " : " + e.clientY);
+        // console.log("start crop " + e.clientX + " : " + e.clientY);
+        // if (appState.isCropMode) {
+        //     setAppState({
+        //         isCropping: true,
+        //         mouseStartX: parseInt(e.clientX, 10),
+        //         mouseStartY: parseInt(e.clientY, 10)
+        //     });
+        // }
+        console.log("start crop " + e.offsetX + " : " + e.offsetY);
         if (appState.isCropMode) {
             setAppState({
                 isCropping: true,
-                mouseStartX: parseInt(e.clientX, 10),
-                mouseStartY: parseInt(e.clientY, 10)
+                mouseStartX: parseInt(e.offsetX, 10),
+                mouseStartY: parseInt(e.offsetY, 10)
             });
         }
     }
