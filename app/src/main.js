@@ -4,10 +4,26 @@ import {constants} from "./constants";
 import {AppState} from "./app-state";
 require("core-js");
 
-(function() {
+function resetCropBoxDragControls(boxHeight, boxWidth) {
+    var size = 10;
+    return {
+        size: 10,
+        topLeft: {y: 10, x: 10},
+        top: {y: 10, x: 100},
+        topRight: {y: 10, x: 200},
+        left: {y: 100, x: 10},
+        right: {y: 100, x: 200},
+        bottomLeft: {y: 200, x: 10},
+        bottom: {y: 200, x: 100},
+        bottomRight: {y: 200, x: 200}
+    };
+
+}
+
+(function () {
     "use strict";
     // Do we have drag and drop?
-    var isAdvancedUpload = (function() {
+    var isAdvancedUpload = (function () {
         var div = document.createElement("div");
         return "draggable" in div || ("ondragstart" in div && "ondrop" in div) && "FormData" in window && "FileReader" in window;
     }());
@@ -27,6 +43,7 @@ require("core-js");
     var zoom50Button = document.getElementById("zoom50Button");
     var zoom200Button = document.getElementById("zoom200Button");
     var zoom500Button = document.getElementById("zoom500Button");
+    var cropDragControls;
     // Other stuff
     var uploadInstructions = document.getElementById("uploadInstructions");
     var workspace = document.getElementById("workspace");
@@ -41,8 +58,8 @@ require("core-js");
     var rotationValue = document.getElementById("rotationValue");
     var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module-control-group_tool-switch"));
     var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module-control-group"));
-
     var myEditor;
+
 
     var appState = new AppState();
 
@@ -74,45 +91,62 @@ require("core-js");
                         case "isCropMode" :
                             console.log("crop case");
                             console.log(state.isCropMode);
-                            if (state.isCropMode) {
-                                setEditorBoxClass(constants.IS_CROPPING);
-                                cropControl.className += (/is-active/).test(cropControl.className) ? "" : " is-active";
-                                if (myEditor) {
-                                    myEditor.canvas.setAttribute("class", (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
-                                    myEditor.canvas.addEventListener("mousedown", startCrop);
-                                    myEditor.canvas.addEventListener("mousemove", cropping);
-                                    myEditor.canvas.addEventListener("mouseup", endCrop);
-                                    myEditor.canvas.addEventListener("mouseout", endCrop);
-                                }
-                                break;
-                            }
-                            cropControl.className = cropControl.className.replace(/is-active/g, "").trim();
+
                             if (myEditor) {
+                                if (state.isCropMode) {
+                                    if (!cropDragControls) {
+                                        cropDragControls = resetCropBoxDragControls(300, 300);
+                                    }
+                                    drawCropBox({
+                                        x: cropDragControls.topLeft.x,
+                                        y: cropDragControls.topLeft.y,
+                                        width: cropDragControls.topRight.x - cropDragControls.topLeft.x,
+                                        height: cropDragControls.bottomLeft.y - cropDragControls.topLeft.y
+                                    });
+                                    cropDragControls = resetCropBoxDragControls();
+                                    myEditor.canvas.setAttribute("class", (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
+                                    // myEditor.canvas.addEventListener("mousedown", startCrop);
+                                    // myEditor.canvas.addEventListener("mousemove", cropping);
+                                    // myEditor.canvas.addEventListener("mouseup", endCrop);
+                                    // myEditor.canvas.addEventListener("mouseout", endCrop);
+                                    break;
+                                }
+
                                 myEditor.canvas.setAttribute("class", myEditor.canvas.className.replace("is-cropping", "").trim());
-                                myEditor.canvas.removeEventListener("mousedown", startCrop);
-                                myEditor.canvas.removeEventListener("mousemove", cropping);
-                                myEditor.canvas.removeEventListener("mouseup", endCrop);
-                                myEditor.canvas.removeEventListener("mouseout", endCrop);
+                                // myEditor.canvas.removeEventListener("mousedown", startCrop);
+                                // myEditor.canvas.removeEventListener("mousemove", cropping);
+                                // myEditor.canvas.removeEventListener("mouseup", endCrop);
+                                // myEditor.canvas.removeEventListener("mouseout", endCrop);
                             }
                             break;
 
-                        case "isLastHistory" :
+                        case
+                        "isLastHistory"
+                        :
                             if (state.isLastHistory) {
                                 redoControl.setAttribute("disabled", "disabled");
                                 break;
                             }
                             redoControl.removeAttribute("disabled");
                             break;
-                        case "isFirstHistory" :
+                        case
+                        "isFirstHistory"
+                        :
                             if (state.isFirstHistory) {
                                 undoControl.setAttribute("disabled", "disabled");
                                 break;
                             }
                             undoControl.removeAttribute("disabled");
                             break;
-                        case "hasPhoto" :
+                        case
+                        "hasPhoto"
+                        :
                             if (state.hasPhoto) {
+
                                 workspace.className = workspace.className + " has-photo";
+                                switchButtons.forEach(function (control) {
+                                    control.removeAttribute("disabled");
+                                });
                                 scaleControl.removeAttribute("disabled");
                                 cropControl.removeAttribute("disabled");
                                 clearImageControl.removeAttribute("disabled");
@@ -143,7 +177,9 @@ require("core-js");
                             zoom500Button.setAttribute("disabled", "disabled");
                             fileInput.value = null;
                             break;
-                        case "isDragging" :
+                        case
+                        "isDragging"
+                        :
                             console.log("drag case");
                             console.log(state.isDragging);
                             setEditorBoxClass(constants.IS_DRAGGING);
@@ -153,7 +189,9 @@ require("core-js");
                             }
                             workspace.className = workspace.className.replace(/is-dragover/g, "").trim();
                             break;
-                        case "spinnerIsVisible" :
+                        case
+                        "spinnerIsVisible"
+                        :
                             var isHidden = /is-hidden/.test(spinner.className);
 
                             if (state.spinnerIsVisible) {
@@ -162,7 +200,9 @@ require("core-js");
                             }
                             spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
                             break;
-                        case "activeControlSet" :
+                        case
+                        "activeControlSet"
+                        :
                             controlSets.forEach(c => {
                                     c.className = c.className.replace(/is-open/g, "").trim();
                                     if (c.id === "controlSet" + state.activeControlSet) {
@@ -178,7 +218,9 @@ require("core-js");
                                 }
                             );
                             break;
-                        case "isPhotoBig" :
+                        case
+                        "isPhotoBig"
+                        :
                             var isBig = /is-photo-big/.test(workspace.className);
 
                             if (!state.isPhotoBig) {
@@ -258,7 +300,7 @@ require("core-js");
         }));
 
 
-      // saveButton.addEventListener("click", myEditor.save);
+        // saveButton.addEventListener("click", myEditor.save);
         editorBox.appendChild(myEditor.canvas);
         // TODO : remove this hack
         window.editor = myEditor;
@@ -281,7 +323,7 @@ require("core-js");
         event.stopPropagation();
         if (appState.isCropMode) {
             setAppState({
-                isCropMode: false, 
+                isCropMode: false,
                 isCropping: false
             });
             return;
@@ -299,13 +341,22 @@ require("core-js");
         var canMouseY = parseInt(e.offsetY, 10) - appState.mouseStartY;
         // if the crop flag is set, clear the canvas and draw the image
         if (appState.isCropping) {
-            drawInvertedBox({
+            drawCropBox({
                 x: appState.mouseStartX - appState.offset.left,
                 y: appState.mouseStartY - appState.offset.top,
                 width: canMouseX,
                 height: canMouseY
             });
         }
+    }
+
+    function drawCropBox(args) {
+        drawInvertedBox(args);
+        Object.keys(cropDragControls).forEach((box) => {
+            myEditor.canvasContext.beginPath();
+            myEditor.canvasContext.fillStyle = "rgba(0,0,255,1)";
+            myEditor.canvasContext.fillRect(cropDragControls[box].x-5, cropDragControls[box].y-5, 10, 10);
+        });
     }
 
     function drawBox(args) {
@@ -364,10 +415,9 @@ require("core-js");
             }
         }
         // clear the crop flag
-        setAppState({isCropping: false, isCropMode:false});
+        setAppState({isCropping: false, isCropMode: false});
 
     }
-
 
     function redo() {
         myEditor.redo();

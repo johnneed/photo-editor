@@ -4,7 +4,7 @@
 @tab-panel-height: 60px;
 @import "icons";
 @import "modules/module-control-group";
-
+@import "modules/module-crop-control";
 
 
 .photo-widget {
@@ -228,8 +228,10 @@ button {
 }
 
 .photo-widget_boolean-button{
+  margin: 0 .2rem;
   span.photo-widget_boolean-button-active{
     display: none;
+
   }
   span.photo-widget_boolean-button-inactive{
     display: inline;
@@ -244,13 +246,15 @@ button {
     }}
 }
 
-
-.photo-widget_control-group {
-  margin: 0;
-  text-align: center;
-  &.is-open{
-   }
+.photo-widget_boolean-button-crop{
+  margin: 0 .2rem;
+  display:none;
+  &.is-active{
+    display:inline;
+  }
 }
+
+
 
 .spinner-box {
   position: relative;

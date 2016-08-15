@@ -57,52 +57,53 @@
             <div class="photo-widget_toolbar">
                 <div id="photoWidgetTabs" class="photo-widget_tabs">
                     <div class="photo-widget_tab">
-                        <button id="toolSwitchScale" value="Scale" title="Scale Image"
+                        <button id="toolSwitchScale" value="Scale" title="Scale Image" disabled="disabled"
                                 class="module-control-group_tool-switch">
                             <i class="icon-shrink"></i>
                             <span class="-label">Scale</span>
                         </button>
                     </div>
                     <div class="photo-widget_tab">
-                        <button id="toolSwitchCrop" value="Crop" title="Crop Image"
+                        <button id="toolSwitchCrop" value="Crop" title="Crop Image" disabled="disabled"
                                 class="module-control-group_tool-switch">
                             <i class="icon-crop"></i>
                             <span class="module-control-group_tool-switch-label">Crop</span>
                         </button>
                     </div>
                     <div class="photo-widget_tab">
-                        <button id="toolSwitchHistory" value="History" title="Image History"
+                        <button id="toolSwitchHistory" value="History" title="Image History" disabled="disabled"
                                 class="module-control-group_tool-switch">
                             <i class="icon-history"></i>
                             <span class="module-control-group_tool-switch-label">History</span>
                         </button>
                     </div>
                     <div class="photo-widget_tab">
-                        <button id="toolSwitchRotate" value="Rotate" title="Rotate Image"
+                        <button id="toolSwitchRotate" value="Rotate" title="Rotate Image" disabled="disabled"
                                 class="module-control-group_tool-switch">
                             <i class="icon-spinner11"></i>
                             <span class="module-control-group_tool-switch-label">Rotate</span>
                         </button>
                     </div>
+
                     <div class="photo-widget_tab">
-                        <button id="toolSwitchSave" value="Save" title="Save Image"
-                                class="module-control-group_tool-switch">
-                            <i class="icon-floppy-disk"></i>
-                            <span class="module-control-group_tool-switch-label">Save</span>
-                        </button>
-                    </div>
-                    <div class="photo-widget_tab">
-                        <button id="toolSwitchClear" value="Clear" title="Start Over"
+                        <button id="toolSwitchClear" value="Clear" title="Start Over" disabled="disabled"
                                 class="module-control-group_tool-switch">
                             <i class="icon-cancel-circle"></i>
                             <span class="module-control-group_tool-switch-label">Reset</span>
                         </button>
                     </div>
                     <div class="photo-widget_tab">
-                        <button id="toolSwitchZoom" value="Zoom" title="Zoom Image"
+                        <button id="toolSwitchZoom" value="Zoom" title="Zoom Image" disabled="disabled"
                                 class="module-control-group_tool-switch">
                             <i class="icon-zoom-in"></i>
                             <span class="module-control-group_tool-switch-label">Zoom</span>
+                        </button>
+                    </div>
+                    <div class="photo-widget_tab">
+                        <button id="toolSwitchSave" value="Save" title="Save Image" disabled="disabled"
+                                class="module-control-group_tool-switch">
+                            <i class="icon-floppy-disk"></i>
+                            <span class="module-control-group_tool-switch-label">Save</span>
                         </button>
                     </div>
                 </div>
@@ -137,10 +138,10 @@
                             <div class="module-control-group_tool-group-container">
                                 <div class="module-control-group_tool-group-crop">
                                     <div class="module-crop-control">
-                                        <button class="photo-widget_boolean-button" id="cropImageControl">
-                                            <span class="photo-widget_boolean-button-inactive">Start</span>
-                                            <span class="photo-widget_boolean-button-active">Stop</span>
+                                        <button class="module-control-group_start-button" id="cropImageControl">
+                                            <span>Crop</span>
                                         </button>
+
                                     </div>
                                     <div class="module-control-group_lower-control-container">
                                         <span class="module-control-group_group-name">Crop</span>
