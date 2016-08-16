@@ -5,17 +5,16 @@ import {AppState} from "./app-state";
 require("core-js");
 
 function resetCropBoxDragControls(boxHeight, boxWidth) {
-    var size = 10;
+
     return {
-        size: 10,
-        topLeft: {y: 10, x: 10},
-        top: {y: 10, x: 100},
-        topRight: {y: 10, x: 200},
-        left: {y: 100, x: 10},
-        right: {y: 100, x: 200},
-        bottomLeft: {y: 200, x: 10},
-        bottom: {y: 200, x: 100},
-        bottomRight: {y: 200, x: 200}
+        topLeft: {y: 10, x: 10, active: false},
+       // top: {y: 10, x: 100, active: false},
+        topRight: {y: 10, x: 200, active: false},
+       // left: {y: 100, x: 10, active: false},
+       // right: {y: 100, x: 200, active: false},
+        bottomLeft: {y: 200, x: 10, active: false},
+       // bottom: {y: 200, x: 100, active: false},
+        bottomRight: {y: 200, x: 200, active: true}
     };
 }
 
@@ -55,11 +54,10 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
     // var heightValue = document.getElementById("heightValue");
     // var widthValue = document.getElementById("widthValue");
     var rotationValue = document.getElementById("rotationValue");
-    var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module-control-group_tool-switch"));
+    var switchButtons = [...document.getElementsByClassName("module-control-group_tool-switch")];
     var toolSwitchCrop = document.getElementById("toolSwitchCrop");
-    var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module-control-group"));
+    var controlSets = [...document.getElementsByClassName("module-control-group")];
     var myEditor;
-
 
     var appState = new AppState();
 
@@ -115,7 +113,7 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
                                 myEditor.canvas.setAttribute("class", myEditor.canvas.className.replace("is-cropping", "").trim());
                                 // myEditor.canvas.removeEventListener("mousedown", startCrop);
                                 // myEditor.canvas.removeEventListener("mousemove", cropping);
-                                // myEditor.canvas.removeEventListener("mouseup", endCrop);
+                               myEditor.canvas.removeEventListener("mouseup", endCrop);
                                 // myEditor.canvas.removeEventListener("mouseout", endCrop);
                                 myEditor.redrawImage();
                             }
@@ -323,6 +321,8 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
     }
 
     function cropButtonClick(event) {
+        crop( cropDragControls.topLeft.x,cropDragControls.topLeft.y,cropDragControls.bottomRight.x,cropDragControls.bottomRight.x);
+
         // event.stopPropagation();
         // if (appState.isCropMode) {
         //     setAppState({
@@ -357,8 +357,12 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         drawInvertedBox(args);
         Object.keys(cropDragControls).forEach((box) => {
             myEditor.canvasContext.beginPath();
-            myEditor.canvasContext.fillStyle = args.activeBox === box?"rgba(0,0,255,.2)":"rgba(0,0,255,1)";
+            myEditor.canvasContext.lineWidth="1";
+            myEditor.canvasContext.fillStyle = cropDragControls[box].active?"rgba(255,255,255,0)":"rgba(255,255,255,0.8)";
+            myEditor.canvasContext.strokeStyle=cropDragControls[box].active?"rgba(255,0,0,1)":"rgba(255,0,0,0.5)";
+            myEditor.canvasContext.rect(cropDragControls[box].x-5, cropDragControls[box].y-5, 10, 10);
             myEditor.canvasContext.fillRect(cropDragControls[box].x-5, cropDragControls[box].y-5, 10, 10);
+            myEditor.canvasContext.stroke();
         });
     }
 
@@ -399,9 +403,18 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
 
     }
 
+    function crop(topLeftX,topLeftY,bottomRightX,bottomRightY){
+        myEditor.crop({
+            x: topLeftX,
+            y: topLeftY,
+            width: Math.abs(bottomRightX - topLeftX),
+            height: Math.abs(bottomRightY - topLeftY)
+        })
+    }
+
     function endCrop(e) {
         console.log("end crop " + e.offsetX + " : " + e.offsetY);
-        // var zoomRatio = appState.zoom / 100;
+
         if (e.clientX && e.clientY) {
             setAppState({
                 mouseEndX: parseInt(e.offsetX, 10) - appState.mouseStartX,
