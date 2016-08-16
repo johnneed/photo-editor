@@ -17,7 +17,6 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         bottom: {y: 200, x: 100},
         bottomRight: {y: 200, x: 200}
     };
-
 }
 
 (function () {
@@ -57,6 +56,7 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
     // var widthValue = document.getElementById("widthValue");
     var rotationValue = document.getElementById("rotationValue");
     var switchButtons = Array.prototype.slice.call(document.getElementsByClassName("module-control-group_tool-switch"));
+    var toolSwitchCrop = document.getElementById("toolSwitchCrop");
     var controlSets = Array.prototype.slice.call(document.getElementsByClassName("module-control-group"));
     var myEditor;
 
@@ -162,6 +162,9 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
                                 break;
                             }
                             workspace.className = workspace.className.replace(/has-photo/g, "").trim();
+                            switchButtons.forEach(function (control) {
+                                control.setAttribute("disabled", "disabled");
+                            });
                             scaleControl.setAttribute("disabled", "disabled");
                             cropControl.setAttribute("disabled", "disabled");
                             clearImageControl.setAttribute("disabled", "disabled");
@@ -318,20 +321,19 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         setAppState({isDragging: true});
     }
 
-
     function cropButtonClick(event) {
-        event.stopPropagation();
-        if (appState.isCropMode) {
-            setAppState({
-                isCropMode: false,
-                isCropping: false
-            });
-            return;
-        }
-        setAppState({
-            offset: getOffset(myEditor.canvas),
-            isCropMode: true
-        });
+        // event.stopPropagation();
+        // if (appState.isCropMode) {
+        //     setAppState({
+        //         isCropMode: false,
+        //         isCropping: false
+        //     });
+        //     return;
+        // }
+        // setAppState({
+        //     offset: getOffset(myEditor.canvas),
+        //     isCropMode: true
+        // });
 
     }
 
@@ -354,7 +356,7 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         drawInvertedBox(args);
         Object.keys(cropDragControls).forEach((box) => {
             myEditor.canvasContext.beginPath();
-            myEditor.canvasContext.fillStyle = "rgba(0,0,255,1)";
+            myEditor.canvasContext.fillStyle = args.activeBox === box?"rgba(0,0,255,.2)":"rgba(0,0,255,1)";
             myEditor.canvasContext.fillRect(cropDragControls[box].x-5, cropDragControls[box].y-5, 10, 10);
         });
     }
@@ -472,7 +474,6 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         }
     }
 
-
     function startOver(event) {
         event.preventDefault();
         myEditor = null;
@@ -489,7 +490,6 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
     function zoomPic(event) {
         myEditor.zoom(parseInt(event.currentTarget.value, 10));
     }
-
 
     function setActiveControlSet(event) {
         var id = event.currentTarget.value;
@@ -515,6 +515,17 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
     zoom500Button.addEventListener("click", zoomPic);
     switchButtons.forEach(b => {
         b.addEventListener("click", setActiveControlSet);
+    });
+
+    toolSwitchCrop.addEventListener("click",(event)=>{
+       event.stopPropagation();
+        setActiveControlSet.bind(this);
+
+        setAppState({
+            offset: getOffset(myEditor.canvas),
+            isCropMode: true
+        });
+
     });
 
     if (isAdvancedUpload) {
