@@ -117,6 +117,7 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
                                 // myEditor.canvas.removeEventListener("mousemove", cropping);
                                 // myEditor.canvas.removeEventListener("mouseup", endCrop);
                                 // myEditor.canvas.removeEventListener("mouseout", endCrop);
+                                myEditor.redrawImage();
                             }
                             break;
 
@@ -494,6 +495,13 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
     function setActiveControlSet(event) {
         var id = event.currentTarget.value;
         setAppState({activeControlSet: id});
+
+            setAppState({
+                offset: getOffset(myEditor.canvas),
+                isCropMode: (event.currentTarget.id === "toolSwitchCrop")
+            });
+
+
     }
 
     resetAppState();
@@ -517,16 +525,7 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         b.addEventListener("click", setActiveControlSet);
     });
 
-    toolSwitchCrop.addEventListener("click",(event)=>{
-       event.stopPropagation();
-        setActiveControlSet.bind(this);
 
-        setAppState({
-            offset: getOffset(myEditor.canvas),
-            isCropMode: true
-        });
-
-    });
 
     if (isAdvancedUpload) {
         workspace.addEventListener("drop", addPic);
