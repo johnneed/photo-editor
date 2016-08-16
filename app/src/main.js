@@ -4,19 +4,7 @@ import {constants} from "./constants";
 import {AppState} from "./app-state";
 require("core-js");
 
-function resetCropBoxDragControls(boxHeight, boxWidth) {
 
-    return {
-        topLeft: {y: 10, x: 10, active: false},
-       // top: {y: 10, x: 100, active: false},
-        topRight: {y: 10, x: 200, active: false},
-       // left: {y: 100, x: 10, active: false},
-       // right: {y: 100, x: 200, active: false},
-        bottomLeft: {y: 200, x: 10, active: false},
-       // bottom: {y: 200, x: 100, active: false},
-        bottomRight: {y: 200, x: 200, active: true}
-    };
-}
 
 (function () {
     "use strict";
@@ -353,6 +341,20 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
         }
     }
 
+    function resetCropBoxDragControls(boxHeight, boxWidth) {
+
+        return {
+            topLeft: {y: 10, x: 10, active: false},
+            // top: {y: 10, x: 100, active: false},
+            topRight: {y: 10, x: 200, active: false},
+            // left: {y: 100, x: 10, active: false},
+            // right: {y: 100, x: 200, active: false},
+            bottomLeft: {y: 200, x: 10, active: false},
+            // bottom: {y: 200, x: 100, active: false},
+            bottomRight: {y: 200, x: 200, active: true}
+        };
+    }
+
     function drawCropBox(args) {
         drawInvertedBox(args);
         Object.keys(cropDragControls).forEach((box) => {
@@ -410,6 +412,12 @@ function resetCropBoxDragControls(boxHeight, boxWidth) {
             width: Math.abs(bottomRightX - topLeftX),
             height: Math.abs(bottomRightY - topLeftY)
         })
+    }
+
+    function detectCropBoxDragControls(x,y){
+        Object.keys(cropDragControls).forEach((box) => {
+
+        }
     }
 
     function endCrop(e) {
