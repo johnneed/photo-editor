@@ -91,10 +91,10 @@ require("core-js");
                                     });
                                     cropDragControls = resetCropBoxDragControls();
                                     myEditor.canvas.setAttribute("class", (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
-                                    // myEditor.canvas.addEventListener("mousedown", startCrop);
-                                    // myEditor.canvas.addEventListener("mousemove", cropping);
-                                    // myEditor.canvas.addEventListener("mouseup", endCrop);
-                                    // myEditor.canvas.addEventListener("mouseout", endCrop);
+                                    myEditor.canvas.addEventListener("mousedown", startCrop);
+                                    myEditor.canvas.addEventListener("mousemove", cropping);
+                                    myEditor.canvas.addEventListener("mouseup", endCrop);
+                                     myEditor.canvas.addEventListener("mouseout", endCrop);
                                     break;
                                 }
 
@@ -357,6 +357,10 @@ require("core-js");
 
     function drawCropBox(args) {
         drawInvertedBox(args);
+        cropDragControls.topLeft = {x: args.x, y:args.y};
+        cropDragControls.topRight = {x:args.x + args.width, y:args.y};
+        cropDragControls.bottomLeft = {x: args.x, y:args.y + args.height};
+        cropDragControls.bottomRight = {x:args.x +args.width, y:args.y + args.height};
         Object.keys(cropDragControls).forEach((box) => {
             myEditor.canvasContext.beginPath();
             myEditor.canvasContext.lineWidth="1";
@@ -417,7 +421,7 @@ require("core-js");
     function detectCropBoxDragControls(x,y){
         Object.keys(cropDragControls).forEach((box) => {
 
-        }
+        });
     }
 
     function endCrop(e) {
@@ -429,18 +433,18 @@ require("core-js");
                 mouseEndY: parseInt(e.offsetY, 10) - appState.mouseStartY
             });
 
-            if (appState.isCropping) {
-                myEditor.crop({
-                    x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left) : (parseInt(e.offsetX, 10) - appState.offset.left),
-                    y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) : (parseInt(e.offsetY, 10) - appState.offset.top),
-                    width: Math.abs(appState.mouseEndX),
-                    height: Math.abs(appState.mouseEndY)
-                })
-            }
+            // if (appState.isCropping) {
+            //     myEditor.crop({
+            //         x: (appState.mouseEndX > 0) ? (appState.mouseStartX - appState.offset.left) : (parseInt(e.offsetX, 10) - appState.offset.left),
+            //         y: (appState.mouseEndY > 0) ? (appState.mouseStartY - appState.offset.top) : (parseInt(e.offsetY, 10) - appState.offset.top),
+            //         width: Math.abs(appState.mouseEndX),
+            //         height: Math.abs(appState.mouseEndY)
+            //     })
+            // }
         }
         // clear the crop flag
-        setAppState({isCropping: false, isCropMode: false});
-
+       // setAppState({isCropping: false, isCropMode: false});
+        setAppState({isCropping: false})
     }
 
     function redo() {
@@ -490,6 +494,7 @@ require("core-js");
         if (appState.isCropMode) {
             setAppState({
                 isCropping: true,
+                activeDragControl: "lowerLeft",
                 mouseStartX: parseInt(e.offsetX, 10),
                 mouseStartY: parseInt(e.offsetY, 10)
             });
