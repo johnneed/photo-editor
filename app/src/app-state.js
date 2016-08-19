@@ -24,6 +24,7 @@ export class AppState {
     isSaving;
     activeControlSet;
     isPhotoBig;
+    withCropBoxControl;
 
     constructor(state = {}) {
         this.mouseStartX = state.mouseStartX || null;
@@ -48,6 +49,7 @@ export class AppState {
         this.isSaving = typeof state.isSaving === "boolean" ? state.isSaving : false;
         this.activeControlSet = state.activeControlSet || null;
         this.isPhotoBig = !!state.isPhotoBig;
+        this.withCropBoxControl = !!state.withCropBoxControl;
     }
 
     prune() {

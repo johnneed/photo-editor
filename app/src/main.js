@@ -106,27 +106,21 @@ require("core-js");
                             }
                             break;
 
-                        case
-                        "isLastHistory"
-                        :
+                        case   "isLastHistory"   :
                             if (state.isLastHistory) {
                                 redoControl.setAttribute("disabled", "disabled");
                                 break;
                             }
                             redoControl.removeAttribute("disabled");
                             break;
-                        case
-                        "isFirstHistory"
-                        :
+                        case       "isFirstHistory"   :
                             if (state.isFirstHistory) {
                                 undoControl.setAttribute("disabled", "disabled");
                                 break;
                             }
                             undoControl.removeAttribute("disabled");
                             break;
-                        case
-                        "hasPhoto"
-                        :
+                        case  "hasPhoto"     :
                             if (state.hasPhoto) {
 
                                 workspace.className = workspace.className + " has-photo";
@@ -166,9 +160,7 @@ require("core-js");
                             zoom500Button.setAttribute("disabled", "disabled");
                             fileInput.value = null;
                             break;
-                        case
-                        "isDragging"
-                        :
+                        case "isDragging"    :
                             console.log("drag case");
                             console.log(state.isDragging);
                             setEditorBoxClass(constants.IS_DRAGGING);
@@ -178,9 +170,7 @@ require("core-js");
                             }
                             workspace.className = workspace.className.replace(/is-dragover/g, "").trim();
                             break;
-                        case
-                        "spinnerIsVisible"
-                        :
+                        case  "spinnerIsVisible" :
                             var isHidden = /is-hidden/.test(spinner.className);
 
                             if (state.spinnerIsVisible) {
@@ -189,9 +179,7 @@ require("core-js");
                             }
                             spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
                             break;
-                        case
-                        "activeControlSet"
-                        :
+                        case   "activeControlSet" :
                             controlSets.forEach(c => {
                                     c.className = c.className.replace(/is-open/g, "").trim();
                                     if (c.id === "controlSet" + state.activeControlSet) {
@@ -308,7 +296,7 @@ require("core-js");
     }
 
     function cropButtonClick(event) {
-        crop(cropBoxControls.topLeft.x, cropBoxControls.topLeft.y, cropBoxControls.bottomRight.x, cropBoxControls.bottomRight.x);
+        crop();
 
         // event.stopPropagation();
         // if (appState.isCropMode) {
@@ -326,21 +314,36 @@ require("core-js");
     }
 
     function cropping(e) {
+        var overControl = detectCropBoxDragControls(parseInt(e.offsetX, 10), parseInt(e.offsetY, 10));
+        var startSpot = (function(){
+            var activeBox = Object.keys(cropBoxControls).filter(key => cropBoxControls[key].active)[0];
+            switch (activeBox) {
+                case "topLeft":
+                    return cropBoxControls.bottomRight;
+                case "bottomRight":
+                    return cropBoxControls.topLeft;
+                case "topRight":
+                    return cropBoxControls.bottomLeft;
+                case "bottomLeft":
+                    return cropBoxControls.topRight;
+                default :
+                    return null;
+            }
+        }());
+        var canMouseX = parseInt(e.offsetX, 10) - ((appState.withCropBoxControl && !!startSpot) ? startSpot.x : appState.mouseStartX);
+        var canMouseY = parseInt(e.offsetY, 10) - ((appState.withCropBoxControl && !!startSpot) ? startSpot.y : appState.mouseStartY);
 
-        var canMouseX = parseInt(e.offsetX, 10) - appState.mouseStartX;
-        var canMouseY = parseInt(e.offsetY, 10) - appState.mouseStartY;
-        var overControl = detectCropBoxDragControls(canMouseX, canMouseY);
-        if (overControl) {
-            console.log("WE HAVE A CONTROL!!!!!!!!!!!!!!!!!!!!!");
-        }
+
         // if the crop flag is set, clear the canvas and draw the image
         if (appState.isCropping) {
+
             drawCropBox({
-                x: appState.mouseStartX - appState.offset.left,
-                y: appState.mouseStartY - appState.offset.top,
+                x: ((appState.withCropBoxControl && !!startSpot) ? startSpot.x : appState.mouseStartX) - appState.offset.left,
+                y: ((appState.withCropBoxControl && !!startSpot) ? startSpot.y : appState.mouseStartY) - appState.offset.top,
                 width: canMouseX,
                 height: canMouseY
             });
+
         } else if (overControl) {
             drawCropBox();
         }
@@ -421,7 +424,10 @@ require("core-js");
 
     }
 
-    function crop(topLeftX, topLeftY, bottomRightX, bottomRightY) {
+    function crop(topLeftX = cropBoxControls.topLeft.x,
+                  topLeftY = cropBoxControls.topLeft.y,
+                  bottomRightX = cropBoxControls.bottomRight.x,
+                  bottomRightY = cropBoxControls.bottomRight.y) {
         myEditor.crop({
             x: topLeftX,
             y: topLeftY,
@@ -436,7 +442,7 @@ require("core-js");
         Object.keys(cropBoxControls).forEach((box) => {
             var control = cropBoxControls[box];
             var isY = y <= control.y + 5 && y >= control.y - 5;
-            var isX = x <= control.y + 5 && x >= control.y - 5;
+            var isX = x <= control.x + 5 && x >= control.x - 5;
             control.active = isY && isX;
             hasControl = hasControl || (isY && isX);
         });
@@ -516,7 +522,8 @@ require("core-js");
                 isCropping: true,
                 activeDragControl: "lowerLeft",
                 mouseStartX: parseInt(e.offsetX, 10),
-                mouseStartY: parseInt(e.offsetY, 10)
+                mouseStartY: parseInt(e.offsetY, 10),
+                withCropBoxControl: detectCropBoxDragControls(parseInt(e.offsetX, 10), parseInt(e.offsetY, 10))
             });
         }
     }
