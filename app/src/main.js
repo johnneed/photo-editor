@@ -279,8 +279,7 @@ require("core-js");
 
         // saveButton.addEventListener("click", myEditor.save);
         editorBox.appendChild(myEditor.canvas);
-        // TODO : remove this hack
-        window.editor = myEditor;
+
     }
 
     function dragEnd(event) {
@@ -577,7 +576,6 @@ require("core-js");
     switchButtons.forEach(b => {
         b.addEventListener("click", setActiveControlSet);
     });
-
 
     if (isAdvancedUpload) {
         workspace.addEventListener("drop", addPic);
