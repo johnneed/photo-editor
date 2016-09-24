@@ -4,8 +4,248 @@ import {constants} from "./constants";
 import {AppState} from "./app-state";
 require("core-js");
 
+function createElem(args) {
+    var elem = document.createElement((args.tag || "DIV").toUpperCase());
+    if(args.className){elem.className = args.className.trim()};
+    if(args.id){elem.id = args.id;}
+    (Array.isArray(args.children) ? args.children : [args.children]).forEach(el => {
+        var child = typeof el === "string" ? document.createTextNode(el) : createElem(el)
+        elem.appendChild(child)
+    });
+    return elem;
+}
 
-(function () {
+function createControlSet(args) {
+    var name = args.name.charAt(0).toUpperCase() + args.name.slice(1, args.name.length).toLowerCase();
+    var controlSet = createElem({
+        id: "controlSet" + name,
+        className: "photo-widget_control-group module-control-group",
+        tag: "DIV",
+        name: args.name,
+        children: [{
+            tag: "DIV", className: "module-control-group_container", children: [
+                {
+                    tag: "DIV", className: "module-control-group_tool-group-container", children: [
+                    {
+                        tag: "DIV",
+                        className: "module-control-group_tool-group-" + args.name.toLowerCase().trim(),
+                        children: [
+                            {
+                                tag: "DIV",
+                                className: "module-" + args.name.toLowerCase().trim() + "-control",
+                                children: [
+                                    {
+                                        tag: "BUTTON", id: "clearImageControl", className: "", children: [
+                                        {tag: "I", className: "icon-cancel-circle", children: []}
+                                    ]
+                                    }
+                                ]
+                            },
+                            {tag: "DIV", className: "", children: [{tag: "SPAN", className: "", children: name}]}
+                        ]
+                    }
+                ]
+                }
+            ]
+        }]
+    });
+    return controlSet;
+}
+
+var controlSets = [
+    {name: "reset"}
+];
+
+controlSets.forEach(cs => {
+    var node = createControlSet(cs);
+    document.getElementsByClassName("photo-widget_tab-panels")[0].appendChild(node)
+});
+
+var stateRules = [
+    {
+        id: "scale",
+        execute: function (state) {
+            scaleValue.innerHTML = state.scale;
+            scaleControl.value = state.scale;
+            if (!isNaN(state.scale) && state.scale !== 100) {
+                resetScaleButton.removeAttribute("disabled");
+
+            } else {
+                resetScaleButton.setAttribute("disabled", "disabled");
+            }
+            setEditorBoxClass("is-scaling");
+        }
+    },
+    {
+        id: "zoom",
+        execute: function (state) {
+            zoomValue.innerHTML = state.zoom;
+            zoomControl.value = state.zoom;
+            setEditorBoxClass(constants.IS_ZOOMING);
+        }
+    },
+    {
+        id: "rotation",
+        execute: function (state) {
+            let deg = ((isNaN(state.rotation) ? 0 : state.rotation) / Math.PI * 180);
+            rotationValue.innerHTML = deg;
+            setEditorBoxClass(constants.IS_ROTATING);
+        }
+    },
+    {
+        id: "isCropMode",
+        execute: function (state) {
+            if (myEditor) {
+                if (state.isCropMode) {
+                    if (!cropBoxControls) {
+                        console.log("cropBoxControl RESET");
+                        cropBoxControls = resetCropBoxDragControls(300, 300);
+                    }
+                    drawCropBox({
+                        x: cropBoxControls.topLeft.x,
+                        y: cropBoxControls.topLeft.y,
+                        width: cropBoxControls.topRight.x - cropBoxControls.topLeft.x,
+                        height: cropBoxControls.bottomLeft.y - cropBoxControls.topLeft.y
+                    });
+                    cropBoxControls = resetCropBoxDragControls();
+                    myEditor.canvas.setAttribute("class", (myEditor.canvas.className + (/is-cropping/).test(myEditor.canvas.className) ? "" : " is-cropping"));
+                    myEditor.canvas.addEventListener("mousedown", startCrop);
+                    myEditor.canvas.addEventListener("mousemove", cropping);
+                    myEditor.canvas.addEventListener("mouseup", endCrop);
+                    myEditor.canvas.addEventListener("mouseout", endCrop);
+                    return;
+                }
+                myEditor.canvas.setAttribute("class", myEditor.canvas.className.replace("is-cropping", "").trim());
+                myEditor.canvas.removeEventListener("mousedown", startCrop);
+                myEditor.canvas.removeEventListener("mousemove", cropping);
+                myEditor.canvas.removeEventListener("mouseup", endCrop);
+                myEditor.canvas.removeEventListener("mouseout", endCrop);
+                myEditor.redrawImage();
+            }
+        }
+    },
+    {
+        id: "isLastHistory",
+        execute: function (state) {
+            if (state.isLastHistory) {
+                redoControl.setAttribute("disabled", "disabled");
+                return;
+            }
+            redoControl.removeAttribute("disabled");
+        }
+    },
+    {
+        id: "isFirstHistory",
+        execute: function (state) {
+            if (state.isFirstHistory) {
+                undoControl.setAttribute("disabled", "disabled");
+                return;
+            }
+            undoControl.removeAttribute("disabled");
+        }
+    },
+    {
+        id: "hasPhoto",
+        execute: function (state) {
+            if (state.hasPhoto) {
+
+                workspace.className = workspace.className + " has-photo";
+                switchButtons.forEach(function (control) {
+                    control.removeAttribute("disabled");
+                });
+                scaleControl.removeAttribute("disabled");
+                cropControl.removeAttribute("disabled");
+                clearImageControl.removeAttribute("disabled");
+                zoomControl.removeAttribute("disabled");
+                rotateRight.removeAttribute("disabled");
+                rotateLeft.removeAttribute("disabled");
+                saveButton.removeAttribute("disabled");
+                resetScaleButton.removeAttribute("disabled");
+                zoom100Button.removeAttribute("disabled");
+                zoom50Button.removeAttribute("disabled");
+                zoom200Button.removeAttribute("disabled");
+                zoom500Button.removeAttribute("disabled");
+                return;
+            }
+            workspace.className = workspace.className.replace(/has-photo/g, "").trim();
+            switchButtons.forEach(function (control) {
+                control.setAttribute("disabled", "disabled");
+            });
+            scaleControl.setAttribute("disabled", "disabled");
+            cropControl.setAttribute("disabled", "disabled");
+            clearImageControl.setAttribute("disabled", "disabled");
+            zoomControl.setAttribute("disabled", "disabled");
+            undoControl.setAttribute("disabled", "disabled");
+            redoControl.setAttribute("disabled", "disabled");
+            rotateRight.setAttribute("disabled", "disabled");
+            rotateLeft.setAttribute("disabled", "disabled");
+            saveButton.setAttribute("disabled", "disabled");
+            zoom100Button.setAttribute("disabled", "disabled");
+            zoom50Button.setAttribute("disabled", "disabled");
+            zoom200Button.setAttribute("disabled", "disabled");
+            zoom500Button.setAttribute("disabled", "disabled");
+            fileInput.value = null;
+
+        }
+    },
+    {
+        id: "isDragging",
+        execute: function (state) {
+            setEditorBoxClass(constants.IS_DRAGGING);
+            if (state.isDragging) {
+                workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
+                return;
+            }
+            workspace.className = workspace.className.replace(/is-dragover/g, "").trim();
+            return;
+        }
+    },
+    {
+        id: "spinnerIsVisible",
+        execute: function (state) {
+            var isHidden = /is-hidden/.test(spinner.className);
+
+            if (state.spinnerIsVisible) {
+                spinner.className = isHidden ? spinner.className.replace(/is-hidden/g, "").trim() : spinner.className.trim();
+                return;
+            }
+            spinner.className = isHidden ? spinner.className.trim() : spinner.className + " is-hidden";
+        }
+    },
+    {
+        id: "activeControlSet",
+        execute: function (state) {
+            controlSets.forEach(c => {
+                    c.className = c.className.replace(/is-open/g, "").trim();
+                    if (c.id === "controlSet" + state.activeControlSet) {
+                        c.className = c.className + " is-open";
+                    }
+                }
+            );
+            switchButtons.forEach(b => {
+                    b.className = b.className.replace(/is-active/g, "").trim();
+                    if (b.id === "toolSwitch" + state.activeControlSet) {
+                        b.className = b.className + " is-active";
+                    }
+                }
+            );
+        }
+    },
+    {
+        id: "isPhotoBig",
+        execute: function (state) {
+            var isBig = /is-photo-big/.test(workspace.className);
+
+            if (!state.isPhotoBig) {
+                workspace.className = isBig ? workspace.className.replace(/is-photo-big/g, "").trim() : workspace.className.trim();
+                return;
+            }
+            workspace.className = isBig ? workspace.className.trim() : workspace.className + " is-photo-big";
+        }
+    }
+];
+
+(function (stateRules) {
     "use strict";
     // Do we have drag and drop?
     var isAdvancedUpload = (function () {
@@ -29,12 +269,14 @@ require("core-js");
     var zoom200Button = document.getElementById("zoom200Button");
     var zoom500Button = document.getElementById("zoom500Button");
     var cropBoxControls;
+
     // Other stuff
     var uploadInstructions = document.getElementById("uploadInstructions");
     var workspace = document.getElementById("workspace");
     var clearImageControl = document.getElementById("clearImageControl");
     var zoomControl = document.getElementById("zoomControl");
     var spinner = document.getElementById("spinner");
+
     // find our labels
     var zoomValue = document.getElementById("zoomValue");
     var scaleValue = document.getElementById("scaleValue");
@@ -47,6 +289,16 @@ require("core-js");
     var myEditor;
 
     var appState = new AppState();
+
+    function activeCropBoxDragControls(controls, x, y) {
+        return Object.keys(controls).map((box) => {
+            var control = controls[box];
+            var isY = y <= control.y + 5 && y >= control.y - 5;
+            var isX = x <= control.x + 5 && x >= control.x - 5;
+            control.active = isY && isX;
+        });
+
+    }
 
     function setAppState(state) {
         function setControls(state) {
@@ -74,12 +326,13 @@ require("core-js");
                             setEditorBoxClass(constants.IS_ROTATING);
                             break;
                         case "isCropMode" :
-                            console.log("crop case");
-                            console.log(state.isCropMode);
+                            //console.log("crop case");
+                            //console.log(state.isCropMode);
 
                             if (myEditor) {
                                 if (state.isCropMode) {
                                     if (!cropBoxControls) {
+                                        console.log("cropBoxControl RESET");
                                         cropBoxControls = resetCropBoxDragControls(300, 300);
                                     }
                                     drawCropBox({
@@ -161,8 +414,8 @@ require("core-js");
                             fileInput.value = null;
                             break;
                         case "isDragging"    :
-                            console.log("drag case");
-                            console.log(state.isDragging);
+                            //console.log("drag case");
+                            //console.log(state.isDragging);
                             setEditorBoxClass(constants.IS_DRAGGING);
                             if (state.isDragging) {
                                 workspace.className += (/is-dragover/).test(workspace.className) ? "" : " is-dragover";
@@ -252,7 +505,7 @@ require("core-js");
     }
 
     function addPic(event) {
-        console.log("addpic");
+        //console.log("addpic");
         event.stopPropagation();
         event.preventDefault();
         setAppState({spinnerIsVisible: true});
@@ -314,9 +567,9 @@ require("core-js");
 
     function cropping(e) {
         var overControl = detectCropBoxDragControls(parseInt(e.offsetX, 10), parseInt(e.offsetY, 10));
-        var startSpot = (function(){
-            var activeBox = Object.keys(cropBoxControls).filter(key => cropBoxControls[key].active)[0];
-            switch (activeBox) {
+        var activeSpot = Object.keys(cropBoxControls).filter(key => cropBoxControls[key].active)[0] || null;
+        var startSpot = (function () {
+            switch (activeSpot) {
                 case "topLeft":
                     return cropBoxControls.bottomRight;
                 case "bottomRight":
@@ -369,7 +622,7 @@ require("core-js");
                 width: ( cropBoxControls.topRight.x - cropBoxControls.topLeft.x),
                 height: ( cropBoxControls.bottomRight.y - cropBoxControls.topRight.y)
             };
-
+        console.log(JSON.stringify(args));
         drawInvertedBox(args);
         Object.assign(cropBoxControls.topLeft, {x: args.x, y: args.y});
         Object.assign(cropBoxControls.topRight, {x: args.x + args.width, y: args.y});
@@ -436,7 +689,6 @@ require("core-js");
     }
 
     function detectCropBoxDragControls(x, y) {
-
         var hasControl = false;
         Object.keys(cropBoxControls).forEach((box) => {
             var control = cropBoxControls[box];
@@ -446,16 +698,17 @@ require("core-js");
             hasControl = hasControl || (isY && isX);
         });
         return hasControl;
-
     }
 
     function endCrop(e) {
-        console.log("end crop " + e.offsetX + " : " + e.offsetY);
+        //console.log("end crop " + e.offsetX + " : " + e.offsetY);
 
         if (e.clientX && e.clientY) {
             setAppState({
                 mouseEndX: parseInt(e.offsetX, 10) - appState.mouseStartX,
-                mouseEndY: parseInt(e.offsetY, 10) - appState.mouseStartY
+                mouseEndY: parseInt(e.offsetY, 10) - appState.mouseStartY,
+                activeDragControl: null,
+                withCropBoxControl: false
             });
 
             // if (appState.isCropping) {
@@ -506,8 +759,17 @@ require("core-js");
         myEditor.scale(event.target.value);
     }
 
+    function setActiveControlSet(event) {
+        var id = event.currentTarget.value;
+        setAppState({
+            activeControlSet: id,
+            offset: getOffset(myEditor.canvas),
+            isCropMode: (event.currentTarget.id === "toolSwitchCrop")
+        });
+    }
+
     function startCrop(e) {
-        // console.log("start crop " + e.clientX + " : " + e.clientY);
+        // //console.log("start crop " + e.clientX + " : " + e.clientY);
         // if (appState.isCropMode) {
         //     setAppState({
         //         isCropping: true,
@@ -515,14 +777,17 @@ require("core-js");
         //         mouseStartY: parseInt(e.clientY, 10)
         //     });
         // }
-        console.log("start crop " + e.offsetX + " : " + e.offsetY);
+        //console.log("start crop " + e.offsetX + " : " + e.offsetY);
         if (appState.isCropMode) {
+            let withCropBoxControl = detectCropBoxDragControls(parseInt(e.offsetX, 10), parseInt(e.offsetY, 10));
+            let activeDragControl = Object.keys(cropBoxControls).filter(key => cropBoxControls[key].active)[0];
+
             setAppState({
                 isCropping: true,
-                activeDragControl: "lowerLeft",
+                activeDragControl,
                 mouseStartX: parseInt(e.offsetX, 10),
                 mouseStartY: parseInt(e.offsetY, 10),
-                withCropBoxControl: detectCropBoxDragControls(parseInt(e.offsetX, 10), parseInt(e.offsetY, 10))
+                withCropBoxControl
             });
         }
     }
@@ -544,19 +809,8 @@ require("core-js");
         myEditor.zoom(parseInt(event.currentTarget.value, 10));
     }
 
-    function setActiveControlSet(event) {
-        var id = event.currentTarget.value;
-        setAppState({activeControlSet: id});
-
-        setAppState({
-            offset: getOffset(myEditor.canvas),
-            isCropMode: (event.currentTarget.id === "toolSwitchCrop")
-        });
-
-
-    }
-
     resetAppState();
+
     fileInput.addEventListener("change", addPic);
     scaleControl.addEventListener("input", scalePic);
     scaleControl.addEventListener("blur", saveState);
@@ -584,4 +838,4 @@ require("core-js");
         workspace.addEventListener("dragend", dragEnd);
         workspace.addEventListener("dragleave", dragEnd);
     }
-}());
+}(stateRules));
