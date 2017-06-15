@@ -1,8 +1,7 @@
 # photo-editor
 JavaScript Photo Editor
 
-Not even close to production ready
-
+See Demo at https://codepen.io/johnneed/full/wWAdbb/
 
 ##Requires
 * Node
