@@ -1,7 +1,7 @@
 # photo-editor
 JavaScript Photo Editor
 
-See Demo at https://codepen.io/johnneed/full/wWAdbb/
+See Demo at https://s.codepen.io/johnneed/debug/wWAdbb/YvkgOPqXbmDk
 
 ##Requires
 * Node
